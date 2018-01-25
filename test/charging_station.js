@@ -1,13 +1,13 @@
 const crypto = require('crypto');
 
-const Charging = artifacts.require("./Charging.sol");
+const ChargingStation = artifacts.require("./ChargingStation.sol");
 
 contract('Charging', (accounts) => {
 
   let charging;
 
   beforeEach(async () => {
-      charging = await Charging.new();
+      charging = await ChargingStation.new();
   })
 
   it('Should log the correct event details when start called', async () => {
