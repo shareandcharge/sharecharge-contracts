@@ -1,15 +1,12 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.18;
 
 contract Charging {
 
-  uint storedData;
+  event StartEvent(bytes32 connectorId);
 
-  function setData(uint x) public {
-    storedData = x;
+  function start(bytes32 connectorId) public {
+    StartEvent(connectorId);
   }
 
-  function getData() public view returns (uint) {
-    return storedData;
-  }
 
 }

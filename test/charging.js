@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const Charging = artifacts.require("./Charging.sol");
 
 contract('Charging', (accounts) => {
@@ -8,9 +10,13 @@ contract('Charging', (accounts) => {
       charging = await Charging.new();
   })
 
-  it("simple test to verify testing works", async () => {
-    charging.setData(42);
-    const result = await charging.getData();
-    assert.equal(result, 42);
+  it('Should log the correct event details when start called', async () => {
+    const connector = '0x' + crypto.randomBytes(32).toString('hex');
+    const result = await charging.start(connector);
+    const startEventListener = charging.StartEvent({}, (err, res) => {
+      assert.equal(res.args.connectorId, connector);
+      startEventListener.stopWatching();
+    });
   });
+
 });
