@@ -14,10 +14,10 @@ contract('Charging', (accounts) => {
     const connector = '0x' + crypto.randomBytes(32).toString('hex');
     const user = accounts[1];
 
-    const result = await charging.start(connector, user);
+    const result = await charging.requestStart(connector, user);
     
     return new Promise((resolve, reject) => {
-      const startEventListener = charging.StartEvent({}, (err, res) => {
+      const startEventListener = charging.StartRequested({}, (err, res) => {
         const args = res.args;
         assert.equal(args.connectorId, connector);
         assert.equal(args.user, user);
@@ -26,5 +26,7 @@ contract('Charging', (accounts) => {
       });  
     });
   });
+
+  it
 
 });

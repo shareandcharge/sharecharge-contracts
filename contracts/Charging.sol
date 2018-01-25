@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 
 contract Charging {
 
-  event StartEvent(bytes32 indexed connectorId, address user);
+  event StartRequested(bytes32 indexed connectorId, address user);
 
-  function start(bytes32 connectorId, address user) public {
-    StartEvent(connectorId, user);
+  function requestStart(bytes32 connectorId, address user) public {
+    StartRequested(connectorId, user);
   }
 }
