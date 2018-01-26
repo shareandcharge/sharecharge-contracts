@@ -4,6 +4,7 @@ contract ChargingStationStorage {
 
   struct Connector {
     bool isAvailable;
+    
   }
 
   mapping(bytes32 => Connector) public connectors;  

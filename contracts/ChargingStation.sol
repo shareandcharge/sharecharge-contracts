@@ -4,16 +4,18 @@ import './ChargingStationStorage.sol';
 
 contract ChargingStation {
 
-  ChargingStationStorage chargingStations;
+  ChargingStationStorage private stationStorage;
 
-  event StartRequested(bytes32 indexed connectorId, address user);
+  event StartRequested(bytes32 indexed connectorId, address controller);
 
   function ChargingStation(address chargingStationStorageAddress) public {
-    chargingStations = ChargingStationStorage(chargingStationStorageAddress);
+    stationStorage = ChargingStationStorage(chargingStationStorageAddress);
   }
 
-  function requestStart(bytes32 connectorId, address user) public {
-    require(chargingStations.isAvailable(connectorId) == true);
-    StartRequested(connectorId, user);
+  function requestStart(bytes32 connectorId, address controller) public {
+    require(stationStorage.isAvailable(connectorId) == true);
+    StartRequested(connectorId, controller);
   }
+
+
 }
