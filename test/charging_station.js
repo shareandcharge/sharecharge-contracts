@@ -2,15 +2,18 @@ const crypto = require('crypto');
 
 const ChargingStation = artifacts.require("./ChargingStation.sol");
 const ChargingStationStorage = artifacts.require("./ChargingStationStorage.sol");
+const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 
 contract('ChargingStation', (accounts) => {
 
-  let charging, stations;
+  let charging, stations, sessions;
   let connector, controller, parameters;
 
   beforeEach(async () => {
     stations = await ChargingStationStorage.new();
-    charging = await ChargingStation.new(stations.address);
+    sessions = await ChargingSessions.new();
+    charging = await ChargingStation.new(stations.address, sessions.address);
+    await sessions.setChargingContractAddress(charging.address);
     connector = '0x' + crypto.randomBytes(32).toString('hex');
     controller = accounts[1];
     parameters = JSON.stringify({ secondsToRent: 1800, price: 5 });
@@ -78,23 +81,15 @@ contract('ChargingStation', (accounts) => {
       });
     });
 
-    it('Should only allow confirm start to be called if start previously executed on connector', (done) => {
-      registerConnector(connector, true, true).then(() => {
-        charging.requestStart(connector, { from: controller })
-          .then(() => {
-            charging.confirmStart(connector, controller)
-              .then(res => {
-                return expectedEvent(charging.StartConfirmed, (args) => {
-                  assert.equal(args.connectorId, connector);
-                  done();
-                });
-              })
-              .catch(err => {
-                assert.equal(err.message, 'VM Exception while processing transaction: revert')
-                done();
-              });
-          });
-      });
+    it('Should only allow confirm start to be called if start previously executed on connector', async () => {
+      await registerConnector(connector, true, true);
+
+      await charging.requestStart(connector, { from: controller });
+      await charging.confirmStart(connector, controller);
+      
+      return expectedEvent(charging.StartConfirmed, (args) => {
+        assert.equal(args.connectorId, connector);
+      }); 
     });
 
     it('Should fail if confirm start not called by connector owner', (done) => {
@@ -106,7 +101,7 @@ contract('ChargingStation', (accounts) => {
               assert.equal(err.message, 'VM Exception while processing transaction: revert')
               done();
             });
-        })
+        });
       });
     })
   });
