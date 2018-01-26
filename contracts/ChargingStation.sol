@@ -6,16 +6,26 @@ contract ChargingStation {
 
   ChargingStationStorage private stationStorage;
 
-  event StartRequested(bytes32 indexed connectorId, address controller, string parameters);
+  mapping(bytes32 => address) private sessions;
+
+  event StartRequested(bytes32 indexed connectorId, address controller);
+  event StartConfirmed(bytes32 indexed connectorId);
 
   function ChargingStation(address chargingStationStorageAddress) public {
     stationStorage = ChargingStationStorage(chargingStationStorageAddress);
   }
 
-  function requestStart(bytes32 connectorId, address controller, string parameters) public {
+  function requestStart(bytes32 connectorId) public {
     require(stationStorage.isAvailable(connectorId) == true);
     require(stationStorage.isVerified(connectorId) == true);
-    StartRequested(connectorId, controller, parameters);
+    sessions[connectorId] = msg.sender;
+    StartRequested(connectorId, msg.sender);
+  }
+
+  function confirmStart(bytes32 connectorId, address controller) public {
+    require(stationStorage.getOwner(connectorId) == msg.sender);
+    require(sessions[connectorId] == controller);
+    StartConfirmed(connectorId);
   }
 
 }

@@ -13,50 +13,101 @@ contract('ChargingStation', (accounts) => {
     charging = await ChargingStation.new(stations.address);
     connector = '0x' + crypto.randomBytes(32).toString('hex');
     controller = accounts[1];
-    parameters = JSON.stringify({secondsToRent: 1800, price: 5});  
-    await stations.setConnector(connector, true);
-    await stations.verifyConnector(connector);    
+    parameters = JSON.stringify({ secondsToRent: 1800, price: 5 });
   })
+
+  async function registerConnector(connector, isAvailable, isVerified) {
+    await stations.registerConnector(connector, isAvailable);
+    if (isVerified) {
+      await stations.verifyConnector(connector);
+    }
+  };
+
+  function expectedEvent(targetEvent, callback) {
+    return new Promise((resolve, reject) => {
+      const eventListener = targetEvent({}, (err, res) => {
+        callback(res.args);
+        eventListener.stopWatching();
+        resolve();
+      });
+    });
+  }
 
   context('Request Charging Start', () => {
 
     it('Should log the correct event details when start called', async () => {
-      
-      await charging.requestStart(connector, controller, parameters);
-      
-      return new Promise((resolve, reject) => {
-        const startEventListener = charging.StartRequested({}, (err, res) => {
-          const args = res.args;
-          assert.equal(args.connectorId, connector);
-          assert.equal(args.controller, controller);
-          assert.equal(args.parameters, parameters);
-          startEventListener.stopWatching();      
-          resolve();
-        });  
+      await registerConnector(connector, true, true);
+
+      await charging.requestStart(connector, { from: controller });
+
+      return expectedEvent(charging.StartRequested, (args) => {
+        assert.equal(args.connectorId, connector);
+        assert.equal(args.controller, controller);
       });
     });
-  
+
     it('Should not allow a start request if connector not available', async () => {
-      await stations.setConnector(connector, false);
-  
-      charging.requestStart(connector, controller, parameters)
+      await registerConnector(connector, false, true);
+
+      charging.requestStart(connector, { from: controller })
         .then(res => assert.fail())
         .catch(err => assert.equal(err.message, 'VM Exception while processing transaction: revert'));
     });
-  
-    it('Should not allow a start request on an unverified connector', (done) => {
-      const connector2 = '0x' + crypto.randomBytes(32).toString('hex');
 
-      charging.requestStart(connector2, controller, parameters)
+    it('Should not allow a start request on an unverified connector', (done) => {
+      charging.requestStart(connector, { from: controller })
         .then(res => assert.fail())
         .catch(err => {
           assert.equal(err.message, 'VM Exception while processing transaction: revert');
           done();
         });
-
     });
-  
+
   });
 
+  context('Confirm Charging Start', () => {
 
+    it('Should log event with correct details if start confirmed successfully', async () => {
+      await registerConnector(connector, true, true);
+
+      await charging.requestStart(connector, { from: controller });
+      await charging.confirmStart(connector, controller);
+
+      return expectedEvent(charging.StartConfirmed, (args) => {
+        assert.equal(args.connectorId, connector);
+      });
+    });
+
+    it('Should only allow confirm start to be called if start previously executed on connector', (done) => {
+      registerConnector(connector, true, true).then(() => {
+        charging.requestStart(connector, { from: controller })
+          .then(() => {
+            charging.confirmStart(connector, controller)
+              .then(res => {
+                return expectedEvent(charging.StartConfirmed, (args) => {
+                  assert.equal(args.connectorId, connector);
+                  done();
+                });
+              })
+              .catch(err => {
+                assert.equal(err.message, 'VM Exception while processing transaction: revert')
+                done();
+              });
+          });
+      });
+    });
+
+    it('Should fail if confirm start not called by connector owner', (done) => {
+      registerConnector(connector, true, true).then(() => {
+        charging.requestStart(connector, { from: controller }).then(() => {
+          charging.confirmStart(connector, controller, { from: accounts[2] })
+            .then(res => assert.fail())
+            .catch(err => {
+              assert.equal(err.message, 'VM Exception while processing transaction: revert')
+              done();
+            });
+        })
+      });
+    })
+  });
 });
