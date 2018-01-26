@@ -2,36 +2,37 @@ pragma solidity ^0.4.18;
 
 contract ChargingStationStorage {
 
-  struct Connector {
-    address owner;
-    bool isAvailable;
-    bool isVerified;
-  }
+    struct Connector {
+        address owner;
+        bool isAvailable;
+        bool isVerified;
+    }
 
-  mapping(bytes32 => Connector) public connectors;  
+    mapping(bytes32 => Connector) public connectors;
 
-  // SETTERS
+    // SETTERS
 
-  function registerConnector(bytes32 id, bool isAvailable) public {
-    connectors[id] = Connector(msg.sender, isAvailable, false);
-  }
+    function registerConnector(bytes32 id, bool isAvailable) public {
+        connectors[id] = Connector(msg.sender, isAvailable, false);
+    }
 
-  function verifyConnector(bytes32 id) public {
-    connectors[id].isVerified = true;
-  }
+    function verifyConnector(bytes32 id) public {
+        require(msg.sender == connectors[id].owner);
+        connectors[id].isVerified = true;
+    }
 
-  // GETTERS
-  
-  function isAvailable(bytes32 id) view public returns (bool) {
-    return connectors[id].isAvailable;
-  }
+    // GETTERS
 
-  function isVerified(bytes32 id) view public returns (bool) {
-    return connectors[id].isVerified;
-  }
+    function isAvailable(bytes32 id) view public returns (bool) {
+        return connectors[id].isAvailable;
+    }
 
-  function getOwner(bytes32 id) view public returns (address) {
-    return connectors[id].owner;
-  }
+    function isVerified(bytes32 id) view public returns (bool) {
+        return connectors[id].isVerified;
+    }
+
+    function getOwner(bytes32 id) view public returns (address) {
+        return connectors[id].owner;
+    }
 
 }

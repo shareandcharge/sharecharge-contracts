@@ -1,0 +1,27 @@
+{
+  "name": "sharecharge-contracts",
+  "version": "0.0.1",
+  "description": "Share & Charge smart contracts",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "solium -d contracts",
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motionwerkGmbH/sharecharge-contracts.git"
+  },
+  "author": "MotionWerk GmbH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/motionwerkGmbH/sharecharge-contracts/issues"
+  },
+  "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
+  "devDependencies": {
+    "solium": "^1.1.3",
+    "truffle": "^4.0.5"
+  }
+}

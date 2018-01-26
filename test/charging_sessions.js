@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 
-contract('Charging Sessions', (accounts) => {
+contract('ChargingSessions', (accounts) => {
 
   let sessions;
   let connector, contractAddress;
