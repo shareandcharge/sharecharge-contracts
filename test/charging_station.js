@@ -30,7 +30,7 @@ contract('ChargingStation', (accounts) => {
 
     context('Request Charging Start', () => {
 
-        it('Should log the correct event details when start called', async () => {
+        it('Should log the correct event details when start requested', async () => {
             await registerConnector(connector, true, true);
 
             await charging.requestStart(connector, { from: controller });
@@ -78,11 +78,9 @@ contract('ChargingStation', (accounts) => {
         });
 
         it('Should fail if confirm start not called by connector owner', (done) => {
-            registerConnector(connector, true, true).then(() => {
-                charging.requestStart(connector, { from: controller }).then(() => {
-                    assertError(() => charging.confirmStart(connector, controller, { from: accounts[2] }), done);
-                });
-            });
+            registerConnector(connector, true, true)
+                .then(() => charging.requestStart(connector, { from: controller })
+                .then(() => assertError(() => charging.confirmStart(connector, controller, { from: accounts[2] }), done)));
         });
 
         it('Should set connector to unavailable on start confirmation', async () => {
@@ -91,6 +89,46 @@ contract('ChargingStation', (accounts) => {
             await charging.confirmStart(connector, controller);
 
             assert.equal(await stations.isAvailable(connector), false);
+        });
+
+    });
+
+    context('Request Charging Stop', () => {
+
+        it('Should log the correct event details when stop requested', async() => {
+
+            await registerConnector(connector, true, true);
+            await charging.requestStart(connector, { from: controller });
+            // NOTE: No start confirmation needed to request stop
+            await charging.requestStop(connector, { from: controller });
+
+            return expectedEvent(charging.StopRequested, (args) => {
+                assert.equal(args.connectorId, connector);
+                assert.equal(args.controller, controller);
+            });
+
+        });
+
+        it('Should fail if stop requested on connector by controller not in current session', (done) => {
+            registerConnector(connector, true, true)
+                .then(() => charging.requestStart(connector, { from: controller }))
+                .then(() => charging.confirmStart(connector, controller))
+                .then(() => assertError(() => charging.requestStop(connector, { from: accounts[2] }), done));
+        });
+
+    });
+
+    context.only('Confirm Charging Stop', () => {
+
+        it('Should log event with correct details if stop confirmed successfully', async () => {
+            await registerConnector(connector, true, true);
+            await charging.confirmStop(connector);
+            
+            assert.equal(await stations.isAvailable(connector), true);
+            return expectedEvent(charging.StopConfirmed, (args) => {
+                assert.equal(args.connectorId, connector);
+                // assert.equal(args.controller, controller);
+            });
         });
 
     });

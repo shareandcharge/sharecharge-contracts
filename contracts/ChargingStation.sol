@@ -11,6 +11,9 @@ contract ChargingStation {
     event StartRequested(bytes32 indexed connectorId, address controller);
     event StartConfirmed(bytes32 indexed connectorId);
 
+    event StopRequested(bytes32 indexed connectorId, address controller);
+    event StopConfirmed(bytes32 indexed connectorId);
+
     function ChargingStation(address stationStorageAddress, address chargingSessionAddress) public {
         stationStorage = ChargingStationStorage(stationStorageAddress);
         chargingSessions = ChargingSessions(chargingSessionAddress);
@@ -30,6 +33,15 @@ contract ChargingStation {
         StartConfirmed(connectorId);
     }
 
+    function requestStop(bytes32 connectorId) public {
+        require(chargingSessions.get(connectorId) == msg.sender);
+        StopRequested(connectorId, msg.sender);
 
+    }
+
+    function confirmStop(bytes32 connectorId) public {
+        stationStorage.setAvailability(connectorId, true);
+        StopConfirmed(connectorId);
+    }
 
 }
