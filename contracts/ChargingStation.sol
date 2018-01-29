@@ -2,8 +2,11 @@ pragma solidity ^0.4.18;
 
 import "./ChargingStationStorage.sol";
 import "./ChargingSessions.sol";
+import "./MobilityToken.sol";
 
 contract ChargingStation {
+
+    MobilityToken private bank;
 
     ChargingStationStorage private stationStorage;
     ChargingSessions private chargingSessions;
@@ -14,13 +17,18 @@ contract ChargingStation {
     event StopRequested(bytes32 indexed connectorId, address controller);
     event StopConfirmed(bytes32 indexed connectorId);
 
-    // 0 = start failed
-    // 1 = stop failed
     event Error(bytes32 indexed connectorId, uint8 errorCode);
 
-    function ChargingStation(address stationStorageAddress, address chargingSessionAddress) public {
-        stationStorage = ChargingStationStorage(stationStorageAddress);
-        chargingSessions = ChargingSessions(chargingSessionAddress);
+    modifier stationOwnerOnly(bytes32 id) {
+        require(stationStorage.getOwner(id) == msg.sender);
+        _;
+    } 
+
+
+    function ChargingStation(address stationsAddress, address sessionsAddress, address tokenAddress) public {
+        stationStorage = ChargingStationStorage(stationsAddress);
+        chargingSessions = ChargingSessions(sessionsAddress);
+        bank = MobilityToken(tokenAddress);
     }
 
     function requestStart(bytes32 connectorId) public {
@@ -30,10 +38,10 @@ contract ChargingStation {
         StartRequested(connectorId, msg.sender);
     }
 
-    function confirmStart(bytes32 connectorId, address controller) public {
-        require(stationStorage.getOwner(connectorId) == msg.sender);
+    function confirmStart(bytes32 connectorId, address controller) public stationOwnerOnly(connectorId) {
         require(chargingSessions.get(connectorId) == controller);
         stationStorage.setAvailability(connectorId, false);
+        bank.transferFrom(controller, address(this), 1);
         StartConfirmed(connectorId);
     }
 
@@ -43,14 +51,13 @@ contract ChargingStation {
 
     }
 
-    function confirmStop(bytes32 connectorId) public {
-        require(stationStorage.getOwner(connectorId) == msg.sender);
+    function confirmStop(bytes32 connectorId) public stationOwnerOnly(connectorId) {
         chargingSessions.set(connectorId, 0);
         stationStorage.setAvailability(connectorId, true);
         StopConfirmed(connectorId);
     }
 
-    function logError(bytes32 connectorId, uint8 errorCode) public {
+    function logError(bytes32 connectorId, uint8 errorCode) public stationOwnerOnly(connectorId) {        
         Error(connectorId, errorCode);
     }
 

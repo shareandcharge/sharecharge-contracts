@@ -4,17 +4,19 @@ const { expectedEvent, assertError } = require('./helpers');
 const ChargingStation = artifacts.require("./ChargingStation.sol");
 const ChargingStationStorage = artifacts.require("./ChargingStationStorage.sol");
 const ChargingSessions = artifacts.require("./ChargingSessions.sol");
+const MobilityToken = artifacts.require("./MobilityToken.sol");
 
 contract('ChargingStation', (accounts) => {
 
-    let charging, stations, sessions;
+    let charging, stations, sessions, token;
     let connector, controller;
     let emptyAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
         stations = await ChargingStationStorage.new();
         sessions = await ChargingSessions.new();
-        charging = await ChargingStation.new(stations.address, sessions.address);
+        token = await MobilityToken.new(1000);
+        charging = await ChargingStation.new(stations.address, sessions.address, token.address);
         await sessions.setChargingContractAddress(charging.address);
         await stations.setChargingContractAddress(charging.address);
         connector = '0x' + crypto.randomBytes(32).toString('hex');
@@ -55,11 +57,17 @@ contract('ChargingStation', (accounts) => {
 
     context('#confirmStart()', () => {
 
-        it('Should log event with correct details if start confirmed successfully', async () => {
+        it('Should log event details and transfer to escrow if start confirmed successfully', async () => {
             await registerConnector(connector, true, true);
 
             await charging.requestStart(connector, { from: controller });
+            await token.mint(controller, 1);
+            await token.approve(charging.address, 1, { from: controller });
+
             await charging.confirmStart(connector, controller);
+
+            const escrowBalance = await token.balanceOf(charging.address);
+            assert.equal(escrowBalance.toNumber(), 1);
 
             return expectedEvent(charging.StartConfirmed, (args) => {
                 assert.equal(args.connectorId, connector);
@@ -70,6 +78,9 @@ contract('ChargingStation', (accounts) => {
             await registerConnector(connector, true, true);
 
             await charging.requestStart(connector, { from: controller });
+            await token.mint(controller, 1);
+            await token.approve(charging.address, 1, { from: controller });
+
             await charging.confirmStart(connector, controller);
 
             return expectedEvent(charging.StartConfirmed, (args) => {
@@ -80,12 +91,16 @@ contract('ChargingStation', (accounts) => {
         it('Should fail if confirm start not called by connector owner', (done) => {
             registerConnector(connector, true, true)
                 .then(() => charging.requestStart(connector, { from: controller })
+                .then(() => token.mint(controller, 1))
+                .then(() => token.approve(charging.address, 1, { from: controller }))
                 .then(() => assertError(() => charging.confirmStart(connector, controller, { from: accounts[2] }), done)));
         });
 
         it('Should set connector to unavailable on start confirmation', async () => {
             await registerConnector(connector, true, true);
             await charging.requestStart(connector, { from: controller });
+            await token.mint(controller, 1);
+            await token.approve(charging.address, 1, { from: controller });
             await charging.confirmStart(connector, controller);
 
             assert.equal(await stations.isAvailable(connector), false);
@@ -112,6 +127,8 @@ contract('ChargingStation', (accounts) => {
         it('Should fail if stop requested on connector by controller not in current session', (done) => {
             registerConnector(connector, true, true)
                 .then(() => charging.requestStart(connector, { from: controller }))
+                .then(() => token.mint(controller, 1))
+                .then(() => token.approve(charging.address, 1, { from: controller }))
                 .then(() => charging.confirmStart(connector, controller))
                 .then(() => assertError(() => charging.requestStop(connector, { from: accounts[2] }), done));
         });
@@ -151,6 +168,11 @@ contract('ChargingStation', (accounts) => {
                 assert.equal(args.connectorId, connector);
                 assert.equal(args.errorCode.toNumber(), 1);
             });
+        });
+
+        it('Should fail if log error not called by connector owner', (done)  => {
+            registerConnector(connector, true, true)
+                .then(() => assertError(() => charging.logError(connector, 1, { from: accounts[2] }), done));
         });
 
     });
