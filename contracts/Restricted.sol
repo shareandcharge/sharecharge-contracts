@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 contract Restricted {
 
     address private owner;
-    address private chargingContract;
+    address public chargingContract;
 
     modifier onlyOwner() {
         require(msg.sender == owner);

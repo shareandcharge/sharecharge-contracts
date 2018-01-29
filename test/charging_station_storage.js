@@ -25,4 +25,12 @@ contract('ChargingStationStorage', function (accounts) {
         });
     });
 
+    it('Should allow connector owner to update availability', async () => {
+        await storage.registerConnector(connector, false, { from: accounts[1] });
+        assert.equal(await storage.isAvailable(connector), false);
+        
+        await storage.setAvailability(connector, true, { from: accounts[1] });
+        assert.equal(await storage.isAvailable(connector), true);
+    });
+
 });

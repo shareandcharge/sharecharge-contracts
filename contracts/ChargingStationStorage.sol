@@ -12,6 +12,11 @@ contract ChargingStationStorage is Restricted {
 
     mapping(bytes32 => Connector) public connectors;
 
+    modifier connectorOwnerOnly(bytes32 id) {
+        require(msg.sender == connectors[id].owner || msg.sender == Restricted.chargingContract);
+        _;
+    }
+
     // SETTERS
 
     function registerConnector(bytes32 id, bool isAvailable) public {
@@ -23,7 +28,7 @@ contract ChargingStationStorage is Restricted {
         connectors[id].isVerified = true;
     }
 
-    function setAvailability(bytes32 id, bool isAvailable) public restricted {
+    function setAvailability(bytes32 id, bool isAvailable) public connectorOwnerOnly(id) {
         connectors[id].isAvailable = isAvailable;
     }
 
