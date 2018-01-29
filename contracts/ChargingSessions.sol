@@ -1,29 +1,10 @@
 pragma solidity ^0.4.18;
 
-contract ChargingSessions {
+import "./Restricted.sol";
 
-    address public owner;
-    address private chargingContract;
+contract ChargingSessions is Restricted {
 
     mapping(bytes32 => address) private sessions;
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-
-    modifier restricted() {
-        require(msg.sender == owner || msg.sender == chargingContract);
-        _;
-    }
-
-    function ChargingSessions() public {
-        owner = msg.sender;
-    }
-
-    function setChargingContractAddress(address chargingContractAddress) public onlyOwner {
-        chargingContract = chargingContractAddress;
-    }
 
     function set(bytes32 connectorId, address controller) public restricted {
         sessions[connectorId] = controller;

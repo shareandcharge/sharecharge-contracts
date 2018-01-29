@@ -15,6 +15,7 @@ contract('ChargingStation', (accounts) => {
         sessions = await ChargingSessions.new();
         charging = await ChargingStation.new(stations.address, sessions.address);
         await sessions.setChargingContractAddress(charging.address);
+        await stations.setChargingContractAddress(charging.address);
         connector = '0x' + crypto.randomBytes(32).toString('hex');
         controller = accounts[1];
         parameters = JSON.stringify({ secondsToRent: 1800, price: 5 });

@@ -1,6 +1,8 @@
 pragma solidity ^0.4.18;
 
-contract ChargingStationStorage {
+import "./Restricted.sol";
+
+contract ChargingStationStorage is Restricted {
 
     struct Connector {
         address owner;
@@ -21,7 +23,7 @@ contract ChargingStationStorage {
         connectors[id].isVerified = true;
     }
 
-    function setAvailability(bytes32 id, bool isAvailable) public {
+    function setAvailability(bytes32 id, bool isAvailable) public restricted {
         connectors[id].isAvailable = isAvailable;
     }
 
