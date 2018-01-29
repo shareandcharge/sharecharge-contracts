@@ -9,6 +9,7 @@ contract('ChargingStation', (accounts) => {
 
     let charging, stations, sessions;
     let connector, controller, parameters;
+    let emptyAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
         stations = await ChargingStationStorage.new();
@@ -120,16 +121,27 @@ contract('ChargingStation', (accounts) => {
 
     context.only('Confirm Charging Stop', () => {
 
-        it('Should log event with correct details if stop confirmed successfully', async () => {
+        it('Should log event with correct details and reset state if stop confirmed successfully', async () => {
             await registerConnector(connector, true, true);
+            
+            await charging.requestStart(connector, { from: controller });
+            assert.equal(await sessions.get(connector), controller);
+            
             await charging.confirmStop(connector);
             
             assert.equal(await stations.isAvailable(connector), true);
+            assert.equal(await sessions.get(connector), emptyAddress);
             return expectedEvent(charging.StopConfirmed, (args) => {
                 assert.equal(args.connectorId, connector);
-                // assert.equal(args.controller, controller);
             });
         });
+
+        it('Should fail if confirm start not called by connector owner', (done) => {
+            registerConnector(connector, true, true)
+                .then(() => assertError(() => charging.confirmStop(connector, { from: accounts[2] }), done));
+        });
+
+
 
     });
 });

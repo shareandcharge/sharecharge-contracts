@@ -40,6 +40,8 @@ contract ChargingStation {
     }
 
     function confirmStop(bytes32 connectorId) public {
+        require(stationStorage.getOwner(connectorId) == msg.sender);
+        chargingSessions.set(connectorId, 0);
         stationStorage.setAvailability(connectorId, true);
         StopConfirmed(connectorId);
     }
