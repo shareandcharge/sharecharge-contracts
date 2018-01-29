@@ -26,7 +26,10 @@ contract ChargingStation {
     function confirmStart(bytes32 connectorId, address controller) public {
         require(stationStorage.getOwner(connectorId) == msg.sender);
         require(chargingSessions.get(connectorId) == controller);
+        stationStorage.setAvailability(connectorId, false);
         StartConfirmed(connectorId);
     }
+
+
 
 }

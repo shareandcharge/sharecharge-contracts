@@ -84,5 +84,13 @@ contract('ChargingStation', (accounts) => {
             });
         });
 
+        it('Should set connector to unavailable on start confirmation', async () => {
+            await registerConnector(connector, true, true);
+            await charging.requestStart(connector, { from: controller });
+            await charging.confirmStart(connector, controller);
+
+            assert.equal(await stations.isAvailable(connector), false);
+        });
+
     });
 });

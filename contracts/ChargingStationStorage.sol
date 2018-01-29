@@ -21,6 +21,10 @@ contract ChargingStationStorage {
         connectors[id].isVerified = true;
     }
 
+    function setAvailability(bytes32 id, bool isAvailable) public {
+        connectors[id].isAvailable = isAvailable;
+    }
+
     // GETTERS
 
     function isAvailable(bytes32 id) view public returns (bool) {
