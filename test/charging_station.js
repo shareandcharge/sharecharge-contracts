@@ -8,7 +8,7 @@ const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 contract('ChargingStation', (accounts) => {
 
     let charging, stations, sessions;
-    let connector, controller, parameters;
+    let connector, controller, errorMessage;
     let emptyAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
@@ -19,7 +19,7 @@ contract('ChargingStation', (accounts) => {
         await stations.setChargingContractAddress(charging.address);
         connector = '0x' + crypto.randomBytes(32).toString('hex');
         controller = accounts[1];
-        parameters = JSON.stringify({ secondsToRent: 1800, price: 5 });
+        errorMessage = 'Could not start charging';
     })
 
     async function registerConnector(connector, isAvailable, isVerified) {
@@ -29,7 +29,7 @@ contract('ChargingStation', (accounts) => {
         }
     };
 
-    context('Request Charging Start', () => {
+    context('#requestStart()', () => {
 
         it('Should log the correct event details when start requested', async () => {
             await registerConnector(connector, true, true);
@@ -54,7 +54,7 @@ contract('ChargingStation', (accounts) => {
 
     });
 
-    context('Confirm Charging Start', () => {
+    context('#confirmStart()', () => {
 
         it('Should log event with correct details if start confirmed successfully', async () => {
             await registerConnector(connector, true, true);
@@ -94,7 +94,7 @@ contract('ChargingStation', (accounts) => {
 
     });
 
-    context('Request Charging Stop', () => {
+    context('#requestStop()', () => {
 
         it('Should log the correct event details when stop requested', async() => {
 
@@ -119,7 +119,7 @@ contract('ChargingStation', (accounts) => {
 
     });
 
-    context.only('Confirm Charging Stop', () => {
+    context('#confirmStop()', () => {
 
         it('Should log event with correct details and reset state if stop confirmed successfully', async () => {
             await registerConnector(connector, true, true);
@@ -136,12 +136,23 @@ contract('ChargingStation', (accounts) => {
             });
         });
 
-        it('Should fail if confirm start not called by connector owner', (done) => {
+        it('Should fail if confirm stop not called by connector owner', (done) => {
             registerConnector(connector, true, true)
                 .then(() => assertError(() => charging.confirmStop(connector, { from: accounts[2] }), done));
         });
 
+    });
 
+    context.only('#connectorError()', () => {
+
+        it('Should log event with relevant details on connector error', async () => {
+            await registerConnector(connector, true, true);
+            await charging.connectorError(connector, errorMessage);
+            return expectedEvent(charging.Error, (args) => {
+                assert.equal(args.connectorId, connector);
+                assert.equal(args.error, errorMessage);
+            });
+        });
 
     });
 });

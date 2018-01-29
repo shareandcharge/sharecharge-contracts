@@ -14,6 +14,8 @@ contract ChargingStation {
     event StopRequested(bytes32 indexed connectorId, address controller);
     event StopConfirmed(bytes32 indexed connectorId);
 
+    event Error(bytes32 indexed connectorId, string error);
+    
     function ChargingStation(address stationStorageAddress, address chargingSessionAddress) public {
         stationStorage = ChargingStationStorage(stationStorageAddress);
         chargingSessions = ChargingSessions(chargingSessionAddress);
@@ -44,6 +46,11 @@ contract ChargingStation {
         chargingSessions.set(connectorId, 0);
         stationStorage.setAvailability(connectorId, true);
         StopConfirmed(connectorId);
+    }
+
+    function connectorError(bytes32 connectorId, string error) public {
+        Error(connectorId, error);
+
     }
 
 }
