@@ -8,7 +8,7 @@ const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 contract('ChargingStation', (accounts) => {
 
     let charging, stations, sessions;
-    let connector, controller, errorMessage;
+    let connector, controller;
     let emptyAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
@@ -19,8 +19,7 @@ contract('ChargingStation', (accounts) => {
         await stations.setChargingContractAddress(charging.address);
         connector = '0x' + crypto.randomBytes(32).toString('hex');
         controller = accounts[1];
-        errorMessage = 'Could not start charging';
-    })
+    });
 
     async function registerConnector(connector, isAvailable, isVerified) {
         await stations.registerConnector(connector, isAvailable);
@@ -143,14 +142,14 @@ contract('ChargingStation', (accounts) => {
 
     });
 
-    context.only('#connectorError()', () => {
+    context('#logError()', () => {
 
-        it('Should log event with relevant details on connector error', async () => {
+        it('Should log event with error code on connector error', async () => {
             await registerConnector(connector, true, true);
-            await charging.connectorError(connector, errorMessage);
+            await charging.logError(connector, 1);
             return expectedEvent(charging.Error, (args) => {
                 assert.equal(args.connectorId, connector);
-                assert.equal(args.error, errorMessage);
+                assert.equal(args.errorCode.toNumber(), 1);
             });
         });
 

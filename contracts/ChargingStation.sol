@@ -14,8 +14,10 @@ contract ChargingStation {
     event StopRequested(bytes32 indexed connectorId, address controller);
     event StopConfirmed(bytes32 indexed connectorId);
 
-    event Error(bytes32 indexed connectorId, string error);
-    
+    // 0 = start failed
+    // 1 = stop failed
+    event Error(bytes32 indexed connectorId, uint8 errorCode);
+
     function ChargingStation(address stationStorageAddress, address chargingSessionAddress) public {
         stationStorage = ChargingStationStorage(stationStorageAddress);
         chargingSessions = ChargingSessions(chargingSessionAddress);
@@ -48,9 +50,8 @@ contract ChargingStation {
         StopConfirmed(connectorId);
     }
 
-    function connectorError(bytes32 connectorId, string error) public {
-        Error(connectorId, error);
-
+    function logError(bytes32 connectorId, uint8 errorCode) public {
+        Error(connectorId, errorCode);
     }
 
 }
