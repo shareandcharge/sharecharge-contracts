@@ -1,31 +1,31 @@
-const MobilityToken = artifacts.require('./MobilityToken.sol');
+const EVCoin = artifacts.require('./EVCoin.sol');
 
-contract('MobilityToken', function(accounts) {
+contract('EVCoin', function(accounts) {
 
-  let token, supply;
+  let coin, supply;
 
   beforeEach(async () => {
     supply = 100000;
-    token = await MobilityToken.new(supply);
+    coin = await EVCoin.new(supply);
   });
   
   it("Should mint initial supply to owner", async () => {
-    const balance = await token.balanceOf(accounts[0]);
-    const tokens = await token.totalSupply();
+    const balance = await coin.balanceOf(accounts[0]);
+    const coins = await coin.totalSupply();
     assert.equal(balance.toNumber(), supply);
-    assert.equal(tokens.toNumber(), supply);
+    assert.equal(coins.toNumber(), supply);
   });
 
   it("Should approve transfer", async () => {
-    await token.approve(accounts[1], 1);
-    const allowance = await token.allowance(accounts[0], accounts[1]);
+    await coin.approve(accounts[1], 1);
+    const allowance = await coin.allowance(accounts[0], accounts[1]);
     assert.equal(allowance.toNumber(), 1);
   });
 
   it("Should transfer from allowance if spender", async () => {
-    await token.approve(accounts[1], 1);
-    await token.transferFrom(accounts[0], accounts[1], 1, { from: accounts[1] });
-    const balance = await token.balanceOf(accounts[1]);
+    await coin.approve(accounts[1], 1);
+    await coin.transferFrom(accounts[0], accounts[1], 1, { from: accounts[1] });
+    const balance = await coin.balanceOf(accounts[1]);
     assert.equal(balance.toNumber(), 1);
   });
 

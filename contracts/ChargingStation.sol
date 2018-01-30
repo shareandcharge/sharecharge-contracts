@@ -2,11 +2,11 @@ pragma solidity ^0.4.18;
 
 import "./ChargingStationStorage.sol";
 import "./ChargingSessions.sol";
-import "./MobilityToken.sol";
+import "./EVCoin.sol";
 
 contract ChargingStation {
 
-    MobilityToken private bank;
+    EVCoin private bank;
 
     ChargingStationStorage private stationStorage;
     ChargingSessions private chargingSessions;
@@ -25,10 +25,10 @@ contract ChargingStation {
     } 
 
 
-    function ChargingStation(address stationsAddress, address sessionsAddress, address tokenAddress) public {
+    function ChargingStation(address stationsAddress, address sessionsAddress, address coinAddress) public {
         stationStorage = ChargingStationStorage(stationsAddress);
         chargingSessions = ChargingSessions(sessionsAddress);
-        bank = MobilityToken(tokenAddress);
+        bank = EVCoin(coinAddress);
     }
 
     function requestStart(bytes32 connectorId) public {
