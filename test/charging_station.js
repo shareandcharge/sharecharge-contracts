@@ -90,11 +90,9 @@ contract('ChargingStation', (accounts) => {
             });
         });
 
-        it('Should only allow confirm start to be called if start previously executed on connector', async () => {
-            await startCharging();
-            return expectedEvent(charging.StartConfirmed, (args) => {
-                assert.equal(args.connectorId, connector);
-            });
+        it('Should fail if start not previously requested by controller in confirmStart parameter', (done) => {
+            registerConnector(connector, true, true)
+                .then(() => assertError(() => charging.confirmStart(connector, controller), done));
         });
 
         it('Should fail if confirm start not called by connector owner', (done) => {
@@ -166,16 +164,24 @@ contract('ChargingStation', (accounts) => {
 
         it('Should log event with error code on connector error', async () => {
             await registerConnector(connector, true, true);
-            await charging.logError(connector, 1);
+            await charging.logError(connector, 0);
             return expectedEvent(charging.Error, (args) => {
                 assert.equal(args.connectorId, connector);
-                assert.equal(args.errorCode.toNumber(), 1);
+                assert.equal(args.errorCode.toNumber(), 0);
             });
         });
 
         it('Should fail if log error not called by connector owner', (done)  => {
             registerConnector(connector, true, true)
-                .then(() => assertError(() => charging.logError(connector, 1, { from: accounts[2] }), done));
+                .then(() => assertError(() => charging.logError(connector, 0, { from: accounts[2] }), done));
+        });
+
+        it('Should return tokens to controller if stop fails', async () => {
+            await startCharging();
+            await charging.logError(connector, 1);
+
+            const controllerBalance = await coin.balanceOf(controller);
+            assert.equal(controllerBalance.toNumber(), 1);
         });
 
     });
