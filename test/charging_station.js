@@ -17,8 +17,9 @@ contract('ChargingStation', (accounts) => {
         sessions = await ChargingSessions.new();
         coin = await EVCoin.new(1000);
         charging = await ChargingStation.new(stations.address, sessions.address, coin.address);
-        await sessions.setChargingContractAddress(charging.address);
-        await stations.setChargingContractAddress(charging.address);
+        await sessions.setAccess(charging.address);
+        await stations.setAccess(charging.address);
+        await coin.setAccess(charging.address);
         connector = '0x' + crypto.randomBytes(32).toString('hex');
         controller = accounts[1];
     });
@@ -30,9 +31,16 @@ contract('ChargingStation', (accounts) => {
         }
     };
 
+    async function startCharging() {
+        await registerConnector(connector, true, true);
+        await coin.mint(controller, 1);
+        await charging.requestStart(connector, { from: controller });
+        await charging.confirmStart(connector, controller);        
+    }
+
     context('#requestStart()', () => {
 
-        it('Should log the correct event details when start requested', async () => {
+        it('Should log correct StartRequested details when start requested', async () => {
             await registerConnector(connector, true, true);
 
             await charging.requestStart(connector, { from: controller });
@@ -41,6 +49,20 @@ contract('ChargingStation', (accounts) => {
                 assert.equal(args.connectorId, connector);
                 assert.equal(args.controller, controller);
             });
+        });
+
+        it('Should approve transfer when start requested', async () => {
+            await registerConnector(connector, true, true);
+            await charging.requestStart(connector, { from: controller });
+
+            const allowance = await coin.allowance(controller, charging.address);
+            assert.equal(allowance.toNumber(), 1);
+
+            return expectedEvent(coin.Approval, (args) => {
+                assert.equal(args.owner, controller);
+                assert.equal(args.spender, charging.address);
+            });
+
         });
 
         it('Should not allow a start request if connector not available', async () => {
@@ -58,13 +80,7 @@ contract('ChargingStation', (accounts) => {
     context('#confirmStart()', () => {
 
         it('Should log event details and transfer to escrow if start confirmed successfully', async () => {
-            await registerConnector(connector, true, true);
-
-            await charging.requestStart(connector, { from: controller });
-            await coin.mint(controller, 1);
-            await coin.approve(charging.address, 1, { from: controller });
-
-            await charging.confirmStart(connector, controller);
+            await startCharging();
 
             const escrowBalance = await coin.balanceOf(charging.address);
             assert.equal(escrowBalance.toNumber(), 1);
@@ -75,14 +91,7 @@ contract('ChargingStation', (accounts) => {
         });
 
         it('Should only allow confirm start to be called if start previously executed on connector', async () => {
-            await registerConnector(connector, true, true);
-
-            await charging.requestStart(connector, { from: controller });
-            await coin.mint(controller, 1);
-            await coin.approve(charging.address, 1, { from: controller });
-
-            await charging.confirmStart(connector, controller);
-
+            await startCharging();
             return expectedEvent(charging.StartConfirmed, (args) => {
                 assert.equal(args.connectorId, connector);
             });
@@ -90,19 +99,13 @@ contract('ChargingStation', (accounts) => {
 
         it('Should fail if confirm start not called by connector owner', (done) => {
             registerConnector(connector, true, true)
+            .then(() => coin.mint(controller, 1))
                 .then(() => charging.requestStart(connector, { from: controller })
-                .then(() => coin.mint(controller, 1))
-                .then(() => coin.approve(charging.address, 1, { from: controller }))
                 .then(() => assertError(() => charging.confirmStart(connector, controller, { from: accounts[2] }), done)));
         });
 
         it('Should set connector to unavailable on start confirmation', async () => {
-            await registerConnector(connector, true, true);
-            await charging.requestStart(connector, { from: controller });
-            await coin.mint(controller, 1);
-            await coin.approve(charging.address, 1, { from: controller });
-            await charging.confirmStart(connector, controller);
-
+            await startCharging();
             assert.equal(await stations.isAvailable(connector), false);
         });
 
@@ -125,11 +128,7 @@ contract('ChargingStation', (accounts) => {
         });
 
         it('Should fail if stop requested on connector by controller not in current session', (done) => {
-            registerConnector(connector, true, true)
-                .then(() => charging.requestStart(connector, { from: controller }))
-                .then(() => coin.mint(controller, 1))
-                .then(() => coin.approve(charging.address, 1, { from: controller }))
-                .then(() => charging.confirmStart(connector, controller))
+            startCharging()
                 .then(() => assertError(() => charging.requestStop(connector, { from: accounts[2] }), done));
         });
 
@@ -137,19 +136,23 @@ contract('ChargingStation', (accounts) => {
 
     context('#confirmStop()', () => {
 
-        it('Should log event with correct details and reset state if stop confirmed successfully', async () => {
-            await registerConnector(connector, true, true);
-            
-            await charging.requestStart(connector, { from: controller });
-            assert.equal(await sessions.get(connector), controller);
-            
+        it('Should log StopConfirmed if stop confirmed successfully', async () => {
+            await startCharging();
             await charging.confirmStop(connector);
             
-            assert.equal(await stations.isAvailable(connector), true);
-            assert.equal(await sessions.get(connector), emptyAddress);
             return expectedEvent(charging.StopConfirmed, (args) => {
                 assert.equal(args.connectorId, connector);
             });
+        });
+
+        it('Should transfer from escrow and reset state if stop confirmed successfully', async () => {
+            await startCharging();
+            await charging.confirmStop(connector);
+
+            assert.equal(await stations.isAvailable(connector), true);
+            assert.equal(await sessions.get(connector), emptyAddress);
+            const ownerBalance = await coin.balanceOf(accounts[0]);
+            assert.equal(ownerBalance.toNumber(), 1001);
         });
 
         it('Should fail if confirm stop not called by connector owner', (done) => {

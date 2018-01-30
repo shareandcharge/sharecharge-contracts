@@ -19,7 +19,7 @@ contract Restricted {
         owner = msg.sender;
     }
 
-    function setChargingContractAddress(address chargingContractAddress) public onlyOwner {
+    function setAccess(address chargingContractAddress) public onlyOwner {
         chargingContract = chargingContractAddress;
     }
 

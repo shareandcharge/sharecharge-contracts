@@ -15,11 +15,11 @@ contract('ChargingSessions', (accounts) => {
     });
 
     it('Should fail if charging contract address is set by any account other than owner', (done) => {
-        assertError(() => sessions.setChargingContractAddress(contractAddress, { from: accounts[1] }), done);
+        assertError(() => sessions.setAccess(contractAddress, { from: accounts[1] }), done);
     });
 
     it('Should fail if setter not called by address with restricted access', (done) => {
-        sessions.setChargingContractAddress(contractAddress).then(() => {
+        sessions.setAccess(contractAddress).then(() => {
             assertError(() => sessions.set(connector, accounts[0], { from: accounts[1] }), done);
         });
     });

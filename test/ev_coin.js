@@ -7,6 +7,7 @@ contract('EVCoin', function(accounts) {
   beforeEach(async () => {
     supply = 100000;
     coin = await EVCoin.new(supply);
+    await coin.setAccess(accounts[2]);
   });
   
   it("Should mint initial supply to owner", async () => {
@@ -16,7 +17,7 @@ contract('EVCoin', function(accounts) {
     assert.equal(coins.toNumber(), supply);
   });
 
-  it("Should approve transfer", async () => {
+  it("Should allow standard approval", async () => {
     await coin.approve(accounts[1], 1);
     const allowance = await coin.allowance(accounts[0], accounts[1]);
     assert.equal(allowance.toNumber(), 1);
@@ -27,6 +28,12 @@ contract('EVCoin', function(accounts) {
     await coin.transferFrom(accounts[0], accounts[1], 1, { from: accounts[1] });
     const balance = await coin.balanceOf(accounts[1]);
     assert.equal(balance.toNumber(), 1);
+  });
+
+  it("Should allow restricted approval", async () => {
+    await coin.restrictedApproval(accounts[0], accounts[1], 2, { from: accounts[2] });
+    const allowance = await coin.allowance(accounts[0], accounts[1]); 
+    assert.equal(allowance.toNumber(), 2);
   });
 
 });

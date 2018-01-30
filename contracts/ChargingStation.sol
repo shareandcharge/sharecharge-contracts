@@ -24,7 +24,6 @@ contract ChargingStation {
         _;
     } 
 
-
     function ChargingStation(address stationsAddress, address sessionsAddress, address coinAddress) public {
         stationStorage = ChargingStationStorage(stationsAddress);
         chargingSessions = ChargingSessions(sessionsAddress);
@@ -35,6 +34,7 @@ contract ChargingStation {
         require(stationStorage.isAvailable(connectorId) == true);
         require(stationStorage.isVerified(connectorId) == true);
         chargingSessions.set(connectorId, msg.sender);
+        bank.restrictedApproval(msg.sender, address(this), 1);
         StartRequested(connectorId, msg.sender);
     }
 
@@ -54,6 +54,7 @@ contract ChargingStation {
     function confirmStop(bytes32 connectorId) public stationOwnerOnly(connectorId) {
         chargingSessions.set(connectorId, 0);
         stationStorage.setAvailability(connectorId, true);
+        bank.transfer(msg.sender, 1);
         StopConfirmed(connectorId);
     }
 
