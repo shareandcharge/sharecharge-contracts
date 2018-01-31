@@ -19,8 +19,8 @@ contract StationStorage is Restricted {
 
     // SETTERS
 
-    function registerConnector(address owner, bytes32 id, bool isAvailable) public {
-        connectors[id] = Connector(owner, isAvailable, false);
+    function registerConnector(bytes32 id, bool isAvailable) public {
+        connectors[id] = Connector(msg.sender, isAvailable, false);
     }
 
     function verifyConnector(bytes32 id) public {

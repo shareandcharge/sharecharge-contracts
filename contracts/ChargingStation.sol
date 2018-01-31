@@ -24,8 +24,8 @@ contract ChargingStation {
         _;
     } 
 
-    function ChargingStation(address stationsAddress, address sessionsAddress, address coinAddress) public {
-        stationStorage = StationStorage(stationsAddress);
+    function ChargingStation(address storageAddress, address sessionsAddress, address coinAddress) public {
+        stationStorage = StationStorage(storageAddress);
         chargingSessions = ChargingSessions(sessionsAddress);
         bank = EVCoin(coinAddress);
     }

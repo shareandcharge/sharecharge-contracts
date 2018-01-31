@@ -23,7 +23,7 @@ contract('ChargingStation', (accounts) => {
     });
 
     async function registerConnector(connector, isAvailable, isVerified) {
-        await stations.registerConnector(accounts[0], connector, isAvailable);
+        await stations.registerConnector(connector, isAvailable);
         if (isVerified) {
             await stations.verifyConnector(connector);
         }
