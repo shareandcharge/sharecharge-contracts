@@ -8,6 +8,7 @@
   },
   "scripts": {
     "lint": "solium -d contracts",
+    "cover": "solidity-coverage",
     "test": "truffle test"
   },
   "repository": {
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
   "devDependencies": {
+    "solidity-coverage": "^0.4.9",
     "solium": "^1.1.3",
     "truffle": "^4.0.5"
   },
