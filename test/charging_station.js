@@ -1,31 +1,29 @@
-const crypto = require('crypto');
-const { expectedEvent, assertError } = require('./helpers');
+const { expectedEvent, assertError, connector } = require('./helpers');
 
 const ChargingStation = artifacts.require("./ChargingStation.sol");
-const ChargingStationStorage = artifacts.require("./ChargingStationStorage.sol");
+const StationStorage = artifacts.require("./StationStorage.sol");
 const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 const EVCoin = artifacts.require("./EVCoin.sol");
 
 contract('ChargingStation', (accounts) => {
 
     let charging, stations, sessions, coin;
-    let connector, controller;
+    let controller;
     let emptyAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
-        stations = await ChargingStationStorage.new();
+        stations = await StationStorage.new();
         sessions = await ChargingSessions.new();
         coin = await EVCoin.new(1000);
         charging = await ChargingStation.new(stations.address, sessions.address, coin.address);
         await sessions.setAccess(charging.address);
         await stations.setAccess(charging.address);
         await coin.setAccess(charging.address);
-        connector = '0x' + crypto.randomBytes(32).toString('hex');
         controller = accounts[1];
     });
 
     async function registerConnector(connector, isAvailable, isVerified) {
-        await stations.registerConnector(connector, isAvailable);
+        await stations.registerConnector(accounts[0], connector, isAvailable);
         if (isVerified) {
             await stations.verifyConnector(connector);
         }
@@ -120,7 +118,6 @@ contract('ChargingStation', (accounts) => {
 
             return expectedEvent(charging.StopRequested, (args) => {
                 assert.equal(args.connectorId, connector);
-                assert.equal(args.controller, controller);
             });
 
         });

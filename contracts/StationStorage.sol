@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Restricted.sol";
 
-contract ChargingStationStorage is Restricted {
+contract StationStorage is Restricted {
 
     struct Connector {
         address owner;
@@ -19,8 +19,8 @@ contract ChargingStationStorage is Restricted {
 
     // SETTERS
 
-    function registerConnector(bytes32 id, bool isAvailable) public {
-        connectors[id] = Connector(msg.sender, isAvailable, false);
+    function registerConnector(address owner, bytes32 id, bool isAvailable) public {
+        connectors[id] = Connector(owner, isAvailable, false);
     }
 
     function verifyConnector(bytes32 id) public {

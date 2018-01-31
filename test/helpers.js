@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 function expectedEvent(targetEvent, callback) {
     return new Promise((resolve, reject) => {
         const eventListener = targetEvent({}, (err, res) => {
@@ -15,4 +17,6 @@ function assertError(callback, done) {
     });
 }
 
-module.exports = { expectedEvent, assertError };
+const connector = '0x' + crypto.randomBytes(32).toString('hex');
+
+module.exports = { expectedEvent, assertError, connector };

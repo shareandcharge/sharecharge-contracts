@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "./ChargingStationStorage.sol";
+import "./StationStorage.sol";
 import "./ChargingSessions.sol";
 import "./EVCoin.sol";
 
@@ -8,7 +8,7 @@ contract ChargingStation {
 
     EVCoin private bank;
 
-    ChargingStationStorage private stationStorage;
+    StationStorage private stationStorage;
     ChargingSessions private chargingSessions;
 
     event StartRequested(bytes32 indexed connectorId, address controller);
@@ -25,7 +25,7 @@ contract ChargingStation {
     } 
 
     function ChargingStation(address stationsAddress, address sessionsAddress, address coinAddress) public {
-        stationStorage = ChargingStationStorage(stationsAddress);
+        stationStorage = StationStorage(stationsAddress);
         chargingSessions = ChargingSessions(sessionsAddress);
         bank = EVCoin(coinAddress);
     }
