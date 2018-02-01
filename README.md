@@ -43,7 +43,7 @@ npm install
 *Methods*
 
 | Name                | Inputs                                    |
-|-----------------------------------------------------------------|
+|---------------------|-------------------------------------------|
 | registerConnector   | `bytes32 connectorId, bool isAvailable`   |
 | verifyConnector     | `bytes32 connectorId`                     |
 | setAvailability     | `bytes32 connectorId, bool isAvailable`   |
