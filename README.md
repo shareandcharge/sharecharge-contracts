@@ -47,3 +47,26 @@ npm install
 | registerConnector   | `bytes32 connectorId, bool isAvailable`   |
 | verifyConnector     | `bytes32 connectorId`                     |
 | setAvailability     | `bytes32 connectorId, bool isAvailable`   |
+
+## Deployment and Example Usage
+
+An Ethereum client should be running, listening on HTTP (allowing Truffle to establish a connection) and WebSockets (the preferred way of subscribing to events). It should also be configured such that `pubsub` is accessible as a JSONRPC API.
+
+The beta version of web3 (currently provided by default by NPM) is preferred.
+
+*Deployment*
+```
+truffle migrate
+```
+**NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
+
+*Usage: Subscribing to all ChargingStation contract events*
+```js
+const Web3 = require('web3');     
+const web3 = new Web3('ws://localhost:8546');
+
+const abi = require('./build/contracts/ChargingStation.json').abi;
+
+const chargingStation = new web3.eth.Contract(abi, address);
+chargingStation.events.allEvents({}, console.log);
+```
