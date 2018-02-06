@@ -10,7 +10,7 @@
     "lint": "solium -d contracts",
     "cover": "solidity-coverage",
     "test": "truffle test",
-    "geth": "geth --dev --datadir=.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub",
+    "geth-dev": "geth --dev --datadir=.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub",
     "e2e": "node e2e/index.js"
   },
   "repository": {

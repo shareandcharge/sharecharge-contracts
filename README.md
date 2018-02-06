@@ -65,16 +65,16 @@ e.g.
 ## Deployment and Example Usage
 
 *Deployment*
+Make sure an Ethereum client is running. By default Truffle will look for an RPC connection on http://localhost:8545.
 ```
 truffle migrate
 ```
 
 **NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
 
-
 *Usage: Subscribing to all ChargingStation contract events*
 
-An Ethereum client should be running and WebSockets enabled (to subscribe to events). A script is provided for this setup:
+An Ethereum client should be running with WebSockets enabled (to subscribe to events). A script is provided for this setup:
 ```
 npm run geth-dev
 ```
