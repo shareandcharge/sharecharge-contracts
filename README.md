@@ -1,10 +1,93 @@
 # sharecharge-contracts
-Share &amp; Charge eMobility contracts
+Share &amp; Charge eMobility smart contracts
 
-These contracts use Open Zeppelin version 1.6.0. Install, along with truffle using:
+## Quick-start
+Clone and install dependencies:
+```
+$ git clone https://github.com/motionwerkGmbH/sharecharge-contracts.git
+$ cd sharecharge-contracts
+$ npm install
+```
+Ensure you have `ganache-cli` (formerly `ethereumjs-testrpc`) installed and running:
+```
+$ npm install -g ganache-cli 
+$ ganache-cli
+```
+In a different terminal session, ensure the contracts are working as expected:
+```
+$ npm test
+```
+Once tested, run the e2e script to interact with the contracts:
+```
+npm run e2e http
+```
+
+## Using the e2e script
+
+This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions). 
+
+Run the script against your chosen RPC method (`http` for ganache-cli or `ws` for geth with event subscriptions).
 
 ```
-npm install
+USAGE:
+  [command] help        display usage help for a given command (with optional parameters)
+
+COMMANDS:
+  register              register a new charging point connector
+  requestStart          ask to start charging at a given charging point connector
+  confirmStart          start a charging session at a given charging point connector
+  requestStop           ask to stop charging at a given charging point connector
+  confirmStop           stop a charging session at a given charging point connector
+  state                 display the state of a given charging point connector
+  session               display the current charging session of a given charging point connector
+  balance               display the EVCoin balance of a given address
+  mint                  create new EVCoins for a given address
+  accounts              list accounts accessible via RPC
+  listen                start listening for all ChargingStation contract events 
+                        (requires websocket connection)
+  quit                  exit the interactive console
+```
+
+e.g.
+```
+> register 0x01
+{ transactionHash: '0xa22ae1c906f6a01755f7f80fb06752935c6c310d39f445844322110a74e1e19d',
+  blockNumber: 176,
+  gasUsed: 27500,
+  events: [] }
+> requestStart 0x01
+{ transactionHash: '0x4db2c1899150e37d24c06908bc88e518d01518a6f05b170740b7716c073ab5e4',
+  blockNumber: 177,
+  gasUsed: 76427,
+  events: [ '0', 'StartRequested' ] }
+```
+
+## Deployment and Example Usage
+
+*Deployment*
+```
+truffle migrate
+```
+
+**NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
+
+
+*Usage: Subscribing to all ChargingStation contract events*
+
+An Ethereum client should be running and WebSockets enabled (to subscribe to events). A script is provided for this setup:
+```
+npm run geth-dev
+```
+
+Example web3 usage:
+```js
+const Web3 = require('web3');     
+const web3 = new Web3('ws://localhost:8546');
+
+const abi = require('./build/contracts/ChargingStation.json').abi;
+
+const chargingStation = new web3.eth.Contract(abi, address);
+chargingStation.events.allEvents({}, console.log);
 ```
 
 ## Specification
@@ -47,26 +130,3 @@ npm install
 | registerConnector   | `bytes32 connectorId, bool isAvailable`   |
 | verifyConnector     | `bytes32 connectorId`                     |
 | setAvailability     | `bytes32 connectorId, bool isAvailable`   |
-
-## Deployment and Example Usage
-
-An Ethereum client should be running, listening on HTTP (allowing Truffle to establish a connection) and WebSockets (the preferred way of subscribing to events). It should also be configured such that `pubsub` is accessible as a JSONRPC API.
-
-The beta version of web3 (currently provided by default by NPM) is preferred.
-
-*Deployment*
-```
-truffle migrate
-```
-**NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
-
-*Usage: Subscribing to all ChargingStation contract events*
-```js
-const Web3 = require('web3');     
-const web3 = new Web3('ws://localhost:8546');
-
-const abi = require('./build/contracts/ChargingStation.json').abi;
-
-const chargingStation = new web3.eth.Contract(abi, address);
-chargingStation.events.allEvents({}, console.log);
-```

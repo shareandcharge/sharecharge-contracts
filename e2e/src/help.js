@@ -20,7 +20,7 @@ module.exports = {
   balance \t\tdisplay the EVCoin balance of a given address
   mint \t\t\tcreate new EVCoins for a given address
   accounts \t\tlist accounts accessible via RPC
-  listen \t\tstart listening for all ChargingStation contract events
+  listen \t\tstart listening for all ChargingStation contract events (requires websocket connection)
   quit \t\t\texit the interactive console
   
 USAGE:
