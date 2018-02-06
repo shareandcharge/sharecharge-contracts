@@ -1,11 +1,22 @@
+const fs = require('fs');
+
 const ChargingStation = artifacts.require("./ChargingStation.sol");
 const StationStorage = artifacts.require("./StationStorage.sol");
 const ChargingSessions = artifacts.require("./ChargingSessions.sol");
 const EVCoin = artifacts.require("./EVCoin.sol");
 
 module.exports = async function(deployer) {
-    const coin = await deployer.deploy(EVCoin, 10000, { overwrite: false });
-    const storage = await deployer.deploy(StationStorage, { overwrite: false });
-    const session = await deployer.deploy(ChargingSessions, { overwrite: false });
-    const charging = await deployer.deploy(ChargingStation, StationStorage.address, ChargingSessions.address, EVCoin.address, { overwrite: true });
+    await deployer.deploy(EVCoin, 10000, { overwrite: false });
+    await deployer.deploy(StationStorage, { overwrite: false });
+    await deployer.deploy(ChargingSessions, { overwrite: false });
+    await deployer.deploy(ChargingStation, StationStorage.address, ChargingSessions.address, EVCoin.address, { overwrite: true });
+
+    let config = {};
+    const contracts = [ChargingStation, StationStorage, ChargingSessions, EVCoin];
+    contracts.forEach(contract => {
+        config[contract.contractName] = { abi: contract.abi, address: contract.address };
+    });
+
+    await fs.writeFile('./e2e/config.json', JSON.stringify(config), err => { if (err) console.log(err) });
+
 }

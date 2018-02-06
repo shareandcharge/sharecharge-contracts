@@ -60,4 +60,5 @@ typings/
 # misc
 build
 coverage.json
+e2e/config.json
 .chaindata
