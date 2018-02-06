@@ -65,6 +65,7 @@ e.g.
 ## Deployment and Example Usage
 
 *Deployment*
+
 Make sure an Ethereum client is running. By default Truffle will look for an RPC connection on http://localhost:8545.
 ```
 truffle migrate
@@ -112,7 +113,7 @@ chargingStation.events.allEvents({}, console.log);
 | StopRequested   | `bytes32 connectorId, address controller` | connector owner   |
 | StartConfirmed  | `bytes32 connectorId`                     | controller        |
 | StopConfirmed   | `bytes32 connectorId`                     | controller        |
-| Error           | `bytes32 connectorId`                     | controller        |
+| Error           | `bytes32 connectorId, uint8 errorCode`    | controller        |
 
 *Error Codes*
 
