@@ -17,12 +17,12 @@ In a different terminal session, ensure the contracts are working as expected:
 ```
 $ npm test
 ```
-Once tested, run the e2e script to interact with the contracts:
+Once tested, run the interactive e2e console to interact with the contracts:
 ```
 npm run e2e http
 ```
 
-## Using the e2e script
+## Using the interactive e2e console
 
 This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions). 
 
