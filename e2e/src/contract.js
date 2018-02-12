@@ -25,8 +25,8 @@ class Contract {
         }
     } 
 
-    async register(id, owner) {
-        await this.StationStorage.methods.registerConnector(id, true)
+    async register(clientId, id, owner) {
+        await this.StationStorage.methods.registerConnector(clientId, id, true)
             .send({ from: owner || this.coinbase });
         const tx = await this.StationStorage.methods.verifyConnector(id)
             .send({ from: owner || this.coinbase });
@@ -64,10 +64,11 @@ class Contract {
     }
     
     async state(id) {
+        const client = await this.StationStorage.methods.getClient(id).call();
         const owner = await this.StationStorage.methods.getOwner(id).call();
         const isAvailable = await this.StationStorage.methods.isAvailable(id).call();
         const isVerified = await this.StationStorage.methods.isVerified(id).call();
-        return { owner, isAvailable, isVerified };            
+        return { client, owner, isAvailable, isVerified };            
     }
 
     async session(id) {
