@@ -11,10 +11,10 @@ contract ChargingStation {
     StationStorage private stationStorage;
     ChargingSessions private chargingSessions;
 
-    event StartRequested(bytes32 indexed connectorId, address controller);
+    event StartRequested(bytes32 indexed clientId, bytes32 indexed connectorId, address controller);
     event StartConfirmed(bytes32 indexed connectorId);
 
-    event StopRequested(bytes32 indexed connectorId, address controller);
+    event StopRequested(bytes32 clientId, bytes32 indexed connectorId, address controller);
     event StopConfirmed(bytes32 indexed connectorId);
 
     event Error(bytes32 indexed connectorId, uint8 errorCode);
@@ -34,8 +34,9 @@ contract ChargingStation {
         require(stationStorage.isAvailable(connectorId) == true);
         require(stationStorage.isVerified(connectorId) == true);
         chargingSessions.set(connectorId, msg.sender);
+        bytes32 clientId = stationStorage.getClient(connectorId);
         bank.restrictedApproval(msg.sender, address(this), 1);
-        StartRequested(connectorId, msg.sender);
+        StartRequested(clientId, connectorId, msg.sender);
     }
 
     function confirmStart(bytes32 connectorId, address controller) public stationOwnerOnly(connectorId) {
@@ -47,7 +48,8 @@ contract ChargingStation {
 
     function requestStop(bytes32 connectorId) public {
         require(chargingSessions.get(connectorId) == msg.sender);
-        StopRequested(connectorId, msg.sender);
+        bytes32 clientId = stationStorage.getClient(connectorId);
+        StopRequested(clientId, connectorId, msg.sender);
 
     }
 

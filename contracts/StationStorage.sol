@@ -5,6 +5,7 @@ import "./Restricted.sol";
 contract StationStorage is Restricted {
 
     struct Connector {
+        bytes32 client;
         address owner;
         bool isAvailable;
         bool isVerified;
@@ -19,8 +20,8 @@ contract StationStorage is Restricted {
 
     // SETTERS
 
-    function registerConnector(bytes32 id, bool isAvailable) public {
-        connectors[id] = Connector(msg.sender, isAvailable, false);
+    function registerConnector(bytes32 client, bytes32 id, bool isAvailable) public {
+        connectors[id] = Connector(client, msg.sender, isAvailable, false);
     }
 
     function verifyConnector(bytes32 id) public {
@@ -44,6 +45,10 @@ contract StationStorage is Restricted {
 
     function getOwner(bytes32 id) view public returns (address) {
         return connectors[id].owner;
+    }
+
+    function getClient(bytes32 id) view public returns (bytes32) {
+        return connectors[id].client;
     }
 
 }

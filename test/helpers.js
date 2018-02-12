@@ -18,5 +18,5 @@ function assertError(callback, done) {
 }
 
 const connector = '0x' + crypto.randomBytes(32).toString('hex');
-
-module.exports = { expectedEvent, assertError, connector };
+const client = '0x' + crypto.randomBytes(32).toString('hex');
+module.exports = { expectedEvent, assertError, connector, client }; 
