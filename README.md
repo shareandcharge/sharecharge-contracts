@@ -73,7 +73,7 @@ COMMANDS:
 For instance, register a charging point connector and send a start request:
 
 ```
-> register 0x01
+> register 0x09 0x01
 { transactionHash: '0xa22ae1c906f6a01755f7f80fb06752935c6c310d39f445844322110a74e1e19d',
   blockNumber: 176,
   gasUsed: 27500,
