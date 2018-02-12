@@ -1,5 +1,5 @@
 module.exports = {
-    register: 'register connectorId [owner]',
+    register: 'register clientId connectorId [owner]',
     requestStart: 'requestStart connectorId [driver]',
     confirmStart: 'confirmStart connectorId [driver] [owner]',
     requestStop: 'requestStop connectorId [driver]',
