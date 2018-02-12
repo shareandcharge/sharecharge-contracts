@@ -1,32 +1,54 @@
-# sharecharge-contracts
-Share &amp; Charge eMobility smart contracts
+Share&Charge - Smart Contracts
+==============================
 
-## Quick-start
+Share&Charge eMobility smart contracts
+
+Quick-start
+-----------
+
 Clone and install dependencies:
+
 ```
 $ git clone https://github.com/motionwerkGmbH/sharecharge-contracts.git
 $ cd sharecharge-contracts
 $ npm install
 ```
+
 Ensure you have `ganache-cli` (formerly `ethereumjs-testrpc`) installed and running:
+
 ```
 $ npm install -g ganache-cli 
 $ ganache-cli
 ```
+
 In a different terminal session, ensure the contracts are working as expected:
+
 ```
 $ npm test
 ```
-Once tested, run the interactive e2e console to interact with the contracts:
+
+Initial deployment of the smart contracts:
+
+```
+truffle migrate
+```
+
+**NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
+
+Interactive e2e console
+-----------------------
+
+This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions). 
+
+**NOTE**: You need to run `truffle migrate`, otherwise the console will fail to find `config.json` file!
+
+Run the script against your chosen RPC method (`http` for ganache-cli or `ws` for geth with event subscriptions):
+
 ```
 npm run e2e http
 ```
 
-## Using the interactive e2e console
-
-This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions). 
-
-Run the script against your chosen RPC method (`http` for ganache-cli or `ws` for geth with event subscriptions).
+Usage:
 
 ```
 USAGE:
@@ -48,7 +70,8 @@ COMMANDS:
   quit                  exit the interactive console
 ```
 
-e.g.
+For instance, register a charging point connector and send a start request:
+
 ```
 > register 0x01
 { transactionHash: '0xa22ae1c906f6a01755f7f80fb06752935c6c310d39f445844322110a74e1e19d',
@@ -62,25 +85,19 @@ e.g.
   events: [ '0', 'StartRequested' ] }
 ```
 
-## Deployment and Example Usage
+Subscribing to all ChargingStation contract events
+--------------------------------------------------
 
-*Deployment*
+An Ethereum client (e.g. Geth, Parity) should be running with WebSockets enabled (to subscribe to events). By default Truffle will look for an RPC connection on http://localhost:8545.
 
-Make sure an Ethereum client is running. By default Truffle will look for an RPC connection on http://localhost:8545.
-```
-truffle migrate
-```
+A script is provided to setup Geth:
 
-**NOTE:** Truffle may not update ABIs in the event of a new migration. If issues occur, try deleting the `build` directory and retrying.
-
-*Usage: Subscribing to all ChargingStation contract events*
-
-An Ethereum client should be running with WebSockets enabled (to subscribe to events). A script is provided for this setup:
 ```
 npm run geth-dev
 ```
 
 Example web3 usage:
+
 ```js
 const Web3 = require('web3');     
 const web3 = new Web3('ws://localhost:8546');
@@ -91,9 +108,10 @@ const chargingStation = new web3.eth.Contract(abi, address);
 chargingStation.events.allEvents({}, console.log);
 ```
 
-## Specification
+Specification
+-------------
 
-#### ChargingStation
+### ChargingStation
 
 *Methods*
 
@@ -122,7 +140,7 @@ chargingStation.events.allEvents({}, console.log);
 | 0       | Start failed on connector |
 | 1       | Stop failed on connector  |
 
-#### StationStorage
+### StationStorage
 
 *Methods*
 
