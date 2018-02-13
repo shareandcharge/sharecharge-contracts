@@ -173,13 +173,5 @@ contract('ChargingStation', (accounts) => {
                 .then(() => assertError(() => charging.logError(connector, 0, { from: accounts[2] }), done));
         });
 
-        it('Should return tokens to controller if stop fails', async () => {
-            await startCharging();
-            await charging.logError(connector, 1);
-
-            const controllerBalance = await coin.balanceOf(controller);
-            assert.equal(controllerBalance.toNumber(), 1);
-        });
-
     });
 });

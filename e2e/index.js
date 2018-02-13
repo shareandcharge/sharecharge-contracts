@@ -20,7 +20,7 @@ switch (rpc) {
 
 const web3 = new Web3(rpc);
 const contract = new Contract(web3, config);
-console.log(`connected to ${web3.currentProvider.host}`);
+console.log(`connected to ${web3.currentProvider.host || rpc}`);
 
 contract.setAccess().then(() => {
 

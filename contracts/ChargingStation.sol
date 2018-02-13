@@ -62,9 +62,6 @@ contract ChargingStation {
 
     function logError(bytes32 connectorId, uint8 errorCode) public stationOwnerOnly(connectorId) {        
         Error(connectorId, errorCode);
-        if (errorCode == 1) {
-            bank.transfer(chargingSessions.get(connectorId), 1);
-        }
     }
 
 }
