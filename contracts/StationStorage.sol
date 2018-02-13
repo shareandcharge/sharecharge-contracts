@@ -11,7 +11,14 @@ contract StationStorage is Restricted {
         bool isVerified;
     }
 
+    struct CPO {
+        string lat;
+        string long;
+        string termsAndConditions;
+    }
+
     mapping(bytes32 => Connector) public connectors;
+    mapping(bytes32 => CPO) public cpos;
 
     modifier connectorOwnerOnly(bytes32 id) {
         require(msg.sender == connectors[id].owner || msg.sender == Restricted.chargingContract);
@@ -19,6 +26,13 @@ contract StationStorage is Restricted {
     }
 
     // SETTERS
+    
+    // link to the ipfs test text --> QmSR73mBoUKrupCfex3e6DybiMFqdtT2BwPkKAw5KTyEEh
+    function registerCPO(bytes32 client, string lat, string long, string termsAndConditions) public onlyOwner {
+        cpos[client].lat = lat;
+        cpos[client].long = long;
+        cpos[client].termsAndConditions = termsAndConditions;
+    }
 
     function registerConnector(bytes32 client, bytes32 id, bool isAvailable) public {
         connectors[id] = Connector(client, msg.sender, isAvailable, false);

@@ -1,4 +1,4 @@
-const { assertError, connector, client } = require('./helpers');
+const { assertError, connector, client, lat, long, termsAndConditions } = require('./helpers');
 
 const StationStorage = artifacts.require("./StationStorage.sol");
 
@@ -9,6 +9,16 @@ contract('StationStorage', function (accounts) {
     beforeEach(async () => {
         storage = await StationStorage.new();
     })
+
+    it('Should register a new CPO', async () => {
+        await storage.registerCPO(client, lat, long, termsAndConditions);
+        // assert.equal(await storage.cpos(client), client);
+        const getParamsOCP = await storage.cpos(client);
+        assert.equal(await getParamsOCP[0], lat);
+        assert.equal(await getParamsOCP[1], long);
+        assert.equal(await getParamsOCP[2], termsAndConditions);
+
+    });
 
     it('Should register a new connector', async () => {
         await storage.registerConnector(client, connector, true);
