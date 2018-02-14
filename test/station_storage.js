@@ -12,7 +12,6 @@ contract('StationStorage', function (accounts) {
 
     it('Should register a new CPO', async () => {
         await storage.registerCPO(client, lat, long, termsAndConditions);
-        // assert.equal(await storage.cpos(client), client);
         const getParamsOCP = await storage.cpos(client);
         assert.equal(await getParamsOCP[0], lat);
         assert.equal(await getParamsOCP[1], long);
