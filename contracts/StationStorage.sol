@@ -27,7 +27,6 @@ contract StationStorage is Restricted {
 
     // SETTERS
     
-    // link to the ipfs test text --> QmSR73mBoUKrupCfex3e6DybiMFqdtT2BwPkKAw5KTyEEh
     function registerCPO(bytes32 client, string lat, string long, string termsAndConditions) public onlyOwner {
         cpos[client].lat = lat;
         cpos[client].long = long;
