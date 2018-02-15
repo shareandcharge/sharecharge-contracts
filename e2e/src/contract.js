@@ -12,6 +12,16 @@ class Contract {
         ));
     }
 
+    async setAvailability(clientId, id, isAvailable) {  
+        const tx = await this.ChargingStation.methods.setAvailability(clientId, id, isAvailable || false)
+        .send({from : this.coinbase});
+        return helpers.receipt(tx);
+    }
+
+    async getAvailability(id) {
+        return this.ChargingStation.methods.isAvailable(id).call();
+    }
+
     async setAccess() {
         try {
             this.coinbase = await this.web3.eth.getCoinbase();

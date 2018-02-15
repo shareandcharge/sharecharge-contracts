@@ -36,6 +36,13 @@ contract('ChargingStation', (accounts) => {
         await charging.confirmStart(connector, controller);        
     }
 
+    context('#setAvailability()', () => {
+        it('Should fail if called with different clientId', (done) => {
+            registerConnector(client, connector, true, true)
+                .then(() => assertError(() => charging.confirmStop(client, { from: accounts[2] }), done));
+        });
+    });
+
     context('#requestStart()', () => {
         
         it('Should log correct StartRequested details when start requested', async () => {

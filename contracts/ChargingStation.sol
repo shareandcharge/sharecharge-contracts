@@ -60,6 +60,15 @@ contract ChargingStation {
         StopConfirmed(connectorId);
     }
 
+    function isAvailable(bytes32 connectorId) view public returns(bool) {
+        return stationStorage.isAvailable(connectorId);
+    }
+
+    function setAvailability(bytes32 clientId, bytes32 connectorId, bool _isAvailable) public {
+        require(stationStorage.getClient(connectorId) == clientId);
+        stationStorage.setAvailability(connectorId, _isAvailable);
+    }
+
     function logError(bytes32 connectorId, uint8 errorCode) public stationOwnerOnly(connectorId) {        
         Error(connectorId, errorCode);
     }
