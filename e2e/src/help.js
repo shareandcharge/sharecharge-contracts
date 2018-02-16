@@ -4,6 +4,8 @@ module.exports = {
     confirmStart: 'confirmStart connectorId [driver] [owner]',
     requestStop: 'requestStop connectorId [driver]',
     confirmStop: 'confirmStop connectorId [owner]',
+    setAvailability: 'setAvailability clientId connectorId bool [owner]',
+    getAvailability: 'getAvailability connectorId',
     state: 'state connectorId',
     session: 'session connectorId',
     balance: 'balance connectorId',
@@ -15,6 +17,8 @@ module.exports = {
   confirmStart \t\tstart a charging session at a given charging point connector
   requestStop \t\task to stop charging at a given charging point connector
   confirmStop \t\tstop a charging session at a given charging point connector
+  setAvailability \t\tsets the availability of a given charging point to true or false
+  getAvailability \t\treturns availability of a given charging point
   state \t\tdisplay the state of a given charging point connector
   session \t\tdisplay the current charging session of a given charging point connector
   balance \t\tdisplay the EVCoin balance of a given address
