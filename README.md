@@ -60,6 +60,8 @@ COMMANDS:
   confirmStart          start a charging session at a given charging point connector
   requestStop           ask to stop charging at a given charging point connector
   confirmStop           stop a charging session at a given charging point connector
+  setAvailability       sets the availability of a given charging point to true or false
+  getAvailability       returns availability of a given charging point
   state                 display the state of a given charging point connector
   session               display the current charging session of a given charging point connector
   balance               display the EVCoin balance of a given address
