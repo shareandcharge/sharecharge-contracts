@@ -7,43 +7,33 @@ contract StationStorage is Restricted {
     struct Connector {
         bytes32 client;
         address owner;
-        bool isAvailable;
-        bool isVerified;
-    }
-
-    struct CPO {
+        string ownerName;
         string lat;
-        string long;
-        string termsAndConditions;
+        string lng;
+        uint16 price;
+        uint8 priceModel;
+        uint8 plugType;
+        string openingHours;
+        bool isAvailable;
+        address session;
     }
 
     mapping(bytes32 => Connector) public connectors;
-    mapping(bytes32 => CPO) public cpos;
-
-    modifier connectorOwnerOnly(bytes32 id) {
-        require(msg.sender == connectors[id].owner || msg.sender == Restricted.chargingContract);
-        _;
-    }
+    bytes32[] public ids;
 
     // SETTERS
-    
-    function registerCPO(bytes32 client, string lat, string long, string termsAndConditions) public onlyOwner {
-        cpos[client].lat = lat;
-        cpos[client].long = long;
-        cpos[client].termsAndConditions = termsAndConditions;
+
+    function register(bytes32 client, bytes32 id, address owner, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public restricted {
+        connectors[id] = Connector(client, owner, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable, 0);
+        ids.push(id);
     }
 
-    function registerConnector(bytes32 client, bytes32 id, bool isAvailable) public {
-        connectors[id] = Connector(client, msg.sender, isAvailable, false);
-    }
-
-    function verifyConnector(bytes32 id) public {
-        require(msg.sender == connectors[id].owner);
-        connectors[id].isVerified = true;
-    }
-
-    function setAvailability(bytes32 id, bool isAvailable) public connectorOwnerOnly(id) {
+    function setAvailability(bytes32 id, bool isAvailable) public restricted {
         connectors[id].isAvailable = isAvailable;
+    }
+
+    function setSession(bytes32 id, address session) public restricted {
+        connectors[id].session = session;
     }
 
     // GETTERS
@@ -52,16 +42,16 @@ contract StationStorage is Restricted {
         return connectors[id].isAvailable;
     }
 
-    function isVerified(bytes32 id) view public returns (bool) {
-        return connectors[id].isVerified;
-    }
-
     function getOwner(bytes32 id) view public returns (address) {
         return connectors[id].owner;
     }
 
     function getClient(bytes32 id) view public returns (bytes32) {
         return connectors[id].client;
+    }
+
+    function getSession(bytes32 id) view public returns (address) {
+        return connectors[id].session;
     }
 
 }

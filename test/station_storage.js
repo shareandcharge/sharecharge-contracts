@@ -4,41 +4,42 @@ const StationStorage = artifacts.require("./StationStorage.sol");
 
 contract('StationStorage', function (accounts) {
 
-    let storage;
+    let storage, contractAddress, params;
 
     beforeEach(async () => {
         storage = await StationStorage.new();
-    })
-
-    it('Should register a new CPO', async () => {
-        await storage.registerCPO(client, lat, long, termsAndConditions);
-        const getParamsOCP = await storage.cpos(client);
-        assert.equal(await getParamsOCP[0], lat);
-        assert.equal(await getParamsOCP[1], long);
-        assert.equal(await getParamsOCP[2], termsAndConditions);
-
+        contractAddress = accounts[2];        
+        params = Object.values(connector);
+        params = [...params.slice(0, 2), accounts[1], ...params.slice(2, 10)];
     });
 
     it('Should register a new connector', async () => {
-        await storage.registerConnector(client, connector, true);
-        assert.equal(await storage.getOwner(connector), accounts[0]);
-        assert.equal(await storage.isAvailable(connector), true);
-        assert.equal(await storage.isVerified(connector), false);
-        assert.equal(await storage.getClient(connector), client);
-    });
-    
-    it('Should only allow connector owner to verify it', (done) => {
-        storage.registerConnector(client, connector, true).then(() => {
-            assertError(() => storage.verifyConnector(connector, { from: accounts[1] }), done);
-        });
+        await storage.register(...params);
+        const res = await storage.connectors(connector.id);
+        const id = await storage.ids(0);
+        assert.equal(id, connector.id);
+        assert.equal(res.length, 11);
+        assert.equal(res[0], connector.client);
+        assert.equal(res[res.length - 3], connector.openingHours);
     });
 
-    it('Should allow connector owner to update availability', async () => {
-        await storage.registerConnector(client, connector, false, { from: accounts[1] });
-        assert.equal(await storage.isAvailable(connector), false);
+    it('Should allow contract to update availability', async () => {
+        params[10] = false;
+        await storage.setAccess(contractAddress);
+        const res = await storage.register(...params);
+        assert.equal(await storage.isAvailable(connector.id), false);
         
-        await storage.setAvailability(connector, true, { from: accounts[1] });
-        assert.equal(await storage.isAvailable(connector), true);
+        await storage.setAvailability(connector.id, true, { from: contractAddress });
+        assert.equal(await storage.isAvailable(connector.id), true);
+    });
+
+    it('Should fail if setter not called by address with restricted access', (done) => {
+        storage.setAccess(contractAddress).then(() => {
+            storage.register(...params)
+                .then(() => {
+                    assertError(() => storage.setSession(connector.id, accounts[0], { from: accounts[1] }), done);
+                })
+        });
     });
 
 });

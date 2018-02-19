@@ -9,7 +9,7 @@ contract('EVCoin', function(accounts) {
     coin = await EVCoin.new(supply);
     await coin.setAccess(accounts[2]);
   });
-  
+
   it("Should mint initial supply to owner", async () => {
     const balance = await coin.balanceOf(accounts[0]);
     const coins = await coin.totalSupply();

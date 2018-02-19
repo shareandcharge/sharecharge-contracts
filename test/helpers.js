@@ -17,9 +17,17 @@ function assertError(callback, done) {
     });
 }
 
-const connector = '0x' + crypto.randomBytes(32).toString('hex');
-const client = '0x' + crypto.randomBytes(32).toString('hex');
-const lat = '0x' + crypto.randomBytes(32).toString('hex');
-const long = '0x' + crypto.randomBytes(32).toString('hex');
-const termsAndConditions = '0x' + crypto.randomBytes(32).toString('hex');
-module.exports = { expectedEvent, assertError, connector, client, lat, long, termsAndConditions }; 
+const connector = {
+    client: '0x' + crypto.randomBytes(32).toString('hex'),
+    id: '0x' + crypto.randomBytes(32).toString('hex'),
+    owner: 'Jim',
+    lat: '52.8',
+    lng: '-0.6',
+    price: 1,
+    model: 1,
+    plugType: 2,
+    openingHours: '0024002400240024002400240024',
+    isAvailable: true
+}
+
+module.exports = { expectedEvent, assertError, connector }; 
