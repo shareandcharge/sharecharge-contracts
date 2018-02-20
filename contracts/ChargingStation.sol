@@ -8,6 +8,8 @@ contract ChargingStation {
     EVCoin private bank;
     StationStorage private store;
 
+    event RegisteredConnector(bytes32 indexed id);
+
     event StartRequested(bytes32 indexed clientId, bytes32 indexed connectorId, address controller);
     event StartConfirmed(bytes32 indexed connectorId);
 
@@ -26,16 +28,21 @@ contract ChargingStation {
         bank = EVCoin(coinAddress);
     }
 
-    function registerConnector(bytes32 client, bytes32 id, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public { 
-        store.register(client, id, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable); 
+    function getAddr() view public returns (address) {
+        return address(store);
+    }
+
+    function registerConnector(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public { 
+        store.register(id, client, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable);
+        RegisteredConnector(id);
     }
 
     function requestStart(bytes32 connectorId) public {
         require(store.isAvailable(connectorId) == true);
         store.setSession(connectorId, msg.sender);
-        bytes32 clientId = store.getClient(connectorId);
         bank.restrictedApproval(msg.sender, address(this), 1);
         bank.transferFrom(msg.sender, address(this), 1);
+        bytes32 clientId = store.getClient(connectorId);
         StartRequested(clientId, connectorId, msg.sender);
     }
 

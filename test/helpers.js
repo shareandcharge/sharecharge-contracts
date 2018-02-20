@@ -18,8 +18,8 @@ function assertError(callback, done) {
 }
 
 const connector = {
-    client: '0x' + crypto.randomBytes(32).toString('hex'),
     id: '0x' + crypto.randomBytes(32).toString('hex'),
+    client: '0x' + crypto.randomBytes(32).toString('hex'),
     owner: 'Jim',
     lat: '52.8',
     lng: '-0.6',

@@ -1,3 +1,10 @@
+const state = (result) => {
+    for (let i = 0; i <= 10; i++) {
+        delete result[i];
+    }
+    return result
+}
+
 const receipt = (receipt) => {
     return {
         transactionHash: receipt.transactionHash,
@@ -8,5 +15,6 @@ const receipt = (receipt) => {
 }
 
 module.exports = {
+    state,
     receipt
 }

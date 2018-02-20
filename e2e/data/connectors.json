@@ -1,0 +1,26 @@
+{
+    "0x01": {
+        "id": "0x01",
+        "client": "0x09",
+        "owner": "Jim",
+        "lat": "52.8",
+        "lng": "-0.6",
+        "price": 1,
+        "model": 1,
+        "plugType": 2,
+        "openingHours": "0024002400240024002400240024",
+        "isAvailable": true
+    },
+    "0x02": {
+        "id": "0x02",
+        "client": "0x09",
+        "owner": "Pam",
+        "lat": "50.5",
+        "lng": "0.2",
+        "price": 2,
+        "model": 2,
+        "plugType": 2,
+        "openingHours": "0024002400240024002400240024",
+        "isAvailable": true 
+    }
+}

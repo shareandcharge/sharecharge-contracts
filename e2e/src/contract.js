@@ -12,34 +12,31 @@ class Contract {
         ));
     }
 
-    async setAvailability(clientId, id, isAvailable) {  
-        const tx = await this.ChargingStation.methods.setAvailability(clientId, id, isAvailable || false)
-        .send({from : this.coinbase});
-        return helpers.receipt(tx);
-    }
-
-    async getAvailability(id) {
-        return this.ChargingStation.methods.isAvailable(id).call();
-    }
-
     async setAccess() {
         try {
             this.coinbase = await this.web3.eth.getCoinbase();
             const contractAddress = this.config.ChargingStation.address;
-            const contracts = [this.ChargingSessions, this.StationStorage, this.EVCoin];
+            const contracts = [this.StationStorage, this.EVCoin];
             contracts.forEach(contract => contract.methods.setAccess(contractAddress)
-                .send({ from: this.coinbase })
+            .send({ from: this.coinbase })
             );
         } catch (err) {
             throw Error('Unable to set restricted access on storage contracts');
         }
-    } 
+    }
 
-    async register(clientId, id, owner) {
-        await this.StationStorage.methods.registerConnector(clientId, id, true)
-            .send({ from: owner || this.coinbase });
-        const tx = await this.StationStorage.methods.verifyConnector(id)
-            .send({ from: owner || this.coinbase });
+    async register(data, owner) {
+        const connectors = (data === 'default') ? require('../data/connectors.json') : require(data);
+        return Promise.all(Object.keys(connectors).map(async conn => {
+            const tx = await this.ChargingStation.methods.registerConnector(...Object.values(connectors[conn]))
+            .send({ from: owner || this.coinbase, gas: 500000 });
+            return helpers.receipt(tx);
+        }));
+    }
+    
+    async setAvailability(clientId, id, isAvailable) {  
+        const tx = await this.ChargingStation.methods.setAvailability(clientId, id, isAvailable || false)
+        .send({from : this.coinbase});
         return helpers.receipt(tx);
     }
 
@@ -73,18 +70,11 @@ class Contract {
         return helpers.receipt(tx);
     }
     
-    async state(id) {
-        const client = await this.StationStorage.methods.getClient(id).call();
-        const owner = await this.StationStorage.methods.getOwner(id).call();
-        const isAvailable = await this.StationStorage.methods.isAvailable(id).call();
-        const isVerified = await this.StationStorage.methods.isVerified(id).call();
-        return { client, owner, isAvailable, isVerified };            
+    async state(id) {           
+        const result = await this.StationStorage.methods.connectors(id).call();
+        return helpers.state(result);
     }
 
-    async session(id) {
-        return this.ChargingSessions.methods.get(id).call();
-    }
-    
     async balance(address) {
         return this.EVCoin.methods.balanceOf(address).call();
     }
@@ -103,6 +93,7 @@ class Contract {
                 console.log(res);
             }
         });
+        return 'Listening for events...'
     }
 
     async accounts() {
