@@ -25,8 +25,8 @@ class Contract {
         }
     }
 
-    async register(data, owner) {
-        const connectors = (data === 'default') ? require('../data/connectors.json') : require(data);
+    async register(path, owner) {
+        const connectors = path ? require(data) : require('../data/connectors.json');
         return Promise.all(Object.keys(connectors).map(async conn => {
             const tx = await this.ChargingStation.methods.registerConnector(...Object.values(connectors[conn]))
             .send({ from: owner || this.coinbase, gas: 300000 });

@@ -1,5 +1,5 @@
 module.exports = {
-    register: 'register [path]',
+    register: 'register [path]\t',
     requestStart: 'requestStart connectorId [driver]',
     confirmStart: 'confirmStart connectorId [driver] [owner]',
     requestStop: 'requestStop connectorId [driver]',
@@ -25,5 +25,5 @@ module.exports = {
   quit \t\t\texit the interactive console
   
 USAGE:
-  [command] help \tdisplay usage help for a given command (with optional parameters)` 
+  [command] help \tdisplay usage help for a given command [with optional parameters]` 
 }
