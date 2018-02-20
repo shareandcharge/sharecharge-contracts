@@ -29,7 +29,7 @@ class Contract {
         const connectors = (data === 'default') ? require('../data/connectors.json') : require(data);
         return Promise.all(Object.keys(connectors).map(async conn => {
             const tx = await this.ChargingStation.methods.registerConnector(...Object.values(connectors[conn]))
-            .send({ from: owner || this.coinbase, gas: 500000 });
+            .send({ from: owner || this.coinbase, gas: 300000 });
             return helpers.receipt(tx);
         }));
     }
@@ -42,7 +42,7 @@ class Contract {
 
     async requestStart(id, driver) {
         const tx = await this.ChargingStation.methods.requestStart(id)
-            .send({ from: driver || this.coinbase });
+            .send({ from: driver || this.coinbase, gas: 100000 });
         return helpers.receipt(tx);
     }
 
