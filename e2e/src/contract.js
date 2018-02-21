@@ -2,12 +2,12 @@ const helpers = require('./contractHelpers');
 
 class Contract {
 
-    constructor (web3, config) { 
+    constructor (web3, config) {
         this.web3 = web3;
         this.config = config;
         const definitions = Object.keys(config);
         definitions.forEach(def => this[def] = new this.web3.eth.Contract(
-            config[def].abi, 
+            config[def].abi,
             config[def].address
         ));
     }
@@ -26,15 +26,15 @@ class Contract {
     }
 
     async register(path, owner) {
-        const connectors = path ? require(data) : require('../data/connectors.json');
+        const connectors = path ? require("../data/" + path) : require('../data/connectors.json');
         return Promise.all(Object.keys(connectors).map(async conn => {
             const tx = await this.ChargingStation.methods.registerConnector(...Object.values(connectors[conn]))
             .send({ from: owner || this.coinbase, gas: 300000 });
             return helpers.receipt(tx);
         }));
     }
-    
-    async setAvailability(clientId, id, isAvailable) {  
+
+    async setAvailability(clientId, id, isAvailable) {
         const tx = await this.ChargingStation.methods.setAvailability(clientId, id, isAvailable || false)
         .send({from : this.coinbase});
         return helpers.receipt(tx);
@@ -69,8 +69,8 @@ class Contract {
             .send({ from: owner || this.coinbase});
         return helpers.receipt(tx);
     }
-    
-    async state(id) {           
+
+    async state(id) {
         const result = await this.StationStorage.methods.connectors(id).call();
         return helpers.state(result);
     }
@@ -93,6 +93,7 @@ class Contract {
                 console.log(res);
             }
         });
+
         return 'Listening for events...'
     }
 
