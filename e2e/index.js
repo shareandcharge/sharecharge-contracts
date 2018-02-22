@@ -22,32 +22,28 @@ const web3 = new Web3(rpc);
 const contract = new Contract(web3, config);
 console.log(`connected to ${web3.currentProvider.host || rpc}`);
 
-contract.setAccess().then(() => {
+const rl = readline.createInterface(process.stdin, process.stdout);
+rl.prompt();
 
-    const rl = readline.createInterface(process.stdin, process.stdout);
+rl.on('line', async line => {
+
+    const [cmd, ...params] = line.split(' ');
+
+    switch (cmd) {
+        case 'quit':
+            rl.close();
+            break;
+        case 'help':
+            console.log(help.index);
+            break;
+        default:
+            try {
+                console.log(params[0] === 'help' ? help[cmd] : await contract[cmd](...params));
+            } catch (err) {
+                console.log(err.message);
+            }
+    }
+
     rl.prompt();
-    
-    rl.on('line', async line => {
-    
-        const [cmd, ...params] = line.split(' ');
-    
-        switch (cmd) {
-            case 'quit':
-                rl.close();
-                break;
-            case 'help':
-                console.log(help.index);
-                break;
-            default:
-                try {
-                    console.log(params[0] === 'help' ? help[cmd] : await contract[cmd](...params));
-                } catch (err) {
-                    console.log(err.message);
-                }
-        }
-    
-        rl.prompt();
-    
-    }).on('close', process.exit);
 
-}).catch(err => console.log(err));
+}).on('close', process.exit);
