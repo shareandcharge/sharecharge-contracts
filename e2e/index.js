@@ -2,7 +2,7 @@ const readline = require('readline');
 const Web3 = require('web3');
 const Contract = require('./src/contract');
 const help = require('./src/help');
-const config = require('./config.json');
+const config = require('../config.json');
 
 let rpc = process.argv[2];
 
