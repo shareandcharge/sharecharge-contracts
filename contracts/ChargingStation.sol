@@ -1,5 +1,6 @@
 pragma solidity ^0.4.18;
 
+
 import "./StationStorage.sol";
 import "./EVCoin.sol";
 
@@ -26,7 +27,7 @@ contract ChargingStation {
         bank = EVCoin(coinAddress);
     }
 
-    function getAddr() view public returns (address) {
+    function getAddr() public view returns (address) {
         return address(store);
     }
 
@@ -57,7 +58,6 @@ contract ChargingStation {
         require(store.getSession(connectorId) == msg.sender);
         bytes32 clientId = store.getClient(connectorId);
         StopRequested(clientId, connectorId, msg.sender);
-
     }
 
     function confirmStop(bytes32 connectorId) public stationOwnerOnly(connectorId) {
@@ -67,7 +67,7 @@ contract ChargingStation {
         StopConfirmed(connectorId);
     }
 
-    function isAvailable(bytes32 connectorId) view public returns (bool) {
+    function isAvailable(bytes32 connectorId) public view returns (bool) {
         return store.isAvailable(connectorId);
     }
 

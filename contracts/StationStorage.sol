@@ -45,19 +45,19 @@ contract StationStorage is Restricted {
         c.isAvailable != isAvailable;
     }
 
-    function isAvailable(bytes32 id) view public returns (bool) {
+    function isAvailable(bytes32 id) public view returns (bool) {
         return connectors[id].isAvailable;
     }
 
-    function getOwner(bytes32 id) view public returns (address) {
+    function getOwner(bytes32 id) public view returns (address) {
         return connectors[id].owner;
     }
 
-    function getClient(bytes32 id) view public returns (bytes32) {
+    function getClient(bytes32 id) public view returns (bytes32) {
         return connectors[id].client;
     }
 
-    function getSession(bytes32 id) view public returns (address) {
+    function getSession(bytes32 id) public view returns (address) {
         return connectors[id].session;
     }
 
