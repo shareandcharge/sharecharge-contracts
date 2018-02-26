@@ -21,14 +21,11 @@ contract StationStorage is Restricted {
     mapping(bytes32 => Connector) public connectors;
     bytes32[] public ids;
 
-    event Registered(bytes32 indexed id);
-
     // SETTERS
 
     function register(bytes32 id, bytes32 client, address owner, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public restricted {
         connectors[id] = Connector(client, owner, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable, 0);
         ids.push(id);
-        Registered(id);
     }
 
     function setAvailability(bytes32 id, bool isAvailable) public restricted {

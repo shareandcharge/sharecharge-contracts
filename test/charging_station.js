@@ -23,7 +23,7 @@ contract('ChargingStation', (accounts) => {
 
         await charging.registerConnector(...registerParams);
         await coin.mint(controller, 1);
-        await charging.requestStart(connector.id, { from: controller });
+        await charging.requestStart(connector.id, 1000, { from: controller });
         await charging.confirmStart(connector.id, controller);        
     }
 
@@ -46,21 +46,22 @@ contract('ChargingStation', (accounts) => {
 
     context('#requestStart()', () => {
         
-        it('Should log correct StartRequested details when start requested', async () => {
+        it('Should log correct StartRequested details when start requested correctly', async () => {
             await charging.registerConnector(...registerParams);
             await coin.mint(controller, 1);
-            await charging.requestStart(connector.id, { from: controller });
+            await charging.requestStart(connector.id, 500, { from: controller });
 
             return expectedEvent(charging.StartRequested, (args) => {
                 assert.equal(args.connectorId, connector.id);
                 assert.equal(args.controller, controller);
+                assert.equal(args.secondsToRent, 500);
             });
         });
 
         it('Should approve and transfer when start requested', async () => {
             await charging.registerConnector(...registerParams);
             await coin.mint(controller, 1);
-            await charging.requestStart(connector.id, { from: controller });
+            await charging.requestStart(connector.id, 500, { from: controller });
 
             const user = await coin.balanceOf(controller);
             const escrow = await coin.balanceOf(charging.address);
@@ -78,7 +79,7 @@ contract('ChargingStation', (accounts) => {
             registerParams.isAvailable = false;
             await charging.registerConnector(...registerParams);
 
-            assertError(() => charging.requestStart(connector.id, { from: controller }));
+            assertError(() => charging.requestStart(connector.id, 500, { from: controller }));
         });
 
     });
@@ -101,7 +102,7 @@ contract('ChargingStation', (accounts) => {
         it('Should fail if confirm start not called by connector owner', (done) => {
             charging.registerConnector(...registerParams)            
                 .then(() => coin.mint(controller, 1))
-                    .then(() => charging.requestStart(connector.id, { from: controller })
+                    .then(() => charging.requestStart(connector.id, 500, { from: controller })
                     .then(() => assertError(() => charging.confirmStart(connector.id, controller, { from: accounts[2] }), done)));
         });
 
@@ -165,7 +166,7 @@ contract('ChargingStation', (accounts) => {
         it('Should log event and return tokens on start failure', async () => {
             await charging.registerConnector(...registerParams);
             await coin.mint(controller, 1);
-            await charging.requestStart(connector.id, { from: controller });
+            await charging.requestStart(connector.id, 500, { from: controller });
             await charging.logError(connector.id, 0);
             const balance = await coin.balanceOf(controller);
             assert.equal(balance, 1);
