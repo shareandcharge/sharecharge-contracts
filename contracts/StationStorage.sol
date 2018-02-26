@@ -22,7 +22,6 @@ contract StationStorage is Restricted {
     bytes32[] public ids;
 
     // SETTERS
-
     function register(bytes32 id, bytes32 client, address owner, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public restricted {
         connectors[id] = Connector(client, owner, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable, 0);
         ids.push(id);
@@ -37,6 +36,14 @@ contract StationStorage is Restricted {
     }
 
     // GETTERS
+    function updateRequired(bytes32 id, bytes32 client, address owner, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public view restricted returns (bool) {
+        Connector memory c = connectors[id];
+
+        return c.client != client || c.owner != owner || keccak256(c.ownerName) != keccak256(ownerName) ||
+        keccak256(c.lat) != keccak256(lat) || keccak256(c.lng) != keccak256(lng) || c.price != price ||
+        c.priceModel != priceModel || c.plugType != plugType || keccak256(c.openingHours) != keccak256(openingHours) ||
+        c.isAvailable != isAvailable;
+    }
 
     function isAvailable(bytes32 id) view public returns (bool) {
         return connectors[id].isAvailable;

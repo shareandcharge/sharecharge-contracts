@@ -19,7 +19,7 @@ contract ChargingStation {
     modifier stationOwnerOnly(bytes32 id) {
         require(store.getOwner(id) == msg.sender);
         _;
-    } 
+    }
 
     function ChargingStation(address storageAddress, address coinAddress) public {
         store = StationStorage(storageAddress);
@@ -30,7 +30,11 @@ contract ChargingStation {
         return address(store);
     }
 
-    function registerConnector(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public { 
+    function updateRequired(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public view returns (bool) {
+        return store.updateRequired(id, client, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable);
+    }
+
+    function registerConnector(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public {
         store.register(id, client, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable);
     }
 
@@ -63,7 +67,7 @@ contract ChargingStation {
         StopConfirmed(connectorId);
     }
 
-    function isAvailable(bytes32 connectorId) view public returns(bool) {
+    function isAvailable(bytes32 connectorId) view public returns (bool) {
         return store.isAvailable(connectorId);
     }
 
@@ -75,7 +79,7 @@ contract ChargingStation {
     function logError(bytes32 connectorId, uint8 errorCode) public stationOwnerOnly(connectorId) {
         if (errorCode == 0) {
             bank.transfer(store.getSession(connectorId), 1);
-        }      
+        }
         Error(connectorId, errorCode);
     }
 
