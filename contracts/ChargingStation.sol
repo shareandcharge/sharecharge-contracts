@@ -1,8 +1,9 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 
 import "./StationStorage.sol";
 import "./EVCoin.sol";
+
 
 contract ChargingStation {
 
@@ -22,6 +23,23 @@ contract ChargingStation {
         _;
     }
 
+    function bytes32ToString(bytes32 source) private pure returns (string result) {
+
+        bytes memory bytesArray = new bytes(32);
+
+        for (uint256 i; i < 32; i++) {
+            bytesArray[i] = source[i];
+        }
+
+        return string(bytesArray);
+    }
+
+    function stringToBytes32(string source) private pure returns (bytes32 result) {
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
+
     function ChargingStation(address storageAddress, address coinAddress) public {
         store = StationStorage(storageAddress);
         bank = EVCoin(coinAddress);
@@ -31,12 +49,37 @@ contract ChargingStation {
         return address(store);
     }
 
+    function getOwnerInformation(bytes32 id) public view returns (bytes32 client, address owner, string ownerName) {
+
+        var (_client, _owner, _ownerName,,,,,,,) = store.connectors(id);
+
+        return (_client, _owner, bytes32ToString(_ownerName));
+    }
+
+    function getLocationInformation(bytes32 id) public view returns (string lat, string lng) {
+
+        var (,,, _lat, _lng,,,,,,) = store.connectors(id);
+
+        return (bytes32ToString(_lat), bytes32ToString(_lng));
+    }
+
+    function getGeneralInformation(bytes32 id) public view returns (uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable, address session) {
+
+        var (,,,,, _price, _priceModel, _plugType, _openingHours, _isAvailable, _session) = store.connectors(id);
+
+        return (_price, _priceModel, _plugType, bytes32ToString(_openingHours), _isAvailable, _session);
+    }
+
     function updateRequired(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public view returns (bool) {
-        return store.updateRequired(id, client, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable);
+        return store.updateRequired(id, client, msg.sender, stringToBytes32(ownerName),
+            stringToBytes32(lat), stringToBytes32(lng), price, priceModel, plugType,
+            stringToBytes32(openingHours), isAvailable);
     }
 
     function registerConnector(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public {
-        store.register(id, client, msg.sender, ownerName, lat, lng, price, priceModel, plugType, openingHours, isAvailable);
+        store.register(id, client, msg.sender, stringToBytes32(ownerName),
+            stringToBytes32(lat), stringToBytes32(lng), price, priceModel, plugType,
+            stringToBytes32(openingHours), isAvailable);
     }
 
     function requestStart(bytes32 connectorId, uint256 secondsToRent) public {
