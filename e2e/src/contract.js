@@ -34,8 +34,8 @@ class Contract {
         return helpers.receipt(tx);
     }
 
-    async requestStart(id, driver) {
-        const tx = await this.ChargingStation.methods.requestStart(id)
+    async requestStart(id, seconds, driver) {
+        const tx = await this.ChargingStation.methods.requestStart(id, seconds || 10)
             .send({from: driver || this.coinbase, gas: 100000});
         return helpers.receipt(tx);
     }
