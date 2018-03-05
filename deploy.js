@@ -4,9 +4,9 @@ const config = require("./config");
 const fs = require("fs");
 
 // change this to your needs
-const pathToCoreClientLib = "../sharecharge-core-client/lib";
+const pathToCoreClientLib = process.env.LIB;
 
 console.log("Deploy");
-
-fs.writeFileSync(pathToCoreClientLib + "/src/config/ChargingStation.json",
-    JSON.stringify(config.ChargingStation, null, 2));
+console.log(pathToCoreClientLib);
+// fs.writeFileSync(pathToCoreClientLib + "/src/config/ChargingStation.json",
+//     JSON.stringify(config.ChargingStation, null, 2));
