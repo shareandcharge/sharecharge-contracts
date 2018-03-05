@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 
 import "./StationStorage.sol";
@@ -57,11 +57,11 @@ contract ChargingStation {
         return address(store);
     }
 
-    function balanceOf(address user) public view returns (uint256) {
+    function getBalance(address user) public view returns (uint256) {
         return bank.balanceOf(user);
     }
 
-    function isAvailable(bytes32 connectorId) public view returns (bool) {
+    function getAvailability(bytes32 connectorId) public view returns (bool) {
         return store.isAvailable(connectorId);
     }
 
@@ -89,7 +89,7 @@ contract ChargingStation {
     /**
         Check whether it is necessary for a connector to be registered or updated
 
-        @params metadata        the connector metadata - compared against the properties of the Connector struct in storage
+        params metadata        the connector metadata - compared against the properties of the Connector struct in storage
      */
     function updateRequired(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public view returns (bool) {
         return store.updateRequired(id, client, msg.sender, stringToBytes32(ownerName),
@@ -100,7 +100,7 @@ contract ChargingStation {
     /**
         Register or update a new connector on the network. Call updateRequired first to avoid wasting gas re-registering a connector
 
-        @params metadata        the connector metadata - will always overwrite
+        params metadata        the connector metadata - will always overwrite
      */
     function registerConnector(bytes32 id, bytes32 client, string ownerName, string lat, string lng, uint16 price, uint8 priceModel, uint8 plugType, string openingHours, bool isAvailable) public {
         store.register(id, client, msg.sender, stringToBytes32(ownerName),
@@ -138,7 +138,7 @@ contract ChargingStation {
     /**
         Confirm the start of a charging session at a given connector
 
-        @modifier stationOwnerOnly      callable only by the owner of the connector
+        modifier stationOwnerOnly      callable only by the owner of the connector
         
         @param connectorId      the unique identifier of the connector to confirm
         @param controller       the address of the driver requesting the start
@@ -163,7 +163,7 @@ contract ChargingStation {
     /**
         Confirm a stop on a current charging session
 
-        @modifier stationOwnerOnly      callable only by the owner of the connector
+        modifier stationOwnerOnly      callable only by the owner of the connector
 
         @param connectorId      the unique identifier of the connector
      */
@@ -177,7 +177,7 @@ contract ChargingStation {
     /**
         Report an error with a charging session at a connector
 
-        @modifier stationOwnerOnly      callable only by the owner of the connector
+        modifier stationOwnerOnly      callable only by the owner of the connector
 
         @param connectorId      the unique identifier of the connector
         @param errorCode        the type of error (0 = start error; 1 = stop error)
