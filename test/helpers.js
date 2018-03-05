@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const web3 = require('web3');
 
 function expectedEvent(targetEvent, callback) {
     return new Promise((resolve, reject) => {
@@ -20,14 +21,14 @@ function assertError(callback, done) {
 const connector = {
     id: '0x' + crypto.randomBytes(32).toString('hex'),
     client: '0x' + crypto.randomBytes(32).toString('hex'),
-    owner: 'Jim',
-    lat: '52.8',
-    lng: '-0.6',
+    owner: web3.utils.asciiToHex('Jim'),
+    lat: web3.utils.asciiToHex('52.8'),
+    lng: web3.utils.asciiToHex('-0.6'),
     price: 1,
     model: 1,
     plugType: 2,
-    openingHours: '0024002400240024002400240024',
+    openingHours: web3.utils.asciiToHex('0024002400240024002400240024'),
     isAvailable: true
-}
+};
 
-module.exports = { expectedEvent, assertError, connector }; 
+module.exports = {expectedEvent, assertError, connector};

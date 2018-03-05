@@ -7,7 +7,7 @@ const EVCoin = artifacts.require("./EVCoin.sol");
 contract('ChargingStation', (accounts) => {
 
     let charging, stations, sessions, coin;
-    let controller = accounts[1]
+    let controller = accounts[1];
     let registerParams = Object.values(connector);
     let emptyAddress = '0x0000000000000000000000000000000000000000';
 

@@ -1,4 +1,5 @@
-const { assertError, connector, client, lat, long, termsAndConditions } = require('./helpers');
+const web3 = require("web3");
+const {assertError, connector, client, lat, long, termsAndConditions} = require('./helpers');
 
 const StationStorage = artifacts.require("./StationStorage.sol");
 
@@ -10,12 +11,13 @@ contract('StationStorage', function (accounts) {
 
     beforeEach(async () => {
         storage = await StationStorage.new();
-        contractAddress = accounts[2];        
+        contractAddress = accounts[2];
+        await storage.setAccess(contractAddress);
         params = Object.values(connector);
         params = [...params.slice(0, 2), accounts[1], ...params.slice(2, 10)];
     });
 
-    context('setters', function() {
+    context('setters', function () {
 
         it('Should register a new connector', async () => {
             await storage.register(...params);
@@ -24,38 +26,34 @@ contract('StationStorage', function (accounts) {
             assert.equal(id, connector.id);
             assert.equal(res.length, 11);
             assert.equal(res[0], connector.client);
-            assert.equal(res[res.length - 3], connector.openingHours);
+            assert.equal(web3.utils.hexToAscii(res[res.length - 3]).replace(/\u0000/g, ""), web3.utils.hexToAscii(connector.openingHours));
         });
-    
+
         it('Should allow contract to update availability', async () => {
             params[10] = false;
-            await storage.setAccess(contractAddress);
             await storage.register(...params);
             assert.equal(await storage.isAvailable(connector.id), false);
-            
-            await storage.setAvailability(connector.id, true, { from: contractAddress });
+
+            await storage.setAvailability(connector.id, true, {from: contractAddress});
             assert.equal(await storage.isAvailable(connector.id), true);
         });
 
         it('should allow contract to update session', async () => {
-            await storage.setAccess(contractAddress);
             await storage.register(...params);
-            storage.setSession(connector.id, accounts[3], { from: accounts[2] });
+            await storage.setSession(connector.id, accounts[3], {from: accounts[2]});
             assert.equal(await storage.getSession(connector.id), accounts[3]);
-        })
-    
+        });
+
         it('Should fail if setter not called by address with restricted access', (done) => {
-            storage.setAccess(contractAddress).then(() => {
-                storage.register(...params)
-                    .then(() => {
-                        assertError(() => storage.setSession(connector.id, accounts[0], { from: accounts[1] }), done);
-                    })
-            });
+            storage.register(...params)
+                .then(() => {
+                    assertError(() => storage.setSession(connector.id, accounts[0], {from: accounts[1]}), done);
+                })
         });
 
     });
 
-    context('getters', function() {
+    context('getters', function () {
 
         it('should get connector information for charging contract', async () => {
             await storage.register(...params);
