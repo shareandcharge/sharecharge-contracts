@@ -1,5 +1,4 @@
 // deploy the config to other locations
-
 const config = require("./config");
 const fs = require("fs");
 
@@ -7,6 +6,13 @@ const fs = require("fs");
 const pathToCoreClientLib = process.env.LIB;
 
 console.log("Deploy");
-console.log(pathToCoreClientLib);
-// fs.writeFileSync(pathToCoreClientLib + "/src/config/ChargingStation.json",
-//     JSON.stringify(config.ChargingStation, null, 2));
+
+if (!pathToCoreClientLib) {
+    throw new Error("No, path to lib found. Please run 'set LIB=xxx'");
+}
+
+const pathToJson = pathToCoreClientLib + "/src/config/ChargingStation.json";
+
+console.log("Path to .json:", pathToJson);
+
+fs.writeFileSync(pathToJson, JSON.stringify(config.ChargingStation, null, 2));
