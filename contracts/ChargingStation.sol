@@ -49,6 +49,10 @@ contract ChargingStation {
         return address(store);
     }
 
+    function balanceOf(address user) public view returns (uint256) {
+        return bank.balanceOf(user);
+    }
+
     function getOwnerInformation(bytes32 id) public view returns (bytes32 client, address owner, string ownerName) {
 
         var (_client, _owner, _ownerName,,,,,,,) = store.connectors(id);

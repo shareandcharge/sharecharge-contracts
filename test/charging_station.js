@@ -27,6 +27,15 @@ contract('ChargingStation', (accounts) => {
         await charging.confirmStart(connector.id, controller);        
     }
 
+    context.only('#getBalance()', () => {
+        it('should get balance of user', async () => {
+            await coin.mint(controller, 5);
+            const balance = await charging.balanceOf(controller);
+            assert.equal(balance.toNumber(), 5);
+        });
+    });
+
+
     context('#registerConnector()', () => {
         it('should register connector with correct paramaters', async () => {
             await charging.registerConnector(...registerParams);

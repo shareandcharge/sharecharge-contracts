@@ -4,7 +4,7 @@ const config = require("./config");
 const fs = require("fs");
 
 // change this to your needs
-const pathToCoreClientLib = "../lib";
+const pathToCoreClientLib = "../sharecharge-core-client/lib";
 
 console.log("Deploy");
 
