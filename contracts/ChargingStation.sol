@@ -61,6 +61,14 @@ contract ChargingStation {
         return bank.balanceOf(user);
     }
 
+    function getNumberOfConnectors() public view returns (uint256) {
+        return store.numberOfConnectors();
+    }
+
+    function getIdByIndex(uint256 index) public view returns (bytes32) {
+        return store.idByIndex(index);
+    }
+
     function getAvailability(bytes32 connectorId) public view returns (bool) {
         return store.isAvailable(connectorId);
     }

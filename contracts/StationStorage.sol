@@ -46,6 +46,14 @@ contract StationStorage is Restricted {
         c.isAvailable != isAvailable;
     }
 
+    function numberOfConnectors() public view returns (uint256) {
+        return ids.length;
+    }
+
+    function idByIndex(uint256 index) public view returns (bytes32) {
+        return ids[index];
+    }
+
     function isAvailable(bytes32 id) public view returns (bool) {
         return connectors[id].isAvailable;
     }

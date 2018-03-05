@@ -27,11 +27,23 @@ contract('ChargingStation', (accounts) => {
         await charging.confirmStart(connector.id, controller);        
     }
 
-    context('#getBalance()', () => {
+    context('getters', () => {
         it('should get balance of user', async () => {
             await coin.mint(controller, 5);
             const balance = await charging.getBalance(controller);
             assert.equal(balance.toNumber(), 5);
+        });
+
+        it('should get length of connectors array', async () => {
+            await charging.registerConnector(...registerParams);
+            const length = await charging.getNumberOfConnectors();
+            assert.equal(length.toNumber(), 1);
+        });
+
+        it('should return connector id at given index', async () => {
+            await charging.registerConnector(...registerParams);
+            const id = await charging.getIdByIndex(0);
+            assert.equal(id, connector.id); 
         });
     });
 
@@ -117,7 +129,7 @@ contract('ChargingStation', (accounts) => {
 
         it('Should set connector to unavailable on start confirmation', async () => {
             await startCharging();
-            assert.equal(await charging.isAvailable(connector.id), false);
+            assert.equal(await charging.getAvailability(connector.id), false);
         });
 
     });
