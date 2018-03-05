@@ -27,10 +27,10 @@ contract('ChargingStation', (accounts) => {
         await charging.confirmStart(connector.id, controller);        
     }
 
-    context.only('#getBalance()', () => {
+    context('#getBalance()', () => {
         it('should get balance of user', async () => {
             await coin.mint(controller, 5);
-            const balance = await charging.balanceOf(controller);
+            const balance = await charging.getBalance(controller);
             assert.equal(balance.toNumber(), 5);
         });
     });
