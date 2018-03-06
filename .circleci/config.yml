@@ -31,6 +31,7 @@ jobs:
       # run tests!
       - run: sudo npm install -g ganache-cli
       - run: ganache-cli &
+      - run: sleep 5
       - run: npm test
 
 
