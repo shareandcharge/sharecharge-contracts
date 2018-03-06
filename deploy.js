@@ -1,4 +1,5 @@
 // deploy the config to other locations
+
 const config = require("./config");
 const fs = require("fs");
 
