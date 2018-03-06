@@ -29,7 +29,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
-      - run: npm install -g ganache-cli
+      - run: sudo npm install -g ganache-cli
       - run: ganache-cli &
       - run: npm test
 
