@@ -1,6 +1,8 @@
 Share&Charge - Smart Contracts
 ==============================
 
+[![CircleCI](https://circleci.com/gh/motionwerkGmbH/sharecharge-contracts.svg?style=svg&circle-token=4894d650771ab05ec8efbc595c8e77e151784ac9)]
+
 Share&Charge eMobility smart contracts
 
 Quick-start
