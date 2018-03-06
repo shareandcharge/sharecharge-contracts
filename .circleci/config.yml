@@ -9,13 +9,6 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:9.0
       
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-      - image: trufflesuite/ganache-cli
-
     working_directory: ~/contracts
 
     steps:
@@ -36,7 +29,8 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
-      - run: ganache-cli
+      - run: npm install -g ganache-cli
+      - run: ganache-cli &
       - run: npm test
 
 
