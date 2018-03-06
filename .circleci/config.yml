@@ -30,8 +30,9 @@ jobs:
         
       # run tests!
       - run: sudo npm install -g ganache-cli
-      - run: ganache-cli &
-      - run: sleep 5
+      - run:
+          name: Run test-rpc
+          background: true
+          command: |
+            ganache-cli
       - run: npm test
-
-
