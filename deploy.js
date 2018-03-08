@@ -7,7 +7,7 @@ const fs = require("fs");
 const pathToCoreClientLib = process.env.LIB;
 
 if (!pathToCoreClientLib) {
-    throw new Error("No, path to lib found. Please run 'set LIB=xxx'");
+    throw new Error("No path to lib found. Please run 'set LIB=xxx'");
 }
 
 const pathToJson = pathToCoreClientLib + "/src/config/ChargingStation.json";

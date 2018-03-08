@@ -52,14 +52,14 @@ class Contract {
         return helpers.receipt(tx);
     }
 
-    async confirmStop(id, owner) {
-        const tx = await this.ChargingStation.methods.confirmStop(id)
+    async confirmStop(id, driver, owner) {
+        const tx = await this.ChargingStation.methods.confirmStop(id, driver)
             .send({from: owner || this.coinbase});
         return helpers.receipt(tx);
     }
 
-    async logError(id, errorCode, owner) {
-        const tx = await this.ChargingStation.methods.logError(id, errorCode)
+    async logError(id, driver, errorCode, owner) {
+        const tx = await this.ChargingStation.methods.logError(id, driver, errorCode)
             .send({from: owner || this.coinbase});
         return helpers.receipt(tx);
     }
