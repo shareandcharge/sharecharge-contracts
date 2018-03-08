@@ -11,12 +11,12 @@ contract ChargingStation {
     StationStorage private store;
 
     event StartRequested(bytes32 clientId, bytes32 connectorId, address controller, uint256 secondsToRent);
-    event StartConfirmed(bytes32 connectorId);
+    event StartConfirmed(bytes32 connectorId, address controller);
 
     event StopRequested(bytes32 clientId, bytes32 connectorId, address controller);
-    event StopConfirmed(bytes32 connectorId);
+    event StopConfirmed(bytes32 connectorId, address controller);
 
-    event Error(bytes32 connectorId, uint8 errorCode);
+    event Error(bytes32 connectorId, address controller, uint8 errorCode);
 
     modifier stationOwnerOnly(bytes32 id) {
         require(store.getOwner(id) == msg.sender);
@@ -154,7 +154,7 @@ contract ChargingStation {
     function confirmStart(bytes32 connectorId, address controller) public stationOwnerOnly(connectorId) {
         require(store.getSession(connectorId) == controller);
         store.setAvailability(connectorId, false);
-        StartConfirmed(connectorId);
+        StartConfirmed(connectorId, controller);
     }
 
     /**
@@ -175,11 +175,11 @@ contract ChargingStation {
 
         @param connectorId      the unique identifier of the connector
      */
-    function confirmStop(bytes32 connectorId) public stationOwnerOnly(connectorId) {
+    function confirmStop(bytes32 connectorId, address controller) public stationOwnerOnly(connectorId) {
         store.setSession(connectorId, 0);
         store.setAvailability(connectorId, true);
         bank.transfer(msg.sender, 1);
-        StopConfirmed(connectorId);
+        StopConfirmed(connectorId, controller);
     }
 
     /**
@@ -190,12 +190,12 @@ contract ChargingStation {
         @param connectorId      the unique identifier of the connector
         @param errorCode        the type of error (0 = start error; 1 = stop error)
      */
-    function logError(bytes32 connectorId, uint8 errorCode) public stationOwnerOnly(connectorId) {
+    function logError(bytes32 connectorId, address controller, uint8 errorCode) public stationOwnerOnly(connectorId) {
         if (errorCode == 0) {
             bank.transfer(store.getSession(connectorId), 1);
             store.setSession(connectorId, 0);
         }      
-        Error(connectorId, errorCode);
+        Error(connectorId, controller, errorCode);
     }
 
 }

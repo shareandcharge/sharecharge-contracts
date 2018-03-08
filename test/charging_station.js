@@ -112,6 +112,7 @@ contract('ChargingStation', (accounts) => {
 
             return expectedEvent(charging.StartConfirmed, (args) => {
                 assert.equal(args.connectorId, connector.id);
+                assert.equal(args.controller, controller);
             });
         });
 
@@ -158,16 +159,17 @@ contract('ChargingStation', (accounts) => {
 
         it('Should log StopConfirmed if stop confirmed successfully', async () => {
             await startCharging();
-            await charging.confirmStop(connector.id);
+            await charging.confirmStop(connector.id, controller);
             
             return expectedEvent(charging.StopConfirmed, (args) => {
                 assert.equal(args.connectorId, connector.id);
+                assert.equal(args.controller, controller);
             });
         });
 
         it('Should transfer from escrow and reset state if stop confirmed successfully', async () => {
             await startCharging();
-            await charging.confirmStop(connector.id);
+            await charging.confirmStop(connector.id, controller);
 
             assert.equal(await stations.isAvailable(connector.id), true);
             assert.equal(await stations.getSession(connector.id), emptyAddress);
@@ -177,7 +179,7 @@ contract('ChargingStation', (accounts) => {
 
         it('Should fail if confirm stop not called by connector owner', (done) => {
             charging.registerConnector(...registerParams)
-                .then(() => assertError(() => charging.confirmStop(connector.id, { from: accounts[2] }), done));
+                .then(() => assertError(() => charging.confirmStop(connector.id, controller, { from: accounts[2] }), done));
         });
 
     });
@@ -188,18 +190,19 @@ contract('ChargingStation', (accounts) => {
             await charging.registerConnector(...registerParams);
             await coin.mint(controller, 1);
             await charging.requestStart(connector.id, 500, { from: controller });
-            await charging.logError(connector.id, 0);
+            await charging.logError(connector.id, controller, 0);
             const balance = await coin.balanceOf(controller);
             assert.equal(balance, 1);
             return expectedEvent(charging.Error, (args) => {
                 assert.equal(args.connectorId, connector.id);
+                assert.equal(args.controller, controller);
                 assert.equal(args.errorCode.toNumber(), 0);
             });
         });
 
         it('Should fail if log error not called by connector owner', (done)  => {
             charging.registerConnector(...registerParams)
-                .then(() => assertError(() => charging.logError(connector.id, 0, { from: accounts[2] }), done));
+                .then(() => assertError(() => charging.logError(connector.id, controller, 0, { from: accounts[2] }), done));
         });
 
     });
