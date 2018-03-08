@@ -25,7 +25,7 @@ jobs:
           name: install
           command: |
             npm install
-            sudo npm install -g ganache-cli@beta
+            npm install ganache-cli
 
       # update cache if needed
       - save_cache:
@@ -38,7 +38,7 @@ jobs:
           name: Run test-rpc
           background: true
           command: |
-            ganache-cli
+            ./node_modules/.bin/ganache-cli
 
       # run tests
       - run:
