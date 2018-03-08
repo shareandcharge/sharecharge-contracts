@@ -17,3 +17,6 @@ const pathToJson = pathToCoreClientLib + "/src/config/ChargingStation.json";
 console.log("Path to .json:", pathToJson);
 
 fs.writeFileSync(pathToJson, JSON.stringify(config.ChargingStation, null, 2));
+console.log(pathToCoreClientLib);
+fs.writeFileSync(pathToCoreClientLib + "/src/config/ChargingStation.json",
+    JSON.stringify(config.ChargingStation, null, 2));
