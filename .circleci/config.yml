@@ -25,7 +25,7 @@ jobs:
           name: install
           command: |
             npm install
-            sudo npm install -g ganache-cli
+            sudo npm install -g ganache-cli@beta
 
       # update cache if needed
       - save_cache:
