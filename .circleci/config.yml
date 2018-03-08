@@ -21,14 +21,18 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm install
-      - run: sudo npm install -g ganache-cli
+      - run:
+          name: install
+          command: |
+            npm install
+            sudo npm install -g ganache-cli
 
+      # update cache if needed
       - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-        
+
       # run rpc
       - run:
           name: Run test-rpc
@@ -37,4 +41,7 @@ jobs:
             ganache-cli
 
       # run tests
-      - run: npm test
+      - run:
+          name: Run test
+          command: |
+            npm test
