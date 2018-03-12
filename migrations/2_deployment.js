@@ -35,7 +35,7 @@ module.exports = async function (deployer) {
         };
     });
 
-    await fs.writeFile('./config.json', JSON.stringify(config), err => {
+    await fs.writeFile('./config.json', JSON.stringify(config, null, 2), err => {
         if (err) console.log(err)
     });
 

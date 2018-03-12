@@ -60,5 +60,4 @@ typings/
 # misc
 build
 coverage.json
-config.json
 .chaindata

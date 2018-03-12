@@ -1,0 +1,1291 @@
+{
+  "ChargingStation": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "name": "storageAddress",
+            "type": "address"
+          },
+          {
+            "name": "coinAddress",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "clientId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "secondsToRent",
+            "type": "uint256"
+          }
+        ],
+        "name": "StartRequested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StartConfirmed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "clientId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StopRequested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StopConfirmed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "errorCode",
+            "type": "uint8"
+          }
+        ],
+        "name": "Error",
+        "type": "event"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getAddr",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "getBalance",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getNumberOfConnectors",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "getIdByIndex",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getAvailability",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getOwnerInformation",
+        "outputs": [
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "ownerName",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getLocationInformation",
+        "outputs": [
+          {
+            "name": "lat",
+            "type": "string"
+          },
+          {
+            "name": "lng",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getGeneralInformation",
+        "outputs": [
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "string"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "name": "session",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "ownerName",
+            "type": "string"
+          },
+          {
+            "name": "lat",
+            "type": "string"
+          },
+          {
+            "name": "lng",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "string"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "updateRequired",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "ownerName",
+            "type": "string"
+          },
+          {
+            "name": "lat",
+            "type": "string"
+          },
+          {
+            "name": "lng",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "string"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "registerConnector",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "clientId",
+            "type": "bytes32"
+          },
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "_isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "setAvailability",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "secondsToRent",
+            "type": "uint256"
+          }
+        ],
+        "name": "requestStart",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "confirmStart",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "requestStop",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "confirmStop",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "name": "errorCode",
+            "type": "uint8"
+          }
+        ],
+        "name": "logError",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "address": "0x249a4617ceae6a70419e44aa30cf44bbb13e231b"
+  },
+  "StationStorage": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "chargingContract",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "connectors",
+        "outputs": [
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "ownerName",
+            "type": "bytes32"
+          },
+          {
+            "name": "lat",
+            "type": "bytes32"
+          },
+          {
+            "name": "lng",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "name": "session",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "chargingContractAddress",
+            "type": "address"
+          }
+        ],
+        "name": "setAccess",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "ids",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "ownerName",
+            "type": "bytes32"
+          },
+          {
+            "name": "lat",
+            "type": "bytes32"
+          },
+          {
+            "name": "lng",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "register",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "setAvailability",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "session",
+            "type": "address"
+          }
+        ],
+        "name": "setSession",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "client",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "ownerName",
+            "type": "bytes32"
+          },
+          {
+            "name": "lat",
+            "type": "bytes32"
+          },
+          {
+            "name": "lng",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint16"
+          },
+          {
+            "name": "priceModel",
+            "type": "uint8"
+          },
+          {
+            "name": "plugType",
+            "type": "uint8"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "isAvailable",
+            "type": "bool"
+          }
+        ],
+        "name": "updateRequired",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "numberOfConnectors",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "idByIndex",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "isAvailable",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getOwner",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getClient",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getSession",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "address": "0x930a4d0825c3e4ef91900e7745e11dc238a99f93"
+  },
+  "EVCoin": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "chargingContract",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "mintingFinished",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_spender",
+            "type": "address"
+          },
+          {
+            "name": "_value",
+            "type": "uint256"
+          }
+        ],
+        "name": "approve",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_from",
+            "type": "address"
+          },
+          {
+            "name": "_to",
+            "type": "address"
+          },
+          {
+            "name": "_value",
+            "type": "uint256"
+          }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_to",
+            "type": "address"
+          },
+          {
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "mint",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_spender",
+            "type": "address"
+          },
+          {
+            "name": "_subtractedValue",
+            "type": "uint256"
+          }
+        ],
+        "name": "decreaseApproval",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_owner",
+            "type": "address"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "finishMinting",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "chargingContractAddress",
+            "type": "address"
+          }
+        ],
+        "name": "setAccess",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_to",
+            "type": "address"
+          },
+          {
+            "name": "_value",
+            "type": "uint256"
+          }
+        ],
+        "name": "transfer",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_spender",
+            "type": "address"
+          },
+          {
+            "name": "_addedValue",
+            "type": "uint256"
+          }
+        ],
+        "name": "increaseApproval",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_owner",
+            "type": "address"
+          },
+          {
+            "name": "_spender",
+            "type": "address"
+          }
+        ],
+        "name": "allowance",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "name": "initialSupply",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "Mint",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [],
+        "name": "MintFinished",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "previousOwner",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "Approval",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "Transfer",
+        "type": "event"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "restrictedApproval",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "address": "0x3b5602cb393abca96027ab11d2636cfdc6ebe298"
+  }
+}
