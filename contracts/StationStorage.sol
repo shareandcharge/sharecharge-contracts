@@ -17,9 +17,9 @@ contract StationStorage {
         ids.push(id);
     } 
 
-    function getStation(bytes32 id) external view returns(address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
-        Station storage station = stations[id];
-        return (station.owner, station.latitude, station.longitude, station.openingHours);
+    function getStation(bytes32 _id) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
+        Station storage station = stations[_id];
+        return (_id, station.owner, station.latitude, station.longitude, station.openingHours);
     }
 
     function getNumberOfStations() external view returns(uint) {
