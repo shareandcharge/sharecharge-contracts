@@ -18,17 +18,5 @@ function assertError(callback, done) {
     });
 }
 
-const connector = {
-    id: '0x' + crypto.randomBytes(32).toString('hex'),
-    client: '0x' + crypto.randomBytes(32).toString('hex'),
-    owner: web3.utils.asciiToHex('Jim'),
-    lat: web3.utils.asciiToHex('52.8'),
-    lng: web3.utils.asciiToHex('-0.6'),
-    price: 1,
-    model: 1,
-    plugType: 2,
-    openingHours: web3.utils.asciiToHex('0024002400240024002400240024'),
-    isAvailable: true
-};
 
-module.exports = {expectedEvent, assertError, connector};
+module.exports = { expectedEvent, assertError };
