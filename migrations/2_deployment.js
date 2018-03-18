@@ -16,11 +16,13 @@ module.exports = async function (deployer) {
   contracts.forEach(contract => {
     config[contract.contractName] = {
       abi: contract.abi,
-      address: contract.address
+      address: contract.address,
+      bytecode: contract.bytecode
     };
   });
 
-  await fs.writeFile('./config.json', JSON.stringify(config, null, 2), err => {
+  const outputPath = process.env['HOME'] + '/.sharecharge/config.json';
+  await fs.writeFile(outputPath, JSON.stringify(config, null, 2), err => {
     if (err) console.log(err)
   });
 };
