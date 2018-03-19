@@ -23,6 +23,7 @@ contract ConnectorStorage {
         connectors[id] = Connector(owner, stationId, plugMask, available, address(0));
         stationToConnectors[stationId].push(id);
         ids.push(id);
+        ConnectorCreated(id);
     }
 
     function getConnector(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 stationId, uint16 plugMask, bool available) {
@@ -62,7 +63,7 @@ contract ConnectorStorage {
         ConnectorUpdated(id);
     }
 
-    function setIsAvailable(bytes32 id, bool available) public {
+    function setAvailable(bytes32 id, bool available) external {
         connectors[id].available = available;
         ConnectorUpdated(id);
     }

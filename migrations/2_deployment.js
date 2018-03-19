@@ -27,7 +27,7 @@ module.exports = async function (deployer) {
         fs.mkdirSync(path);
     }
 
-    const outputPath = path + 'config.json';
+    const outputPath = path + 'contract-defs.development.json';
     await fs.writeFile(outputPath, JSON.stringify(config, null, 2), err => {
         if (err) console.log(err);
     });
