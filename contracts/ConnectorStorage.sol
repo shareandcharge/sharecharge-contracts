@@ -62,7 +62,7 @@ contract ConnectorStorage {
         ConnectorUpdated(id);
     }
 
-    function setAvailable(bytes32 id, bool available) public {
+    function setIsAvailable(bytes32 id, bool available) public {
         connectors[id].available = available;
         ConnectorUpdated(id);
     }
