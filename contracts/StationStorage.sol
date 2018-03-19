@@ -32,7 +32,7 @@ contract StationStorage {
     }
 
     function getIdByIndex(uint index) external view returns(bytes32) {
-         return ids[index];
+        return ids[index];
     }
 
     function getIndexById(bytes32 id) external view returns(int) {

@@ -35,7 +35,7 @@ contract ConnectorStorage {
     }
 
     function getIdByIndex(uint index) public view returns(bytes32) {
-         return ids[index];
+        return ids[index];
     }
 
     function getIndexById(bytes32 id) external view returns(int) {
