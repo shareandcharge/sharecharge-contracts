@@ -19,8 +19,8 @@ contract ConnectorStorage {
     mapping(bytes32 => Connector) public connectors;
     bytes32[] public ids;
 
-    function addConnector(bytes32 id, address owner, bytes32 stationId, uint16 plugMask) external {
-        connectors[id] = Connector(owner, stationId, plugMask, true, address(0));
+    function addConnector(bytes32 id, address owner, bytes32 stationId, uint16 plugMask, bool available) external {
+        connectors[id] = Connector(owner, stationId, plugMask, available, address(0));
         stationToConnectors[stationId].push(id);
         ids.push(id);
     }
