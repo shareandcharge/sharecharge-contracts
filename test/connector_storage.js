@@ -15,6 +15,31 @@ contract('ConnectorStorage', function (accounts) {
 
         result = await storage.getStationConnectors("0x06");
         assert.equal(result.length, 1);
+    });
 
+    it('should report false if all connectors are not available', async () => {
+        const storage = await ConnectorStorage.new();
+
+        await storage.addConnector("0x01", accounts[0], "0x01", 0, false);
+        await storage.addConnector("0x02", accounts[0], "0x01", 0, false);
+        await storage.addConnector("0x03", accounts[0], "0x01", 0, false);
+        await storage.addConnector("0x04", accounts[0], "0x01", 0, false);
+
+        const result = await storage.getStationAvailability("0x01");
+
+        assert.equal(result, false);
+    });
+
+    it('should report true if any connectors are available', async () => {
+        const storage = await ConnectorStorage.new();
+
+        await storage.addConnector("0x01", accounts[0], "0x01", 0, false);
+        await storage.addConnector("0x02", accounts[0], "0x01", 0, false);
+        await storage.addConnector("0x03", accounts[0], "0x01", 0, true);
+        await storage.addConnector("0x04", accounts[0], "0x01", 0, false);
+
+        const result = await storage.getStationAvailability("0x01");
+
+        assert.equal(result, true);
     });
 });
