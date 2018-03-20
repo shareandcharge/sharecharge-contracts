@@ -1,6 +1,8 @@
 pragma solidity ^0.4.19;
 
-contract StationStorage {
+import "./Restricted.sol";
+
+contract StationStorage is Restricted {
 
     event StationCreated(bytes32 indexed stationId);
     event StationUpdated(bytes32 indexed stationId);
@@ -45,27 +47,27 @@ contract StationStorage {
         return -1;
     }
 
-    function setOwner(bytes32 id, address newOwner) external {
+    function setOwner(bytes32 id, address newOwner) external onlyOwner(stations[id].owner) {
         stations[id].owner = newOwner;
         StationUpdated(id);
     }
 
-    function setLatitude(bytes32 id, int32 latitude) external {
+    function setLatitude(bytes32 id, int32 latitude) external onlyOwner(stations[id].owner) {
         stations[id].latitude = latitude;
         StationUpdated(id);
     }
 
-    function setLongitude(bytes32 id, int32 longitude) external {
+    function setLongitude(bytes32 id, int32 longitude) external onlyOwner(stations[id].owner) {
         stations[id].longitude = longitude;
         StationUpdated(id);
     }
 
-    function setOpeningHours(bytes32 id, bytes32 openingHours) external {
+    function setOpeningHours(bytes32 id, bytes32 openingHours) external onlyOwner(stations[id].owner) {
         stations[id].openingHours = openingHours;
         StationUpdated(id);
     }
 
-    function setAvailable(bytes32 id, bool available) external {
+    function setAvailable(bytes32 id, bool available) external onlyOwner(stations[id].owner) {
         stations[id].available = available;
         StationUpdated(id);
     }

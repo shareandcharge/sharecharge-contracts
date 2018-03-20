@@ -14,6 +14,9 @@ module.exports = async (deployer, network) => {
     await deployer.deploy(ConnectorStorage);
     await deployer.deploy(Charging, ConnectorStorage.address);
 
+    const connectors = await ConnectorStorage.deployed();
+    await connectors.setAccess(Charging.address);
+
     let config = {};
 
     const contracts = [Charging, StationStorage, ConnectorStorage];
