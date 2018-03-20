@@ -11,9 +11,8 @@ contract('StationStorage', function (accounts) {
         const latitude = 51345000;
         const longitude = -9233200;
         const openingHours = '0x3030303030303030303030303030303030303030303030303030303000000000';
-        const available = true;
     
-        await stations.addStation(id, owner, latitude, longitude, openingHours, available, { from: owner });
+        await stations.addStation(id, owner, latitude, longitude, openingHours, { from: owner });
         return id;
     }
 
@@ -32,7 +31,7 @@ contract('StationStorage', function (accounts) {
         
         expect(stationsCount.toNumber()).to.equal(1);
         expect(stationId).to.equal(id);
-        expect(stationValues.length).to.equal(6);
+        expect(stationValues.length).to.equal(5);
         expect(stationValues[1]).to.equal(accounts[0]);
 
         return helpers.expectedEvent(stations.StationCreated, (values) => {

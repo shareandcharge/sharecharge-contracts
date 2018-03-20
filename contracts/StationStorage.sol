@@ -12,21 +12,20 @@ contract StationStorage is Restricted {
         int32 latitude;
         int32 longitude;
         bytes32 openingHours;
-        bool available;
     }
 
     mapping(bytes32 => Station) public stations;
     bytes32[] public ids;
 
-    function addStation(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours, bool available) external {
-        stations[id] = Station(owner, latitude, longitude, openingHours, available);
+    function addStation(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) external {
+        stations[id] = Station(owner, latitude, longitude, openingHours);
         ids.push(id);
         StationCreated(id);
     }
 
-    function getStation(bytes32 _id) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours, bool available) {
+    function getStation(bytes32 _id) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
         Station storage station = stations[_id];
-        return (_id, station.owner, station.latitude, station.longitude, station.openingHours, station.available);
+        return (_id, station.owner, station.latitude, station.longitude, station.openingHours);
     }
 
     function getNumberOfStations() external view returns(uint) {
@@ -66,10 +65,4 @@ contract StationStorage is Restricted {
         stations[id].openingHours = openingHours;
         StationUpdated(id);
     }
-
-    function setAvailable(bytes32 id, bool available) external onlyOwner(stations[id].owner) {
-        stations[id].available = available;
-        StationUpdated(id);
-    }
-
 }
