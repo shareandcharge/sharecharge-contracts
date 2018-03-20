@@ -198,7 +198,7 @@
         "type": "function"
       }
     ],
-    "address": "0xb3c9be39868cff6c91920a4ff0e1f98049a290ba"
+    "address": "0x77d646abda8a07f1f476fc43852c23304854c887"
   },
   "StationStorage": {
     "abi": [
@@ -496,7 +496,7 @@
         "type": "function"
       }
     ],
-    "address": "0x7d841080134fabeb3b077b9b5507c8b0c0c876bc"
+    "address": "0x7e54d6e9358a2a6e61e5b11b297b722d8076c5f3"
   },
   "ConnectorStorage": {
     "abi": [
@@ -807,7 +807,7 @@
             "type": "bool"
           }
         ],
-        "name": "setIsAvailable",
+        "name": "setAvailable",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -832,6 +832,6 @@
         "type": "function"
       }
     ],
-    "address": "0x642f9352367749c6591d3b4eca149bc577ec62d2"
+    "address": "0xea49e634fceaaec5f5c5e451d98c790b4e0cde7a"
   }
 }
