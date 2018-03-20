@@ -20,7 +20,7 @@ contract Charging {
     }
 
     function requestStart(bytes32 connectorId, uint256 secondsToRent) external {
-        var (,,,,isAvailable) = connectors.getConnector(connectorId);
+        var (,,,, isAvailable) = connectors.getConnector(connectorId);
         require(isAvailable == true);
         connectors.setController(connectorId, msg.sender);
         // bank.restrictedApproval(msg.sender, address(this), 1);
@@ -29,21 +29,21 @@ contract Charging {
     }
 
     function confirmStart(bytes32 connectorId, address controller) external {
-        var (,,,_controller,) = connectors.getConnector(connectorId);
+        var (,,, _controller,) = connectors.getConnector(connectorId);
         require(_controller == controller);
-        connectors.setIsAvailable(connectorId, false);
+        connectors.setAvailable(connectorId, false);
         StartConfirmed(connectorId, controller);
     }
 
     function requestStop(bytes32 connectorId) external {
-        var (,,,_controller,) = connectors.getConnector(connectorId);
+        var (,,, _controller,) = connectors.getConnector(connectorId);
         require(_controller == msg.sender);
         StopRequested(connectorId, msg.sender);
     }
 
     function confirmStop(bytes32 connectorId, address controller) external {
         connectors.setController(connectorId, 0);
-        connectors.setIsAvailable(connectorId, true);
+        connectors.setAvailable(connectorId, true);
         // bank.transfer(msg.sender, 1);
         StopConfirmed(connectorId, controller);
     }
