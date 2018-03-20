@@ -1,0 +1,837 @@
+{
+  "Charging": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "name": "connectorsAddress",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "secondsToRent",
+            "type": "uint256"
+          }
+        ],
+        "name": "StartRequested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StartConfirmed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StopRequested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "StopConfirmed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "errorCode",
+            "type": "uint8"
+          }
+        ],
+        "name": "Error",
+        "type": "event"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "secondsToRent",
+            "type": "uint256"
+          }
+        ],
+        "name": "requestStart",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "confirmStart",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "requestStop",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "confirmStop",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "name": "errorCode",
+            "type": "uint8"
+          }
+        ],
+        "name": "logError",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "address": "0x9a0ac4c54832b2df96e14b1088f37e51571cc806"
+  },
+  "StationStorage": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "stations",
+        "outputs": [
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "latitude",
+            "type": "int32"
+          },
+          {
+            "name": "longitude",
+            "type": "int32"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "ids",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "stationId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "StationCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "stationId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "StationUpdated",
+        "type": "event"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "latitude",
+            "type": "int32"
+          },
+          {
+            "name": "longitude",
+            "type": "int32"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "name": "addStation",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getStation",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "latitude",
+            "type": "int32"
+          },
+          {
+            "name": "longitude",
+            "type": "int32"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getNumberOfStations",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "getIdByIndex",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getIndexById",
+        "outputs": [
+          {
+            "name": "",
+            "type": "int256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "setOwner",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "latitude",
+            "type": "int32"
+          }
+        ],
+        "name": "setLatitude",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "longitude",
+            "type": "int32"
+          }
+        ],
+        "name": "setLongitude",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "openingHours",
+            "type": "bytes32"
+          }
+        ],
+        "name": "setOpeningHours",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "name": "setAvailable",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "address": "0x49b10d1a4ec312667115bfe2b622be70230d3f76"
+  },
+  "ConnectorStorage": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "connectors",
+        "outputs": [
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "name": "plugMask",
+            "type": "uint16"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          },
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "stationToConnectors",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "ids",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "connectorId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "ConnectorCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "connectorId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "ConnectorUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "connectorId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "errorCode",
+            "type": "uint8"
+          }
+        ],
+        "name": "Error",
+        "type": "event"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "name": "plugMask",
+            "type": "uint16"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "name": "addConnector",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getConnector",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "name": "plugMask",
+            "type": "uint16"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getNumberOfConnectors",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "getIdByIndex",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getIndexById",
+        "outputs": [
+          {
+            "name": "",
+            "type": "int256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "stationId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getStationConnectors",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32[]"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "setOwner",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "plugMask",
+            "type": "uint16"
+          }
+        ],
+        "name": "setPlugMask",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ],
+        "name": "setIsAvailable",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          }
+        ],
+        "name": "setController",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "address": "0xa05cfe908a3df3e1ce9c2a56ef12fe35efbf8e99"
+  }
+}

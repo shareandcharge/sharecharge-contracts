@@ -2,7 +2,6 @@
   "name": "sharecharge-contracts",
   "version": "0.0.1",
   "description": "Share & Charge smart contracts",
-  "main": "sharecharge-contracts.js",
   "directories": {
     "test": "test"
   },
@@ -30,8 +29,5 @@
     "truffle": "^4.1.3",
     "web3": "^1.0.0-beta.30",
     "zeppelin-solidity": "1.7.0"
-  },
-  "dependencies": {
-    "ganache-cli": "^6.1.0"
   }
 }

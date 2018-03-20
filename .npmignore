@@ -1,3 +1,3 @@
 *
-!config.json
-!sharecharge-contracts.js
+!contract.defs.test.json
+!contract.defs.production.json
