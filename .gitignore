@@ -61,5 +61,3 @@ typings/
 build
 coverage.json
 .chaindata
-
-contract.defs.development.json
