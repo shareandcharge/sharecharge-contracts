@@ -18,5 +18,9 @@ function assertError(callback, done) {
     });
 }
 
+function randomBytes32String() {
+    return '0x' + crypto.randomBytes(32).toString('hex');
+}
 
-module.exports = { expectedEvent, assertError };
+
+module.exports = { expectedEvent, assertError, randomBytes32String };
