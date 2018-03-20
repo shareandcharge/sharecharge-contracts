@@ -55,6 +55,17 @@ contract ConnectorStorage is Restricted {
         return stationToConnectors[stationId];
     }
 
+    function getStationAvailability(bytes32 stationId) external view returns(bool){
+        bytes32[] storage stationConnectors = stationToConnectors[stationId];
+        for (uint i = 0; i < stationConnectors.length; i++) {
+            bytes32 id = stationConnectors[i];
+            if (connectors[id].available) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function setOwner(bytes32 id, address newOwner) external onlyOwner(connectors[id].owner) {
         connectors[id].owner = newOwner;
         ConnectorUpdated(id);
@@ -74,4 +85,5 @@ contract ConnectorStorage is Restricted {
         connectors[id].controller = controller;
         ConnectorUpdated(id);
     }
+
 }
