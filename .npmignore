@@ -1,3 +1,2 @@
 *
-!contract.defs.test.json
-!contract.defs.production.json
+!contract.defs.*.json
