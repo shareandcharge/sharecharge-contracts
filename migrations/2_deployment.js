@@ -7,6 +7,7 @@ const Charging = artifacts.require("./Charging.sol");
 module.exports = async (deployer, network) => {
 
     const isDevelopment = network === "development";
+    const isProduction = network === "production";
 
     // Use deployer to state migration tasks.
     await deployer.deploy(StationStorage);
@@ -23,12 +24,12 @@ module.exports = async (deployer, network) => {
             address: contract.address
         };
 
-        if (isDevelopment) {
+        if (!isProduction) {
             config[contract.contractName].bytecode = contract.bytecode;
         }
     });
 
-    const fileName = `contract.defs.${network}.json`;
+    const fileName = `contract.defs.${isDevelopment ? "local" : network}.json`;
 
     if (isDevelopment) {
         const path = process.env['HOME'] + '/.sharecharge/';
