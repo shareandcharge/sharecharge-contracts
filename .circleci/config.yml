@@ -25,7 +25,7 @@ jobs:
           name: install
           command: |
             npm install
-            npm install ganache-cli
+            npm install ganache-cli@6.0.3
 
       # update cache if needed
       - save_cache:
