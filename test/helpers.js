@@ -22,5 +22,12 @@ function randomBytes32String() {
     return '0x' + crypto.randomBytes(32).toString('hex');
 }
 
+function randomInt(min, max) {
+    return (min + Math.random() * (max - min)) << 0;
+}
 
-module.exports = { expectedEvent, assertError, randomBytes32String };
+function pad(val, padchar, count) {
+    return val + Array(count - val.length).join(padchar);
+}
+
+module.exports = { expectedEvent, assertError, randomBytes32String, randomInt, pad };

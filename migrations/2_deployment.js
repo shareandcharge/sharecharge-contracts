@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const StationStorage = artifacts.require("./StationStorage.sol");
 const EvseStorage = artifacts.require("./EvseStorage.sol");
+const ConnectorStorage = artifacts.require("./ConnectorStorage.sol");
 const Charging = artifacts.require("./Charging.sol");
 
 module.exports = async (deployer, network) => {
@@ -12,6 +13,7 @@ module.exports = async (deployer, network) => {
     // Use deployer to state migration tasks.
     await deployer.deploy(StationStorage);
     await deployer.deploy(EvseStorage);
+    await deployer.deploy(ConnectorStorage);
     await deployer.deploy(Charging, EvseStorage.address);
 
     const evses = await EvseStorage.deployed();
