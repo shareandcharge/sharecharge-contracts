@@ -30,7 +30,6 @@ contract ConnectorStorage is Restricted {
 
     function update(bytes32 id, bytes32 evseId, uint8 standard, uint8 powerType, uint32 voltage, uint32 amperage, bytes32 tariffId)
     external onlyOwner(connectors[id].owner) {
-        require(connectors[id].owner != address(0));
         Connector storage connector = connectors[id];
         connector.evseId = evseId;
         connector.standard = standard;

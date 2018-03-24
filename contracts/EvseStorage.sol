@@ -27,6 +27,15 @@ contract EvseStorage is Restricted {
         EvseCreated(id);
     }
 
+    function update(bytes32 id, bytes32 stationId, uint16 plugMask, bool available) external onlyOwner(evses[id].owner) {
+        require(evses[id].owner != address(0));
+        Evse storage evse = evses[id];
+        evse.stationId = stationId;
+        evse.plugMask = plugMask;
+        evse.available = available;
+        EvseUpdated(id);
+    }
+
     function getEvse(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 stationId, uint16 plugMask, bool available, address controller) {
         Evse storage evse = evses[_id];
         return (_id, evse.owner, evse.stationId, evse.plugMask, evse.available, evse.controller);

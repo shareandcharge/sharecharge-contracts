@@ -7,6 +7,8 @@ contract StationStorage is Restricted {
     event StationCreated(bytes32 indexed stationId);
     event StationUpdated(bytes32 indexed stationId);
 
+event debug(address owner);
+
     struct Station {
         address owner;
         int32 latitude;
@@ -22,6 +24,15 @@ contract StationStorage is Restricted {
         stations[id] = Station(msg.sender, latitude, longitude, openingHours);
         ids.push(id);
         StationCreated(id);
+    }
+
+    function update(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external onlyOwner(stations[id].owner) {
+        Station storage station = stations[id];
+debug(station.owner);
+        station.latitude = latitude;
+        station.longitude = longitude;
+        station.openingHours = openingHours;
+        StationUpdated(id);
     }
 
     function getStation(bytes32 _id) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
