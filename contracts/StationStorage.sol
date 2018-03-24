@@ -17,8 +17,9 @@ contract StationStorage is Restricted {
     mapping(bytes32 => Station) public stations;
     bytes32[] public ids;
 
-    function addStation(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) external {
-        stations[id] = Station(owner, latitude, longitude, openingHours);
+    function addStation(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external {
+        require(stations[id].owner == address(0));
+        stations[id] = Station(msg.sender, latitude, longitude, openingHours);
         ids.push(id);
         StationCreated(id);
     }

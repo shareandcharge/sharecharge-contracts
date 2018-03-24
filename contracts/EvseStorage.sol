@@ -19,8 +19,9 @@ contract EvseStorage is Restricted {
     mapping(bytes32 => Evse) public evses;
     bytes32[] public ids;
 
-    function addEvse(bytes32 id, address owner, bytes32 stationId, uint16 plugMask, bool available) external {
-        evses[id] = Evse(owner, stationId, plugMask, available, address(0));
+    function addEvse(bytes32 id, bytes32 stationId, uint16 plugMask, bool available) external {
+        require(evses[id].owner == address(0));
+        evses[id] = Evse(msg.sender, stationId, plugMask, available, address(0));
         stationToEvses[stationId].push(id);
         ids.push(id);
         EvseCreated(id);

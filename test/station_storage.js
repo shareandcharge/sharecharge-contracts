@@ -12,7 +12,7 @@ contract('StationStorage', function (accounts) {
         const longitude = -9233200;
         const openingHours = '0x3030303030303030303030303030303030303030303030303030303000000000';
 
-        await stations.addStation(id, owner, latitude, longitude, openingHours, { from: owner });
+        await stations.addStation(id, latitude, longitude, openingHours, { from: owner });
         return id;
     }
 
