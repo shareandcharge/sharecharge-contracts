@@ -15,7 +15,7 @@ contract('ConnectorStorage', function (accounts) {
         const tariffId = 'F.O.C.';
         await storage.insert(id, evseId, standard, powerType, voltage, amperage, tariffId);
 
-        const connector = await storage.select(id);
+        const connector = await storage.getById(id);
         expect(connector[0]).to.equal(id);
         expect(connector[1]).to.equal(accounts[0]);
         expect(connector[2]).to.equal(evseId);
@@ -34,7 +34,7 @@ contract('ConnectorStorage', function (accounts) {
         await storage.insert(id, '0x01', 0, 0, 400, 32, '');
         await storage.update(id, evseId, 1, 2, 800, 16, '');
 
-        const connector = await storage.select(id);
+        const connector = await storage.getById(id);
         expect(connector[0]).to.equal(id);
         expect(connector[1]).to.equal(accounts[0]);
         expect(connector[2]).to.equal(evseId);
@@ -67,8 +67,8 @@ contract('ConnectorStorage', function (accounts) {
         await storage.insert('0x03', '0x01', 0, 0, 400, 32, 0);
         await storage.insert('0x04', '0x02', 0, 0, 400, 32, 0);
 
-        let result1 = await storage.selectIdsForEvse('0x01');
-        let result2 = await storage.selectIdsForEvse('0x02');
+        let result1 = await storage.getIdsByEvse('0x01');
+        let result2 = await storage.getIdsByEvse('0x02');
 
         expect(result1.length).to.equal(3);
         expect(result2.length).to.equal(1);

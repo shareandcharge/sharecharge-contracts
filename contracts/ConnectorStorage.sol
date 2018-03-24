@@ -4,8 +4,8 @@ import "./Restricted.sol";
 
 contract ConnectorStorage is Restricted {
 
-    event ConnectorCreated(bytes32 indexed id);
-    event ConnectorUpdated(bytes32 indexed id);
+    event ConnectorCreated(bytes32 indexed connectorId);
+    event ConnectorUpdated(bytes32 indexed connectorId);
 
     struct Connector {
         address owner;
@@ -41,13 +41,13 @@ contract ConnectorStorage is Restricted {
         ConnectorUpdated(id);
     }
 
-    function select(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 evseId, uint8 standard, uint8 powerType, uint32 voltage, uint32 amperage, bytes32 tariffId) {
+    function getById(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 evseId, uint8 standard, uint8 powerType, uint32 voltage, uint32 amperage, bytes32 tariffId) {
         Connector storage connector = connectors[_id];
         return (_id, connector.owner, connector.evseId, connector.standard,
         connector.powerType, connector.voltage, connector.amperage, connector.tariffId);
     }
 
-    function selectIdsForEvse(bytes32 evseId) external view returns(bytes32[]) {
+    function getIdsByEvse(bytes32 evseId) external view returns(bytes32[]) {
         return evseToConnectors[evseId];
     }
 
