@@ -55,4 +55,4 @@ jobs:
             git config --global user.name "CircleCI"
             git add contract.defs.local.json
             git commit -m "Updated local defs"
-            git push
+            git push --set-upstream origin $CIRCLE_BRANCH
