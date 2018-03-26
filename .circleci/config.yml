@@ -26,6 +26,7 @@ jobs:
           command: |
             npm install
             npm install ganache-cli@6.0.3
+            npm install truffle
 
       # update cache if needed
       - save_cache:
@@ -50,7 +51,7 @@ jobs:
       - run:
           name: Run test
           command: |
-            truffle migrate
+            ./node_modules/.bin/truffle migrate
             git add contracts.defs.local.json
             git commit -m "Updated local defs"
             git push
