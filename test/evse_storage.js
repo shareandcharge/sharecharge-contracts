@@ -6,12 +6,12 @@ contract('EvseStorage', function (accounts) {
 
     let storage;
 
-    async function addEvse(owner) {
+    async function createEvse(owner) {
         const id = helpers.randomBytes32String();
         const stationId = "0x123456789abcdef";
         const plugMask = 1;
         const available = true;
-        await storage.addEvse(id, stationId, plugMask, available, { from: owner });
+        await storage.create(id, stationId, plugMask, available, { from: owner });
         return id;
     }
 
@@ -20,7 +20,7 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should add an evse', async () => {
-        const id = await addEvse(accounts[0]);
+        const id = await createEvse(accounts[0]);
         const evse = await storage.getEvse(id);
         expect(evse[0]).to.equal(id);
         expect(evse[1]).to.equal(accounts[0]);
@@ -31,7 +31,7 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should update an evse', async () => {
-        const id = await addEvse(accounts[0]);
+        const id = await createEvse(accounts[0]);
 
         await storage.update(id, "0x01", 3, false);
 
@@ -45,7 +45,7 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should only allow owner to update an evse', async () => {
-        const id = await addEvse(accounts[0]);
+        const id = await createEvse(accounts[0]);
         let threw = false;
         try {
             await storage.update(id, "0x01", 3, false, { from: accounts[1] });
@@ -56,10 +56,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should return all evses of given station', async () => {
-        await storage.addEvse("0x0", "0x01", 1, true);
-        await storage.addEvse("0x1", "0x01", 2, true);
-        await storage.addEvse("0x2", "0x01", 5, true);
-        await storage.addEvse("0x3", "0x06", 5, true);
+        await storage.create("0x0", "0x01", 1, true);
+        await storage.create("0x1", "0x01", 2, true);
+        await storage.create("0x2", "0x01", 5, true);
+        await storage.create("0x3", "0x06", 5, true);
 
         let result = await storage.getStationEvses("0x01");
         assert.equal(result.length, 3);
@@ -69,10 +69,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should report false if all evses are not available', async () => {
-        await storage.addEvse("0x01", "0x01", 0, false);
-        await storage.addEvse("0x02", "0x01", 0, false);
-        await storage.addEvse("0x03", "0x01", 0, false);
-        await storage.addEvse("0x04", "0x01", 0, false);
+        await storage.create("0x01", "0x01", 0, false);
+        await storage.create("0x02", "0x01", 0, false);
+        await storage.create("0x03", "0x01", 0, false);
+        await storage.create("0x04", "0x01", 0, false);
 
         const result = await storage.getStationAvailability("0x01");
 
@@ -80,10 +80,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should report true if any evses are available', async () => {
-        await storage.addEvse("0x01", "0x01", 0, false);
-        await storage.addEvse("0x02", "0x01", 0, false);
-        await storage.addEvse("0x03", "0x01", 0, true);
-        await storage.addEvse("0x04", "0x01", 0, false);
+        await storage.create("0x01", "0x01", 0, false);
+        await storage.create("0x02", "0x01", 0, false);
+        await storage.create("0x03", "0x01", 0, true);
+        await storage.create("0x04", "0x01", 0, false);
 
         const result = await storage.getStationAvailability("0x01");
 

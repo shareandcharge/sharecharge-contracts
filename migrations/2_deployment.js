@@ -21,7 +21,7 @@ module.exports = async (deployer, network) => {
 
     let config = {};
 
-    const contracts = [Charging, StationStorage, EvseStorage];
+    const contracts = [Charging, StationStorage, ConnectorStorage, EvseStorage];
     contracts.forEach(contract => {
 
         config[contract.contractName] = {

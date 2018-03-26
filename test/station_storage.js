@@ -6,13 +6,13 @@ contract('StationStorage', function (accounts) {
 
     let stations;
 
-    async function addStation(owner) {
+    async function createStation(owner) {
         const id = helpers.randomBytes32String();
         const latitude = 51345000;
         const longitude = -9233200;
         const openingHours = '0x3030303030303030303030303030303030303030303030303030303000000000';
 
-        await stations.addStation(id, latitude, longitude, openingHours, { from: owner });
+        await stations.create(id, latitude, longitude, openingHours, { from: owner });
         return id;
     }
 
@@ -21,7 +21,7 @@ contract('StationStorage', function (accounts) {
     });
 
     it('should add a station', async () => {
-        const id = await addStation(accounts[0]);
+        const id = await createStation(accounts[0]);
 
         const stationsCount = await stations.getNumberOfStations();
         const stationId = await stations.getIdByIndex(0);
@@ -41,7 +41,7 @@ contract('StationStorage', function (accounts) {
     });
 
     it('should update a station', async () => {
-        const id = await addStation(accounts[0]);
+        const id = await createStation(accounts[0]);
         await stations.update(id, 2, 3, "0x1020304030303030303030303030303030303030303030303030303000000000");
 
         const station = await stations.getStation(id);
@@ -54,7 +54,7 @@ contract('StationStorage', function (accounts) {
     });
 
     it('should only allow owner to update a station', async () => {
-        const id = await addStation(accounts[0]);
+        const id = await createStation(accounts[0]);
         let threw = false;
         try {
             await stations.update(id, 2, 3, "0x1020304030303030303030303030303030303030303030303030303000000000", { from: accounts[1] });

@@ -7,7 +7,7 @@ contract StationStorage is Restricted {
     event StationCreated(bytes32 indexed stationId);
     event StationUpdated(bytes32 indexed stationId);
 
-event debug(address owner);
+    event debug(address owner);
 
     struct Station {
         address owner;
@@ -19,7 +19,7 @@ event debug(address owner);
     mapping(bytes32 => Station) public stations;
     bytes32[] public ids;
 
-    function addStation(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external {
+    function create(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external {
         require(stations[id].owner == address(0));
         stations[id] = Station(msg.sender, latitude, longitude, openingHours);
         ids.push(id);
@@ -28,7 +28,7 @@ event debug(address owner);
 
     function update(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external onlyOwner(stations[id].owner) {
         Station storage station = stations[id];
-debug(station.owner);
+        debug(station.owner);
         station.latitude = latitude;
         station.longitude = longitude;
         station.openingHours = openingHours;
