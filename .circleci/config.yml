@@ -51,6 +51,8 @@ jobs:
           name: Truffle migrate
           command: |
             npm run migrate
+            git config --global user.email "ci@shareandcharge.com"
+            git config --global user.name "CircleCI"
             git add contract.defs.local.json
             git commit -m "Updated local defs"
             git push
