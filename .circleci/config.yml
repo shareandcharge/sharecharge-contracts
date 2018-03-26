@@ -54,5 +54,5 @@ jobs:
             git config --global user.email "ci@shareandcharge.com"
             git config --global user.name "CircleCI"
             git add contract.defs.local.json
-            git commit -m "Updated local defs"
+            git commit -m "Automated: Updated local defs [ci skip]"
             git push --set-upstream origin ${CIRCLE_BRANCH}
