@@ -45,3 +45,12 @@ jobs:
           name: Run test
           command: |
             npm test
+
+      # run truffle migrate
+      - run:
+          name: Run test
+          command: |
+            truffle migrate
+            git add contracts.defs.local.json
+            git commit -m "Updated local defs"
+            git push
