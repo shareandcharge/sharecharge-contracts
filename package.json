@@ -10,6 +10,7 @@
     "lint": "solium -d contracts",
     "cover": "solidity-coverage",
     "test": "truffle test",
+    "migrate": "truffle migrate",
     "geth-dev": "geth --dev --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
     "e2e": "node e2e/index.js",
     "deploy": "node deploy.js"

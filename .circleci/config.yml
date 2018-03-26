@@ -51,7 +51,7 @@ jobs:
       - run:
           name: Run test
           command: |
-            ./node_modules/.bin/truffle migrate
-            git add contracts.defs.local.json
+            npm migrate
+            git add contract.defs.local.json
             git commit -m "Updated local defs"
             git push
