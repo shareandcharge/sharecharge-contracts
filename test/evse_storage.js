@@ -21,7 +21,7 @@ contract('EvseStorage', function (accounts) {
 
     it('should add an evse', async () => {
         const id = await createEvse(accounts[0]);
-        const evse = await storage.getEvse(id);
+        const evse = await storage.getById(id);
         expect(evse[0]).to.equal(id);
         expect(evse[1]).to.equal(accounts[0]);
         expect(evse[2]).to.equal("0x123456789abcdef0000000000000000000000000000000000000000000000000");
@@ -35,7 +35,7 @@ contract('EvseStorage', function (accounts) {
 
         await storage.update(id, "0x01", 3, false);
 
-        const evse = await storage.getEvse(id);
+        const evse = await storage.getById(id);
         expect(evse[0]).to.equal(id);
         expect(evse[1]).to.equal(accounts[0]);
         expect(evse[2]).to.equal("0x0100000000000000000000000000000000000000000000000000000000000000");
@@ -61,10 +61,10 @@ contract('EvseStorage', function (accounts) {
         await storage.create("0x2", "0x01", 5, true);
         await storage.create("0x3", "0x06", 5, true);
 
-        let result = await storage.getStationEvses("0x01");
+        let result = await storage.getIdsByStation("0x01");
         assert.equal(result.length, 3);
 
-        result = await storage.getStationEvses("0x06");
+        result = await storage.getIdsByStation("0x06");
         assert.equal(result.length, 1);
     });
 

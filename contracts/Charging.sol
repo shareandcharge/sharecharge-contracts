@@ -16,7 +16,7 @@ contract Charging {
     event Error(bytes32 evseId, address controller, uint8 errorCode);
 
     modifier onlyEvseOwner(bytes32 id) {
-        var (,owner,,,,) = evses.getEvse(id);
+        var (,owner,,,,) = evses.getById(id);
         require(owner == msg.sender);
         _;
     }
@@ -26,7 +26,7 @@ contract Charging {
     }
 
     function requestStart(bytes32 evseId, uint256 secondsToRent) external {
-        var (,,,,isAvailable,) = evses.getEvse(evseId);
+        var (,,,,isAvailable,) = evses.getById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
         // bank.restrictedApproval(msg.sender, address(this), 1);
@@ -35,14 +35,14 @@ contract Charging {
     }
 
     function confirmStart(bytes32 evseId, address controller) external onlyEvseOwner(evseId) {
-        var (,,,,,_controller) = evses.getEvse(evseId);
+        var (,,,,,_controller) = evses.getById(evseId);
         require(_controller == controller);
         evses.setAvailable(evseId, false);
         StartConfirmed(evseId, controller);
     }
 
     function requestStop(bytes32 evseId) external {
-        var (,,,,,_controller) = evses.getEvse(evseId);
+        var (,,,,,_controller) = evses.getById(evseId);
         require(_controller == msg.sender);
         StopRequested(evseId, msg.sender);
     }

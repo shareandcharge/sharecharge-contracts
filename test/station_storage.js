@@ -23,12 +23,10 @@ contract('StationStorage', function (accounts) {
     it('should add a station', async () => {
         const id = await createStation(accounts[0]);
 
-        const stationsCount = await stations.getNumberOfStations();
-        const stationId = await stations.getIdByIndex(0);
-        const stationValues = await stations.getStation(id);
+        const stationsCount = await stations.getTotal();
+        const stationValues = await stations.getById(id);
 
         expect(stationsCount.toNumber()).to.equal(1);
-        expect(stationId).to.equal(id);
         expect(stationValues.length).to.equal(5);
         expect(stationValues[1]).to.equal(accounts[0]);
         expect(stationValues[2].toNumber()).to.equal(51345000);
@@ -44,7 +42,7 @@ contract('StationStorage', function (accounts) {
         const id = await createStation(accounts[0]);
         await stations.update(id, 2, 3, "0x1020304030303030303030303030303030303030303030303030303000000000");
 
-        const station = await stations.getStation(id);
+        const station = await stations.getById(id);
 
         expect(station[0]).to.equal(id);
         expect(station[1]).to.equal(accounts[0]);

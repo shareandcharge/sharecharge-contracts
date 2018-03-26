@@ -35,27 +35,18 @@ contract StationStorage is Restricted {
         StationUpdated(id);
     }
 
-    function getStation(bytes32 _id) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
+    function getById(bytes32 _id) public view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
         Station storage station = stations[_id];
         return (_id, station.owner, station.latitude, station.longitude, station.openingHours);
     }
 
-    function getNumberOfStations() external view returns(uint) {
+    function getTotal() external view returns(uint) {
         return ids.length;
     }
 
-    function getIdByIndex(uint index) external view returns(bytes32) {
-        return ids[index];
-    }
-
-    function getIndexById(bytes32 id) external view returns(int) {
-        uint length = ids.length;
-        for (uint i = 0; i < length; i++) {
-            if (ids[i] == id) {
-                return int(i);
-            }
-        }
-        return -1;
+    function getByIndex(uint index) external view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
+        bytes32 station = ids[index];
+        return getById(station);
     }
 
     function setOwner(bytes32 id, address newOwner) external onlyOwner(stations[id].owner) {
