@@ -29,7 +29,7 @@ contract('Charging', function (accounts) {
         const evseId = await createEvse(accounts[0]);
         const start = Date.now();
 
-        await charging.requestStart(evseId, 5000, { from: accounts[1] });
+        await charging.requestStart(evseId, 5000, 0, { from: accounts[1] });
         await charging.confirmStart(evseId, accounts[1], { from: accounts[0] });
         
         const result = await charging.confirmStop(evseId, accounts[1], start, start + 5000, 18000, { from: accounts[0] });

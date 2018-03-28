@@ -7,7 +7,7 @@ contract Charging {
 
     EvseStorage evses;
 
-    event StartRequested(bytes32 evseId, address controller, uint256 secondsToRent);
+    event StartRequested(bytes32 evseId, address controller, uint secondsToRent, uint energyToRent);
     event StartConfirmed(bytes32 evseId, address controller);
 
     event StopRequested(bytes32 evseId, address controller);
@@ -22,7 +22,6 @@ contract Charging {
         bytes3 currency,            // on evse
         uint tariffId,              // on evse
         uint basePrice,             // on evse
-        // uint totalCost           calculated on contract? 
         uint totalEnergy            // confirmStop parameter
     );
 
@@ -43,13 +42,13 @@ contract Charging {
         evses = EvseStorage(evsesAddress);
     }
 
-    function requestStart(bytes32 evseId, uint256 secondsToRent) external {
+    function requestStart(bytes32 evseId, uint secondsToRent, uint energyToRent) external {
         bool isAvailable;
         (,,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
         // bank.restrictedApproval(msg.sender, address(this), 1);
-        StartRequested(evseId, msg.sender, secondsToRent);
+        StartRequested(evseId, msg.sender, secondsToRent, energyToRent);
     }
 
     function confirmStart(bytes32 evseId, address controller) external onlyEvseOwner(evseId) {
