@@ -10,7 +10,9 @@ contract EvseStorage is Restricted {
     struct Evse {
         address owner;
         bytes32 stationId;
-        uint16 plugMask;
+        bytes3 currency;
+        uint basePrice;
+        uint tariffId;        
         bool available;
         address controller;
     }
@@ -19,26 +21,43 @@ contract EvseStorage is Restricted {
     mapping(bytes32 => Evse) public evses;
     bytes32[] public ids;
 
-    function create(bytes32 id, bytes32 stationId, uint16 plugMask, bool available) external {
+    function create(bytes32 id, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available) external {
         require(evses[id].owner == address(0));
-        evses[id] = Evse(msg.sender, stationId, plugMask, available, address(0));
+        evses[id] = Evse(msg.sender, stationId, currency, basePrice, tariffId, available, address(0));
         stationToEvses[stationId].push(id);
         ids.push(id);
         EvseCreated(id);
     }
 
-    function update(bytes32 id, bytes32 stationId, uint16 plugMask, bool available) external onlyOwner(evses[id].owner) {
+    function update(bytes32 id, bytes32 stationId,  bytes3 currency, uint basePrice, uint tariffId, bool available) external onlyOwner(evses[id].owner) {
         require(evses[id].owner != address(0));
         Evse storage evse = evses[id];
         evse.stationId = stationId;
-        evse.plugMask = plugMask;
         evse.available = available;
+        evse.currency = currency;
+        evse.basePrice = basePrice;
+        evse.tariffId = tariffId;
         EvseUpdated(id);
     }
 
-    function getById(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 stationId, uint16 plugMask, bool available, address controller) {
+    function getById(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available, address controller) {
         Evse storage evse = evses[_id];
-        return (_id, evse.owner, evse.stationId, evse.plugMask, evse.available, evse.controller);
+        return (_id, evse.owner, evse.stationId, evse.currency, evse.basePrice, evse.tariffId, evse.available, evse.controller);
+    }
+
+    function getGeneralInformationById(bytes32 _id) public view returns(address owner, bytes32 stationid, bool available) {
+        Evse storage evse = evses[_id];
+        return (evse.owner, evse.stationId, evse.available);
+    }
+
+    function getPriceModelById(bytes32 _id) public view returns(bytes3 currency, uint basePrice, uint tariffId) {
+        Evse storage evse = evses[_id];
+        return (evse.currency, evse.basePrice, evse.tariffId);
+    }
+
+    function getSessionById(bytes32 _id) public view returns(address controller) {
+        Evse storage evse = evses[_id];
+        return evse.controller;
     }
 
     function getIdsByStation(bytes32 stationId) external view returns(bytes32[]) {
@@ -58,11 +77,6 @@ contract EvseStorage is Restricted {
 
     function setOwner(bytes32 id, address newOwner) external onlyOwner(evses[id].owner) {
         evses[id].owner = newOwner;
-        EvseUpdated(id);
-    }
-
-    function setPlugMask(bytes32 id, uint16 plugMask) external onlyOwner(evses[id].owner) {
-        evses[id].plugMask = plugMask;
         EvseUpdated(id);
     }
 

@@ -9,9 +9,11 @@ contract('EvseStorage', function (accounts) {
     async function createEvse(owner) {
         const id = helpers.randomBytes32String();
         const stationId = "0x123456789abcdef";
-        const plugMask = 1;
+        const currency = "EUR";
+        const basePrice = "150";
+        const tariffId = 1
         const available = true;
-        await storage.create(id, stationId, plugMask, available, { from: owner });
+        await storage.create(id, stationId, currency, basePrice, tariffId, available, { from: owner });
         return id;
     }
 
@@ -25,23 +27,27 @@ contract('EvseStorage', function (accounts) {
         expect(evse[0]).to.equal(id);
         expect(evse[1]).to.equal(accounts[0]);
         expect(evse[2]).to.equal("0x123456789abcdef0000000000000000000000000000000000000000000000000");
-        expect(evse[3].toNumber()).to.equal(1);
-        expect(evse[4]).to.equal(true);
-        expect(evse[5]).to.equal("0x0000000000000000000000000000000000000000");
+        expect(web3.toUtf8(evse[3])).to.equal("EUR");
+        expect(evse[4].toNumber()).to.equal(150);
+        expect(evse[5].toNumber()).to.equal(1);
+        expect(evse[6]).to.equal(true);
+        expect(evse[7]).to.equal("0x0000000000000000000000000000000000000000");
+        
     });
 
     it('should update an evse', async () => {
         const id = await createEvse(accounts[0]);
 
-        await storage.update(id, "0x01", 3, false);
+        await storage.update(id, "0x01", "GBP", 300, 2, false);
 
         const evse = await storage.getById(id);
         expect(evse[0]).to.equal(id);
         expect(evse[1]).to.equal(accounts[0]);
         expect(evse[2]).to.equal("0x0100000000000000000000000000000000000000000000000000000000000000");
-        expect(evse[3].toNumber()).to.equal(3);
-        expect(evse[4]).to.equal(false);
-        expect(evse[5]).to.equal("0x0000000000000000000000000000000000000000");
+        expect(web3.toUtf8(evse[3])).to.equal("GBP");
+        expect(evse[4].toNumber()).to.equal(300);
+        expect(evse[5].toNumber()).to.equal(2);
+        expect(evse[6]).to.equal(false);
     });
 
     it('should only allow owner to update an evse', async () => {
@@ -56,10 +62,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should return all evses of given station', async () => {
-        await storage.create("0x0", "0x01", 1, true);
-        await storage.create("0x1", "0x01", 2, true);
-        await storage.create("0x2", "0x01", 5, true);
-        await storage.create("0x3", "0x06", 5, true);
+        await storage.create("0x0", "0x01", "EUR", 600, 1, true);
+        await storage.create("0x1", "0x01", "EUR", 600, 2, true);
+        await storage.create("0x2", "0x01", "EUR", 600, 5, true);
+        await storage.create("0x3", "0x06", "EUR", 600, 5, true);
 
         let result = await storage.getIdsByStation("0x01");
         assert.equal(result.length, 3);
@@ -69,10 +75,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should report false if all evses are not available', async () => {
-        await storage.create("0x01", "0x01", 0, false);
-        await storage.create("0x02", "0x01", 0, false);
-        await storage.create("0x03", "0x01", 0, false);
-        await storage.create("0x04", "0x01", 0, false);
+        await storage.create("0x01", "0x01", "EUR", 200, 0, false);
+        await storage.create("0x02", "0x01", "EUR", 200, 0, false);
+        await storage.create("0x03", "0x01", "EUR", 200, 0, false);
+        await storage.create("0x04", "0x01", "EUR", 200, 0, false);
 
         const result = await storage.getStationAvailability("0x01");
 
@@ -80,10 +86,10 @@ contract('EvseStorage', function (accounts) {
     });
 
     it('should report true if any evses are available', async () => {
-        await storage.create("0x01", "0x01", 0, false);
-        await storage.create("0x02", "0x01", 0, false);
-        await storage.create("0x03", "0x01", 0, true);
-        await storage.create("0x04", "0x01", 0, false);
+        await storage.create("0x01", "0x01", "EUR", 500, 0, false);
+        await storage.create("0x02", "0x01", "EUR", 500, 0, false);
+        await storage.create("0x03", "0x01", "EUR", 500, 0, true);
+        await storage.create("0x04", "0x01", "EUR", 500, 0, false);
 
         const result = await storage.getStationAvailability("0x01");
 
