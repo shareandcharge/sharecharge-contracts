@@ -1,9 +1,10 @@
 pragma solidity ^0.4.19;
 
+import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./EvseStorage.sol";
 // import "./EVCoin.sol";
 
-contract Charging {
+contract Charging is Ownable {
 
     EvseStorage evses;
 
@@ -38,7 +39,10 @@ contract Charging {
         _;
     }
 
-    function Charging(address evsesAddress) public {
+    function Charging() public {
+    }
+
+    function setEvsesAddress(address evsesAddress) public onlyOwner() {
         evses = EvseStorage(evsesAddress);
     }
 

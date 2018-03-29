@@ -9,7 +9,8 @@ contract('Charging', function (accounts) {
 
     beforeEach(async () => {
         evse = await EvseStorage.new();
-        charging = await Charging.new(evse.address);
+        charging = await Charging.new();
+        charging.setEvsesAddress(evse.address);
         evse.setAccess(charging.address);
     });
 
@@ -31,7 +32,7 @@ contract('Charging', function (accounts) {
 
         await charging.requestStart(evseId, 5000, 0, { from: accounts[1] });
         await charging.confirmStart(evseId, accounts[1], { from: accounts[0] });
-        
+
         const result = await charging.confirmStop(evseId, accounts[1], start, start + 5000, 18000, { from: accounts[0] });
 
         const cdrEvent = result.logs.filter(log => log.event === 'ChargeDetailRecord');

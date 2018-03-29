@@ -4,24 +4,16 @@ const StationStorage = artifacts.require("./StationStorage.sol");
 const EvseStorage = artifacts.require("./EvseStorage.sol");
 const ConnectorStorage = artifacts.require("./ConnectorStorage.sol");
 const Charging = artifacts.require("./Charging.sol");
+const MSPTokenManager = artifacts.require("./MSPTokenManager.sol");
 
 module.exports = async (deployer, network) => {
 
     const isDevelopment = network === "development";
     const isProduction = network === "production";
 
-    // Use deployer to state migration tasks.
-    await deployer.deploy(StationStorage);
-    await deployer.deploy(EvseStorage);
-    await deployer.deploy(ConnectorStorage);
-    await deployer.deploy(Charging, EvseStorage.address);
-
-    const evses = await EvseStorage.deployed();
-    await evses.setAccess(Charging.address);
-
     let config = {};
 
-    const contracts = [Charging, StationStorage, ConnectorStorage, EvseStorage];
+    const contracts = [Charging, StationStorage, ConnectorStorage, EvseStorage, MSPTokenManager];
     contracts.forEach(contract => {
 
         config[contract.contractName] = {
