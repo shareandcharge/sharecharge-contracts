@@ -69,6 +69,11 @@ contract EvseStorage is Restricted {
         return evse.controller;
     }
 
+    function getAvailableById(bytes32 _id) public view returns(bool available) {
+        Evse storage evse = evses[_id];
+        return evse.available;
+    }
+
     function getIdsByStation(bytes32 stationId) external view returns(bytes32[]) {
         return stationToEvses[stationId];
     }
