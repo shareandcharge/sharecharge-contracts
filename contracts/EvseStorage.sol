@@ -9,6 +9,7 @@ contract EvseStorage is Restricted {
 
     struct Evse {
         address owner;
+        bytes32 uid;
         bytes32 stationId;
         bytes3 currency;
         uint basePrice;
@@ -19,19 +20,22 @@ contract EvseStorage is Restricted {
 
     mapping(bytes32 => bytes32[]) public stationToEvses;
     mapping(bytes32 => Evse) public evses;
+    mapping(bytes32 => bytes32) public evses_uid;
     bytes32[] public ids;
 
-    function create(bytes32 id, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available) external {
+    function create(bytes32 id, bytes32 uid, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available) external {
         require(evses[id].owner == address(0));
-        evses[id] = Evse(msg.sender, stationId, currency, basePrice, tariffId, available, address(0));
+        evses[id] = Evse(msg.sender, uid, stationId, currency, basePrice, tariffId, available, address(0));
         stationToEvses[stationId].push(id);
         ids.push(id);
+        evses_uid[uid] = id;
         EvseCreated(id);
     }
 
-    function update(bytes32 id, bytes32 stationId,  bytes3 currency, uint basePrice, uint tariffId, bool available) external onlyOwner(evses[id].owner) {
+    function update(bytes32 id, bytes32 uid, bytes32 stationId,  bytes3 currency, uint basePrice, uint tariffId, bool available) external onlyOwner(evses[id].owner) {
         require(evses[id].owner != address(0));
         Evse storage evse = evses[id];
+        evse.uid = uid;
         evse.stationId = stationId;
         evse.available = available;
         evse.currency = currency;
@@ -40,9 +44,14 @@ contract EvseStorage is Restricted {
         EvseUpdated(id);
     }
 
-    function getById(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available, address controller) {
+    function getById(bytes32 _id) public view returns(bytes32 id, bytes32 uid, address owner, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available, address controller) {
         Evse storage evse = evses[_id];
-        return (_id, evse.owner, evse.stationId, evse.currency, evse.basePrice, evse.tariffId, evse.available, evse.controller);
+        return (_id, evse.uid, evse.owner, evse.stationId, evse.currency, evse.basePrice, evse.tariffId, evse.available, evse.controller);
+    }
+
+    function getByUid(bytes32 _uid) public view returns(bytes32 id, bytes32 uid, address owner, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available, address controller) {
+        bytes32 evse_id = evses_uid[_uid];
+        return getById(evse_id);
     }
 
     function getGeneralInformationById(bytes32 _id) public view returns(address owner, bytes32 stationid, bool available) {

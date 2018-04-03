@@ -16,12 +16,13 @@ contract('Charging', function (accounts) {
 
     async function createEvse(owner) {
         const id = helpers.randomBytes32String();
+        const uid = "FR138E1ETG5578567YU8D";
         const stationId = "0x123456789abcdef";
         const currency = "EUR";
         const basePrice = "150";
         const tariffId = 1
         const available = true;
-        await evse.create(id, stationId, currency, basePrice, tariffId, available, { from: owner });
+        await evse.create(id, uid, stationId, currency, basePrice, tariffId, available, { from: owner });
         return id;
     }
 
