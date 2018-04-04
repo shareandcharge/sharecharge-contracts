@@ -4,7 +4,7 @@ const StationStorage = artifacts.require("./StationStorage.sol");
 const EvseStorage = artifacts.require("./EvseStorage.sol");
 const ConnectorStorage = artifacts.require("./ConnectorStorage.sol");
 const Charging = artifacts.require("./Charging.sol");
-const MSPTokenManager = artifacts.require("./MSPTokenManager.sol");
+const MSPToken = artifacts.require("./MSPToken.sol");
 
 module.exports = async (deployer, network) => {
 
@@ -13,7 +13,7 @@ module.exports = async (deployer, network) => {
 
     let config = {};
 
-    const contracts = [Charging, StationStorage, ConnectorStorage, EvseStorage, MSPTokenManager];
+    const contracts = [Charging, StationStorage, ConnectorStorage, EvseStorage, MSPToken];
     contracts.forEach(contract => {
 
         config[contract.contractName] = {

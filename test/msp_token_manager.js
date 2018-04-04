@@ -1,7 +1,7 @@
 const MSPTokenManager = artifacts.require("./MSPTokenManager.sol");
 const MSPToken = artifacts.require('./MSPToken.sol');
 
-contract('MSPTokenManager', function (accounts) {
+contract.skip('MSPTokenManager', function (accounts) {
 
   let tokenManager;
 

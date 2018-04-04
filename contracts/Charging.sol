@@ -2,11 +2,13 @@ pragma solidity ^0.4.19;
 
 import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./EvseStorage.sol";
-// import "./EVCoin.sol";
+import "./MSPToken.sol";
+
 
 contract Charging is Ownable {
 
     EvseStorage evses;
+    MSPToken token;
 
     event StartRequested(bytes32 evseId, address controller, uint secondsToRent, uint energyToRent);
     event StartConfirmed(bytes32 evseId, address controller);
@@ -15,7 +17,7 @@ contract Charging is Ownable {
     event StopConfirmed(bytes32 evseId, address controller);
 
     event ChargeDetailRecord(
-        bytes32 id,                 // id of cdr is hash of connectorId, startTime
+        // bytes32 id,                 // id of cdr is hash of connectorId, startTime
         uint startTime,             // confirmStop parameter
         uint stopTime,              // confirmStop parameter
         bytes32 evseId,             // confirmStop paremeter
@@ -39,11 +41,12 @@ contract Charging is Ownable {
         _;
     }
 
-    function Charging() public {
-    }
-
     function setEvsesAddress(address evsesAddress) public onlyOwner() {
         evses = EvseStorage(evsesAddress);
+    }
+
+    function setTokenAddress(address tokenAddress) public onlyOwner() {
+        token = MSPToken(tokenAddress);
     }
 
     function requestStart(bytes32 evseId, uint secondsToRent, uint energyToRent) external {
@@ -51,7 +54,7 @@ contract Charging is Ownable {
         (,,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
-        // bank.restrictedApproval(msg.sender, address(this), 1);
+        token.restrictedApproval(msg.sender, address(this), 1);
         StartRequested(evseId, msg.sender, secondsToRent, energyToRent);
     }
 
@@ -59,7 +62,7 @@ contract Charging is Ownable {
         address _controller = evses.getSessionById(evseId);
         require(_controller == controller);
         evses.setAvailable(evseId, false);
-        // bank.transferFrom(msg.sender, address(this), 1);
+        token.transferFrom(_controller, address(this), 1);
         StartConfirmed(evseId, controller);
     }
 
@@ -72,19 +75,21 @@ contract Charging is Ownable {
     function confirmStop(bytes32 evseId, address controller, uint startTime, uint stopTime, uint totalEnergy) external onlyEvseOwner(evseId) {
         evses.setController(evseId, 0);
         evses.setAvailable(evseId, true);
-        // bank.transfer(msg.sender, 1);
+        token.transfer(msg.sender, 1);
         StopConfirmed(evseId, controller);
-        bytes32 id = keccak256(evseId, startTime);
+        // bytes32 id = keccak256(evseId, startTime);
         bytes3 currency;
         uint basePrice;
         uint tariffId;
         (currency,basePrice,tariffId) = evses.getPriceModelById(evseId);
-        ChargeDetailRecord(id, startTime, stopTime, evseId, controller, currency, tariffId, basePrice, totalEnergy);
+        ChargeDetailRecord(startTime, stopTime, evseId, controller, currency, tariffId, basePrice, totalEnergy);
     }
 
     function logError(bytes32 evseId, address controller, uint8 errorCode) external onlyEvseOwner(evseId) {
         if (errorCode == 0) {
-            // bank.transfer(store.getSession(evseId), 1);
+            // address _controller = evses.getSessionById(evseId);
+            // require(controller == _controller);
+            // token.transfer(_controller, 1);
             evses.setController(evseId, 0);
         }
         Error(evseId, controller, errorCode);

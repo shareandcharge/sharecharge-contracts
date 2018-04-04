@@ -9,9 +9,25 @@ contract MSPToken is MintableToken, BurnableToken {
     string public symbol;
     // uint8 public constant decimals = 18;
 
+    address private chargingContract;
+
+    modifier restricted() {
+        require(msg.sender == owner || msg.sender == chargingContract);
+        _;
+    }
+
     function MSPToken(string _name, string _symbol) public {
         name = _name;
         symbol = _symbol;
+    }
+
+    function setAccess(address _chargingAddress) external {
+        chargingContract = _chargingAddress;
+    }
+
+    function restrictedApproval(address owner, address spender, uint256 value) public restricted {
+        allowed[owner][spender] = value;
+        Approval(owner, spender, value);
     }
 
 }
