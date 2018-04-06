@@ -19,7 +19,7 @@ $ npm install
 Ensure you have `ganache-cli` (formerly `ethereumjs-testrpc`) installed and running:
 
 ```
-$ npm install -g ganache-cli 
+$ npm install -g ganache-cli
 $ ganache-cli
 ```
 
@@ -40,7 +40,7 @@ truffle migrate
 Interactive e2e console
 -----------------------
 
-This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions). 
+This script allows you to interact with the ChargingStation contract from both the perspective of the EV driver (requesting charging sessions) and the Charge Point Operator (confirming charging sessions).
 
 **NOTE**: You need to run `truffle migrate`, otherwise the console will fail to find `config.json` file!
 
@@ -126,7 +126,7 @@ npm run geth-dev
 Example web3 usage:
 
 ```js
-const Web3 = require('web3');     
+const Web3 = require('web3');
 const web3 = new Web3('ws://localhost:8546');
 
 const abi = require('./build/contracts/ChargingStation.json').abi;
@@ -135,3 +135,9 @@ const chargingStation = new web3.eth.Contract(abi, address);
 chargingStation.events.allEvents({}, console.log);
 ```
 
+NPM Link for faster local development
+--------------------------------------------------
+Run the following command to create a symlink in the global folder for use later with other projects
+```
+npm link
+```
