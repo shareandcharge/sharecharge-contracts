@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./Restricted.sol";
 
@@ -24,7 +24,7 @@ contract ConnectorStorage is Restricted {
         require(connectors[id].owner == address(0));
         connectors[id] = Connector(msg.sender, evseId, standard, powerType, voltage, amperage);
         evseToConnectors[evseId].push(id);
-        ConnectorCreated(id);
+        emit ConnectorCreated(id);
     }
 
     function update(bytes32 id, bytes32 evseId, uint8 standard, uint8 powerType, uint32 voltage, uint32 amperage)
@@ -35,7 +35,7 @@ contract ConnectorStorage is Restricted {
         connector.powerType = powerType;
         connector.voltage = voltage;
         connector.amperage = amperage;
-        ConnectorUpdated(id);
+        emit ConnectorUpdated(id);
     }
 
     function getById(bytes32 _id) public view returns(bytes32 id, address owner, bytes32 evseId, uint8 standard, uint8 powerType, uint32 voltage, uint32 amperage) {

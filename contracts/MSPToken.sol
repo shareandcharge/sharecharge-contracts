@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../node_modules/zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "../node_modules/zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
@@ -27,7 +27,7 @@ contract MSPToken is MintableToken, BurnableToken {
 
     function restrictedApproval(address owner, address spender, uint256 value) public restricted {
         allowed[owner][spender] = value;
-        Approval(owner, spender, value);
+        emit Approval(owner, spender, value);
     }
 
 }

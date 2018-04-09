@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "./Restricted.sol";
 
@@ -29,7 +29,7 @@ contract EvseStorage is Restricted {
         stationToEvses[stationId].push(id);
         ids.push(id);
         evses_uid[uid] = id;
-        EvseCreated(id);
+        emit EvseCreated(id);
     }
 
     function update(bytes32 id, bytes32 uid, bytes32 stationId,  bytes3 currency, uint basePrice, uint tariffId, bool available) external onlyOwner(evses[id].owner) {
@@ -41,7 +41,7 @@ contract EvseStorage is Restricted {
         evse.currency = currency;
         evse.basePrice = basePrice;
         evse.tariffId = tariffId;
-        EvseUpdated(id);
+        emit EvseUpdated(id);
     }
 
     function getById(bytes32 _id) public view returns(bytes32 id, bytes32 uid, address owner, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available, address controller) {
@@ -91,17 +91,17 @@ contract EvseStorage is Restricted {
 
     function setOwner(bytes32 id, address newOwner) external onlyOwner(evses[id].owner) {
         evses[id].owner = newOwner;
-        EvseUpdated(id);
+        emit EvseUpdated(id);
     }
 
     function setAvailable(bytes32 id, bool available) public restricted(evses[id].owner) {
         evses[id].available = available;
-        EvseUpdated(id);
+        emit EvseUpdated(id);
     }
 
     function setController(bytes32 id, address controller) public restricted(evses[id].owner) {
         evses[id].controller = controller;
-        EvseUpdated(id);
+        emit EvseUpdated(id);
     }
 
 }

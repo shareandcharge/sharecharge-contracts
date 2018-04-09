@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./Restricted.sol";
 
@@ -23,16 +23,16 @@ contract StationStorage is Restricted {
         require(stations[id].owner == address(0));
         stations[id] = Station(msg.sender, latitude, longitude, openingHours);
         ids.push(id);
-        StationCreated(id);
+        emit StationCreated(id);
     }
 
     function update(bytes32 id, int32 latitude, int32 longitude, bytes32 openingHours) external onlyOwner(stations[id].owner) {
         Station storage station = stations[id];
-        debug(station.owner);
+        emit debug(station.owner);
         station.latitude = latitude;
         station.longitude = longitude;
         station.openingHours = openingHours;
-        StationUpdated(id);
+        emit StationUpdated(id);
     }
 
     function getById(bytes32 _id) public view returns(bytes32 id, address owner, int32 latitude, int32 longitude, bytes32 openingHours) {
@@ -51,21 +51,21 @@ contract StationStorage is Restricted {
 
     function setOwner(bytes32 id, address newOwner) external onlyOwner(stations[id].owner) {
         stations[id].owner = newOwner;
-        StationUpdated(id);
+        emit StationUpdated(id);
     }
 
     function setLatitude(bytes32 id, int32 latitude) external onlyOwner(stations[id].owner) {
         stations[id].latitude = latitude;
-        StationUpdated(id);
+        emit StationUpdated(id);
     }
 
     function setLongitude(bytes32 id, int32 longitude) external onlyOwner(stations[id].owner) {
         stations[id].longitude = longitude;
-        StationUpdated(id);
+        emit StationUpdated(id);
     }
 
     function setOpeningHours(bytes32 id, bytes32 openingHours) external onlyOwner(stations[id].owner) {
         stations[id].openingHours = openingHours;
-        StationUpdated(id);
+        emit StationUpdated(id);
     }
 }
