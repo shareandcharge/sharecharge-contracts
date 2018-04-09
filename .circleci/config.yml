@@ -47,12 +47,12 @@ jobs:
             npm test
 
       # run truffle migrate
-      - run:
-          name: Truffle migrate
-          command: |
-            npm run migrate
-            git config --global user.email "ci@shareandcharge.com"
-            git config --global user.name "CircleCI"
-            git add contract.defs.local.json
-            git commit -m "Automated: Updated local defs [ci skip]"
-            git push --set-upstream origin ${CIRCLE_BRANCH}
+      # - run:
+      #     name: Truffle migrate
+      #     command: |
+      #       npm run migrate
+      #       git config --global user.email "ci@shareandcharge.com"
+      #       git config --global user.name "CircleCI"
+      #       git add contract.defs.local.json
+      #       git commit -m "Automated: Updated local defs [ci skip]"
+      #       git push --set-upstream origin ${CIRCLE_BRANCH}
