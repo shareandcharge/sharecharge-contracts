@@ -29,7 +29,7 @@
     "solidity-coverage": "^0.4.11",
     "solium": "^1.1.5",
     "truffle": "^4.1.3",
-    "web3": "^1.0.0-beta.30",
+    "web3": "^1.0.0-beta.33",
     "zeppelin-solidity": "1.8.0"
   }
 }
