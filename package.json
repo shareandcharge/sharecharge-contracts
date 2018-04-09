@@ -13,7 +13,10 @@
     "migrate": "truffle migrate",
     "geth-dev": "geth --dev --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
     "e2e": "node e2e/index.js",
-    "deploy": "node deploy.js"
+    "deploy": "node deploy.js",
+    "publish": "node bin/publish.js",
+    "publish-test": "node bin/publish.js test",
+    "publish-production": "node bin/publish.js production"
   },
   "repository": {
     "type": "git",
@@ -29,7 +32,8 @@
     "solidity-coverage": "^0.4.11",
     "solium": "^1.1.5",
     "truffle": "^4.1.5",
-    "web3": "^1.0.0-beta.33",
+    "truffle-contract": "3.0.4",
+    "web3": "^0.20.6",
     "zeppelin-solidity": "1.8.0"
   }
 }
