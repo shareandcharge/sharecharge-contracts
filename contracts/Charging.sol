@@ -10,21 +10,20 @@ contract Charging is Ownable {
     EvseStorage evses;
     MSPToken token;
 
-    event StartRequested(bytes32 evseId, address controller, uint secondsToRent, uint energyToRent);
+    event StartRequested(bytes32 evseId, address controller, uint secondsToRent, uint kwhToRent);
     event StartConfirmed(bytes32 evseId, address controller);
 
     event StopRequested(bytes32 evseId, address controller);
     event StopConfirmed(bytes32 evseId, address controller);
 
     event ChargeDetailRecord(
-        // bytes32 id,                 // id of cdr is hash of connectorId, startTime
+        // bytes32 id,              // id of cdr is hash of connectorId, startTime
         uint startTime,             // confirmStop parameter
         uint stopTime,              // confirmStop parameter
         bytes32 evseId,             // confirmStop paremeter
         address controller,         // confirmStop parameter
         bytes3 currency,            // on evse
-        uint tariffId,              // on evse
-        uint basePrice,             // on evse
+        uint price,                 // calculated at on confirmStop
         uint totalEnergy            // confirmStop parameter
     );
     
@@ -82,38 +81,57 @@ contract Charging is Ownable {
         (,,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
-        token.restrictedApproval(msg.sender, address(this), 1);
+
+        // initial price calculation
+        uint price = calculatePrice(evseId, msg.sender, secondsToRent, kwhToRent);
+        evses.setSessionPrice(evseId, price);                
+        token.restrictedApproval(msg.sender, address(this), price);
+
         emit StartRequested(evseId, msg.sender, secondsToRent, kwhToRent);
     }
 
-    function confirmStart(bytes32 evseId, address controller) external onlyEvseOwner(evseId) {
-        address _controller = evses.getSessionById(evseId);
-        require(_controller == controller);
+    function confirmStart(bytes32 evseId) external onlyEvseOwner(evseId) {
+        address controller;
+        uint price;
+        (controller,price) = evses.getSessionById(evseId);
+
         evses.setAvailable(evseId, false);
-        token.transferFrom(_controller, address(this), 1);
+        
+        token.transferFrom(controller, address(this), price);
         emit StartConfirmed(evseId, controller);
     }
 
     function requestStop(bytes32 evseId) external {
-        address _controller = evses.getSessionById(evseId);
+        address _controller;
+        (_controller,) = evses.getSessionById(evseId);
         require(_controller == msg.sender);
         emit StopRequested(evseId, msg.sender);
     }
 
-    function confirmStop(bytes32 evseId, address controller, uint startTime, uint stopTime, uint totalEnergy) external onlyEvseOwner(evseId) {
+    function confirmStop(bytes32 evseId, uint startTime, uint stopTime, uint totalEnergy) external onlyEvseOwner(evseId) {
+        address controller;
+        uint sessionPrice;
+        (controller,sessionPrice) = evses.getSessionById(evseId);
+        
         evses.setController(evseId, 0);
         evses.setAvailable(evseId, true);
-        token.transfer(msg.sender, 1);
+        
+        // final price calculation
+        uint price = calculatePrice(evseId, controller, stopTime - startTime, totalEnergy);
+        token.transfer(msg.sender, price);
+        uint difference = sessionPrice - price;
+        token.transfer(controller, difference);
+
         emit StopConfirmed(evseId, controller);
-        // bytes32 id = keccak256(evseId, startTime);
+        
         bytes3 currency;
-        uint basePrice;
-        uint tariffId;
-        (currency,basePrice,tariffId) = evses.getPriceModelById(evseId);
-        emit ChargeDetailRecord(startTime, stopTime, evseId, controller, currency, tariffId, basePrice, totalEnergy);
+        (currency,,) = evses.getPriceModelById(evseId);
+        emit ChargeDetailRecord(startTime, stopTime, evseId, controller, currency, price, totalEnergy);
     }
 
-    function logError(bytes32 evseId, address controller, uint8 errorCode) external onlyEvseOwner(evseId) {
+    function logError(bytes32 evseId, uint8 errorCode) external onlyEvseOwner(evseId) {
+        address controller;
+        (controller,) = evses.getSessionById(evseId);
         if (errorCode == 0) {
             // address _controller = evses.getSessionById(evseId);
             // require(controller == _controller);

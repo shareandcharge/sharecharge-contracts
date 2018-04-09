@@ -26,8 +26,15 @@ contract MSPToken is MintableToken, BurnableToken {
     }
 
     function restrictedApproval(address owner, address spender, uint256 value) public restricted {
+        require(balanceOf(owner) >= value);
         allowed[owner][spender] = value;
         emit Approval(owner, spender, value);
+    }
+
+    function restrictedTransferFrom(address owner, address spender) public restricted {
+        uint value = allowed[owner][spender];
+        transferFrom(owner, spender, value);
+        emit Transfer(owner, spender, value);
     }
 
 }

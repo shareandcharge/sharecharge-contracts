@@ -16,6 +16,7 @@ contract EvseStorage is Restricted {
         uint tariffId;        
         bool available;
         address controller;
+        uint sessionPrice;
     }
 
     mapping(bytes32 => bytes32[]) public stationToEvses;
@@ -25,7 +26,7 @@ contract EvseStorage is Restricted {
 
     function create(bytes32 id, bytes32 uid, bytes32 stationId, bytes3 currency, uint basePrice, uint tariffId, bool available) external {
         require(evses[id].owner == address(0));
-        evses[id] = Evse(msg.sender, uid, stationId, currency, basePrice, tariffId, available, address(0));
+        evses[id] = Evse(msg.sender, uid, stationId, currency, basePrice, tariffId, available, address(0), 0);
         stationToEvses[stationId].push(id);
         ids.push(id);
         evses_uid[uid] = id;
@@ -64,9 +65,9 @@ contract EvseStorage is Restricted {
         return (evse.currency, evse.basePrice, evse.tariffId);
     }
 
-    function getSessionById(bytes32 _id) public view returns(address controller) {
+    function getSessionById(bytes32 _id) public view returns(address controller, uint sesssionPrice) {
         Evse storage evse = evses[_id];
-        return evse.controller;
+        return (evse.controller, evse.sessionPrice);
     }
 
     function getAvailableById(bytes32 _id) public view returns(bool available) {
@@ -101,6 +102,11 @@ contract EvseStorage is Restricted {
 
     function setController(bytes32 id, address controller) public restricted(evses[id].owner) {
         evses[id].controller = controller;
+        emit EvseUpdated(id);
+    }
+
+    function setSessionPrice(bytes32 id, uint sessionPrice) public restricted(evses[id].owner) {
+        evses[id].sessionPrice = sessionPrice;
         emit EvseUpdated(id);
     }
 
