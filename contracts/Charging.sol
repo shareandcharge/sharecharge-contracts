@@ -56,7 +56,7 @@ contract Charging is Ownable {
         // kWh
         if (tariffId == 0) {
             // price per kwh  * number of kwh  * scaled seconds to allow integer division / seconds in hour
-            return (basePrice * kwhToRent) * (uint(secondsToRent * 10) / uint(3600));
+            return (basePrice * kwhToRent) * (uint(secondsToRent * 10) / uint(3600)) / 10;
 
         // flat rate
         } else if (tariffId == 1) {
@@ -65,7 +65,7 @@ contract Charging is Ownable {
         // time based
         } else if (tariffId == 3) {
             // price per hour   *  scaled seconds to allow integer division / seconds in hour
-            return (basePrice ) * (uint(secondsToRent * 10) / uint(3600));
+            return (basePrice ) * (uint(secondsToRent * 10) / uint(3600)) / 10;
         }
     }
 

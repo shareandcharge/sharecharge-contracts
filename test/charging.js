@@ -82,7 +82,7 @@ contract('Charging', function (accounts) {
             // charge for 1800 seconds (30 minutes)
             const price = await charging.calculatePrice(evseId, accounts[1], 1800, 0);
             // expect half the price of the base price per hour
-            expect(price.toNumber() / 10).to.equal(150 / 2);
+            expect(price.toNumber()).to.equal(150 / 2);
         });
 
         it('should calculate price of kWh charge', async () => {
@@ -90,7 +90,7 @@ contract('Charging', function (accounts) {
             // charge for 2 hours at a rate of 5 kWh 
             const price = await charging.calculatePrice(evseId, accounts[1], 7200, 5);
             // expect 150 * 5 (kwh) * 2 hours (15 eur or 1500 tokens)
-            expect(price.toNumber() / 10).to.equal(150 * 5 * 2);
+            expect(price.toNumber()).to.equal(150 * 5 * 2);
         });
 
     });
