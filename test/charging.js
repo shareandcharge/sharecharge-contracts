@@ -18,13 +18,20 @@ contract('Charging', function (accounts) {
         token.setAccess(charging.address);
     });
 
-    async function createEvse(owner) {
+
+    // export enum Tariff {
+    //     ENERGY,                 // charging tariff by kWh
+    //     FLAT,                   // flat fee (also use if free of charge)
+    //     PARKING_TIME,           // parking tariff by hours
+    //     TIME                    // charging tariff by hours
+    // }
+    async function createEvse(owner, tariff = 1) {
         const id = helpers.randomBytes32String();
         const uid = "FR138E1ETG5578567YU8D";
         const stationId = "0x123456789abcdef";
         const currency = "EUR";
         const basePrice = "150";
-        const tariffId = 1
+        const tariffId = tariff;
         const available = true;
         await evse.create(id, uid, stationId, currency, basePrice, tariffId, available, { from: owner });
         return id;
@@ -56,5 +63,36 @@ contract('Charging', function (accounts) {
         expect(cdrEvent[0].args.controller).to.equal(accounts[1]);
     });
 
+    context('#calculatePrice()', function () {
+
+        it('should not charge owner of evse', async () => {
+            const evseId = await createEvse(accounts[0]);
+            const price = await charging.calculatePrice(evseId, accounts[0], 0, 0);
+            expect(price.toNumber()).to.equal(0);
+        });
+
+        it('should calculate price of flat rate charge', async () => {
+            const evseId = await createEvse(accounts[0]);
+            const price = await charging.calculatePrice(evseId, accounts[1], 0, 0);
+            expect(price.toNumber()).to.equal(150);
+        });
+
+        it('should calculate price of time based charge', async () => {
+            const evseId = await createEvse(accounts[0], 3);
+            // charge for 1800 seconds (30 minutes)
+            const price = await charging.calculatePrice(evseId, accounts[1], 1800, 0);
+            // expect half the price of the base price per hour
+            expect(price.toNumber() / 10).to.equal(150 / 2);
+        });
+
+        it('should calculate price of kWh charge', async () => {
+            const evseId = await createEvse(accounts[0], 0);
+            // charge for 2 hours at a rate of 5 kWh 
+            const price = await charging.calculatePrice(evseId, accounts[1], 7200, 5);
+            // expect 150 * 5 (kwh) * 2 hours (15 eur or 1500 tokens)
+            expect(price.toNumber() / 10).to.equal(150 * 5 * 2);
+        });
+
+    });
 
 });

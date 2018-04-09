@@ -30,7 +30,7 @@ contract Charging is Ownable {
     
     event Error(bytes32 evseId, address controller, uint8 errorCode);
 
-    event Debug(string);
+    event Debug(uint param);
 
     modifier onlyEvseOwner(bytes32 id) {
         address owner;
@@ -41,12 +41,33 @@ contract Charging is Ownable {
         _;
     }
 
-    // function calculatePrice(bytes32 evseId) public returns (uint) {
-    //     uint basePrice;
-    //     uint tariffId;
-    //     (,basePrice,tariffId) = evses.getPriceModelById(evseId);
+    function calculatePrice(bytes32 evseId, address controller, uint secondsToRent, uint kwhToRent) view public returns (uint) {
+        address owner;
+        (owner,,) = evses.getGeneralInformationById(evseId);
+        // don't charge owner
+        if (controller == owner) {
+            return 0;
+        }
 
-    // }
+        uint basePrice;     // price/hour or price/kw
+        uint tariffId;
+        (,basePrice,tariffId) = evses.getPriceModelById(evseId);
+
+        // kWh
+        if (tariffId == 0) {
+            // price per kwh  * number of kwh  * scaled seconds to allow integer division / seconds in hour
+            return (basePrice * kwhToRent) * (uint(secondsToRent * 10) / uint(3600));
+
+        // flat rate
+        } else if (tariffId == 1) {
+            return basePrice;
+
+        // time based
+        } else if (tariffId == 3) {
+            // price per hour   *  scaled seconds to allow integer division / seconds in hour
+            return (basePrice ) * (uint(secondsToRent * 10) / uint(3600));
+        }
+    }
 
     function setEvsesAddress(address evsesAddress) public onlyOwner() {
         evses = EvseStorage(evsesAddress);
@@ -56,13 +77,13 @@ contract Charging is Ownable {
         token = MSPToken(tokenAddress);
     }
 
-    function requestStart(bytes32 evseId, uint secondsToRent, uint energyToRent) external {
+    function requestStart(bytes32 evseId, uint secondsToRent, uint kwhToRent) external {
         bool isAvailable;
         (,,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
         token.restrictedApproval(msg.sender, address(this), 1);
-        emit StartRequested(evseId, msg.sender, secondsToRent, energyToRent);
+        emit StartRequested(evseId, msg.sender, secondsToRent, kwhToRent);
     }
 
     function confirmStart(bytes32 evseId, address controller) external onlyEvseOwner(evseId) {
