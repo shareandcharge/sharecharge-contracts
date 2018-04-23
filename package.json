@@ -1,6 +1,6 @@
 {
   "name": "@motionwerk/sharecharge-contracts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
@@ -12,8 +12,7 @@
     "test": "truffle test",
     "migrate": "truffle migrate",
     "geth-dev": "geth --dev --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
-    "e2e": "node e2e/index.js",
-    "deploy": "node deploy.js",
+    "parity-dev": "parity --config network/dev.toml",
     "publish-development": "node bin/publish.js",
     "publish-test": "node bin/publish.js test",
     "publish-production": "node bin/publish.js production"
@@ -31,7 +30,7 @@
   "devDependencies": {
     "solidity-coverage": "^0.4.11",
     "solium": "^1.1.5",
-    "truffle": "^4.1.5",
+    "truffle": "^4.1.7",
     "truffle-contract": "3.0.4",
     "web3": "^0.20.6",
     "zeppelin-solidity": "1.8.0"

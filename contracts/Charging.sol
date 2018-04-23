@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./EvseStorage.sol";
@@ -119,8 +119,11 @@ contract Charging is Ownable {
         // final price calculation
         uint price = calculatePrice(evseId, controller, stopTime - startTime, totalEnergy);
         token.transfer(msg.sender, price);
+        
         uint difference = sessionPrice - price;
-        token.transfer(controller, difference);
+        if (difference > 0) {
+            token.transfer(controller, difference);
+        }
 
         emit StopConfirmed(evseId, controller);
         

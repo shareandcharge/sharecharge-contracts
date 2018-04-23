@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../node_modules/zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "../node_modules/zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
@@ -16,7 +16,7 @@ contract MSPToken is MintableToken, BurnableToken {
         _;
     }
 
-    function MSPToken(string _name, string _symbol) public {
+    constructor(string _name, string _symbol) public {
         name = _name;
         symbol = _symbol;
     }

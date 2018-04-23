@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 contract Restricted {
 
@@ -20,7 +20,7 @@ contract Restricted {
         _;
     }
 
-    function Restricted () public {
+    constructor() public {
         contractOwner = msg.sender;
     }
 

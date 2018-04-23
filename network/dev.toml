@@ -1,0 +1,56 @@
+[parity]
+chain = "network/dev.json"
+light = false
+
+[account]
+unlock = ["0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"]
+password = ["network/pwd"]
+
+[network]
+port = 30303
+warp = true
+
+[rpc]
+disable = false
+port = 8545
+interface = "local"
+cors = ["*"]
+apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "traces", "rpc", "shh", "shh_pubsub"]
+hosts = ["none"]
+
+[websockets]
+disable = false
+port = 8546
+interface = "local"
+origins = ["*"]
+apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "traces", "rpc", "shh", "shh_pubsub"]
+hosts = ["none"]
+
+[ipc]
+disable = false
+path = "$HOME/.local/share/io.parity.ethereum/jsonrpc.ipc"
+apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "parity_accounts", "traces", "rpc", "shh", "shh_pubsub"]
+
+[secretstore]
+disable = false
+nodes = []
+http_interface = "local"
+http_port = 8082
+interface = "local"
+port = 8083
+path = "$HOME/.local/share/io.parity.ethereum/secretstore"
+
+[ipfs]
+enable = false
+port = 5001
+interface = "local"
+cors = []
+hosts = ["none"]
+
+[mining]
+author = "0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"
+engine_signer = "0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"
+force_sealing = true
+
+[misc]
+color = true
