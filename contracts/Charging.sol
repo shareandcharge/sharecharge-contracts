@@ -10,7 +10,7 @@ contract Charging is Ownable {
     EvseStorage evses;
     MSPToken token;
 
-    event StartRequested(bytes32 evseId, address controller, uint secondsToRent, uint kwhToRent);
+    event StartRequested(bytes32 evseId, address controller);
     event StartConfirmed(bytes32 evseId, address controller);
 
     event StopRequested(bytes32 evseId, address controller);
@@ -76,18 +76,16 @@ contract Charging is Ownable {
         token = MSPToken(tokenAddress);
     }
 
-    function requestStart(bytes32 evseId, uint secondsToRent, uint kwhToRent) external {
+    function requestStart(bytes32 evseId, uint estimatedPrice) external {
         bool isAvailable;
-        (,,,isAvailable) = evses.getGeneralInformationById(evseId);
+        (,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
         evses.setController(evseId, msg.sender);
 
-        // initial price calculation
-        uint price = calculatePrice(evseId, msg.sender, secondsToRent, kwhToRent);
-        evses.setSessionPrice(evseId, price);                
-        token.restrictedApproval(msg.sender, address(this), price);
+        evses.setSessionPrice(evseId, estimatedPrice);                
+        token.restrictedApproval(msg.sender, address(this), estimatedPrice);
 
-        emit StartRequested(evseId, msg.sender, secondsToRent, kwhToRent);
+        emit StartRequested(evseId, msg.sender);
     }
 
     function confirmStart(bytes32 evseId) external onlyEvseOwner(evseId) {

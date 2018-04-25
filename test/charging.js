@@ -43,12 +43,11 @@ contract('Charging', function (accounts) {
 
         const balanceBefore = await token.balanceOf(accounts[1]);
         expect(balanceBefore.toNumber()).to.equal(500);
-
+        
         const evseId = await createEvse(accounts[0]);
         const start = Date.now();
-
         // flat rate charge
-        await charging.requestStart(evseId, 0, 0, { from: accounts[1] });
+        await charging.requestStart(evseId, 150, { from: accounts[1] });
 
         const allowance = await token.allowance(accounts[1], charging.address);
         expect(allowance.toNumber()).to.equal(150);
@@ -81,7 +80,8 @@ contract('Charging', function (accounts) {
         const end = start + 5400;
 
         // driver pays for 2 hours
-        await charging.requestStart(evseId, 7200, 0, { from: accounts[1] });
+
+        await charging.requestStart(evseId, 300, { from: accounts[1] });
 
         await charging.confirmStart(evseId, { from: accounts[0] });        
 
