@@ -16,15 +16,24 @@ async function publish() {
     const promises = contractNames.map(async contractName => {
         return new Promise((resolve, reject) => {
             const instance = contract(require('../build/contracts/' + contractName));
-            instance.setProvider(provider);
-            instance.detectNetwork().then(() => {
+            if (contractName === 'MSPToken') {
                 resolve({
                     name: instance.contractName,
                     abi: instance.abi,
-                    address: instance.address,
+                    address: '',
                     bytecode: instance.bytecode
+                })
+            } else {
+                instance.setProvider(provider);
+                instance.detectNetwork().then(() => {
+                    resolve({
+                        name: instance.contractName,
+                        abi: instance.abi,
+                        address: instance.address,
+                        bytecode: instance.bytecode
+                    });
                 });
-            });
+            }
         });
     });
     const config = {};
@@ -34,7 +43,7 @@ async function publish() {
             abi: contract.abi,
             address: contract.address
         }
-        if (!isProduction) {
+        if (!isProduction && contract.name !== 'MSPToken') {
             config[contract.name].bytecode = contract.bytecode;
         }
     });
