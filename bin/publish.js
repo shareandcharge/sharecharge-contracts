@@ -43,7 +43,7 @@ async function publish() {
             abi: contract.abi,
             address: contract.address
         }
-        if (!isProduction && contract.name !== 'MSPToken') {
+        if (!isProduction || contract.name === 'MSPToken') {
             config[contract.name].bytecode = contract.bytecode;
         }
     });
