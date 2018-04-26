@@ -59,8 +59,9 @@ contract('Charging', function (accounts) {
         expect(allowance2.toNumber()).to.equal(0);
 
         // charged 10kw over 2 hours
-        const result = await charging.confirmStop(evseId, start, start + 7200, 10000, { from: accounts[0] });
-
+        await charging.confirmStop(evseId, { from: accounts[0] });
+        
+        const result = await charging.chargeDetailRecord(evseId, 150);
         const balanceAfter = await token.balanceOf(accounts[1]);
         expect(balanceAfter.toNumber()).to.equal(350);
 
@@ -70,7 +71,7 @@ contract('Charging', function (accounts) {
         const cdrEvent = result.logs.filter(log => log.event === 'ChargeDetailRecord');
         expect(cdrEvent.length).to.equal(1);
         expect(cdrEvent[0].args.controller).to.equal(accounts[1]);
-        expect(cdrEvent[0].args.price.toNumber()).to.equal(150);        
+        expect(cdrEvent[0].args.finalPrice.toNumber()).to.equal(150);        
     });
 
     it('should emit CDR and divvy up tokens correctly for time based charge', async () => {
@@ -89,49 +90,18 @@ contract('Charging', function (accounts) {
         expect(balanceControllerBefore.toNumber()).to.equal(200);
 
         // driver charges for 1.5 hours (5400 seconds)
-        const result = await charging.confirmStop(evseId, start, end, 10000, { from: accounts[0] });
-
+        await charging.confirmStop(evseId, { from: accounts[0] });
+        
+        const result = await charging.chargeDetailRecord(evseId, 225);
+        
         const balanceControllerAfter = await token.balanceOf(accounts[1]);
         expect(balanceControllerAfter.toNumber()).to.equal(275);
-
         const balanceEvseOwner = await token.balanceOf(accounts[0]);
         expect(balanceEvseOwner.toNumber()).to.equal(225);
 
         const cdrEvent = result.logs.filter(log => log.event === 'ChargeDetailRecord');
         expect(cdrEvent.length).to.equal(1);
-        expect(cdrEvent[0].args.price.toNumber()).to.equal(225); 
-    });
-
-    context('#calculatePrice()', function () {
-
-        it('should not charge owner of evse', async () => {
-            const evseId = await createEvse(accounts[0]);
-            const price = await charging.calculatePrice(evseId, accounts[0], 0, 0);
-            expect(price.toNumber()).to.equal(0);
-        });
-
-        it('should calculate price of flat rate charge', async () => {
-            const evseId = await createEvse(accounts[0]);
-            const price = await charging.calculatePrice(evseId, accounts[1], 0, 0);
-            expect(price.toNumber()).to.equal(150);
-        });
-
-        it('should calculate price of time based charge', async () => {
-            const evseId = await createEvse(accounts[0], 3);
-            // charge for 1800 seconds (30 minutes)
-            const price = await charging.calculatePrice(evseId, accounts[1], 1800, 0);
-            // expect half the price of the base price per hour
-            expect(price.toNumber()).to.equal(150 / 2);
-        });
-
-        it('should calculate price of kWh charge', async () => {
-            const evseId = await createEvse(accounts[0], 0);
-            // charge for 2 hours at a rate of 5 kWh 
-            const price = await charging.calculatePrice(evseId, accounts[1], 7200, 5);
-            // expect 150 * 5 (kwh) * 2 hours (15 eur or 1500 tokens)
-            expect(price.toNumber()).to.equal(150 * 5 * 2);
-        });
-
+        expect(cdrEvent[0].args.finalPrice.toNumber()).to.equal(225); 
     });
 
 });

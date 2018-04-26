@@ -17,14 +17,9 @@ contract Charging is Ownable {
     event StopConfirmed(bytes32 evseId, address controller);
 
     event ChargeDetailRecord(
-        // bytes32 id,              // id of cdr is hash of connectorId, startTime
-        uint startTime,             // confirmStop parameter
-        uint stopTime,              // confirmStop parameter
-        bytes32 evseId,             // confirmStop paremeter
-        address controller,         // confirmStop parameter
-        bytes3 currency,            // on evse
-        uint price,                 // calculated at on confirmStop
-        uint totalEnergy            // confirmStop parameter
+        bytes32 id,
+        address controller,
+        uint finalPrice
     );
     
     event Error(bytes32 evseId, address controller, uint8 errorCode);
@@ -40,33 +35,6 @@ contract Charging is Ownable {
         _;
     }
 
-    function calculatePrice(bytes32 evseId, address controller, uint secondsToRent, uint kwhToRent) view public returns (uint) {
-        address owner;
-        (owner,,) = evses.getGeneralInformationById(evseId);
-        // don't charge owner
-        if (controller == owner) {
-            return 0;
-        }
-
-        uint basePrice;     // price/hour or price/kw
-        uint tariffId;
-        (,basePrice,tariffId) = evses.getPriceModelById(evseId);
-
-        // kWh
-        if (tariffId == 0) {
-            // price per kwh  * number of kwh  * scaled seconds to allow integer division / seconds in hour
-            return (basePrice * kwhToRent) * (uint(secondsToRent * 10) / uint(3600)) / 10;
-
-        // flat rate
-        } else if (tariffId == 1) {
-            return basePrice;
-
-        // time based
-        } else if (tariffId == 3) {
-            // price per hour   *  scaled seconds to allow integer division / seconds in hour
-            return (basePrice ) * (uint(secondsToRent * 10) / uint(3600)) / 10;
-        }
-    }
 
     function setEvsesAddress(address evsesAddress) public onlyOwner() {
         evses = EvseStorage(evsesAddress);
@@ -106,28 +74,20 @@ contract Charging is Ownable {
         emit StopRequested(evseId, msg.sender);
     }
 
-    function confirmStop(bytes32 evseId, uint startTime, uint stopTime, uint totalEnergy) external onlyEvseOwner(evseId) {
-        address controller;
-        uint sessionPrice;
-        (controller,sessionPrice) = evses.getSessionById(evseId);
-        
-        evses.setController(evseId, 0);
-        evses.setAvailable(evseId, true);
-        
-        // final price calculation
-        uint price = calculatePrice(evseId, controller, stopTime - startTime, totalEnergy);
-        token.transfer(msg.sender, price);
-        
-        uint difference = sessionPrice - price;
-        if (difference > 0) {
-            token.transfer(controller, difference);
-        }
+    function confirmStop(bytes32 id) public onlyEvseOwner(id) {
+        emit StopConfirmed(id, msg.sender);
+    } 
 
-        emit StopConfirmed(evseId, controller);
-        
-        bytes3 currency;
-        (currency,,) = evses.getPriceModelById(evseId);
-        emit ChargeDetailRecord(startTime, stopTime, evseId, controller, currency, price, totalEnergy);
+    function chargeDetailRecord(bytes32 id, uint finalPrice) public onlyEvseOwner(id) {
+        address _controller;        
+        uint sessionPrice;
+        (_controller, sessionPrice) = evses.getSessionById(id);
+        uint difference = sessionPrice - finalPrice;
+        token.transfer(msg.sender, finalPrice);
+        if(difference > 0) {
+            token.transfer(_controller, difference);
+        }
+        emit ChargeDetailRecord(id, _controller, finalPrice);
     }
 
     function logError(bytes32 evseId, uint8 errorCode) external onlyEvseOwner(evseId) {
