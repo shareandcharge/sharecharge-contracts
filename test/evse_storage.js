@@ -33,7 +33,6 @@ contract('EvseStorage', function (accounts) {
         expect(evse[5].toNumber()).to.equal(150);
         expect(evse[6].toNumber()).to.equal(1);
         expect(evse[7]).to.equal(true);
-        expect(evse[8]).to.equal("0x0000000000000000000000000000000000000000");
         
     });
 

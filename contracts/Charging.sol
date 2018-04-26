@@ -4,11 +4,17 @@ import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./EvseStorage.sol";
 import "./MSPToken.sol";
 
-
 contract Charging is Ownable {
 
     EvseStorage evses;
-    MSPToken token;
+
+    struct Session {
+        address controller;
+        address token;
+        uint price;
+    }
+
+    mapping(bytes32 => Session) private state;
 
     event StartRequested(bytes32 evseId, address controller);
     event StartConfirmed(bytes32 evseId, address controller);
@@ -16,11 +22,7 @@ contract Charging is Ownable {
     event StopRequested(bytes32 evseId, address controller);
     event StopConfirmed(bytes32 evseId, address controller);
 
-    event ChargeDetailRecord(
-        bytes32 id,
-        address controller,
-        uint finalPrice
-    );
+    event ChargeDetailRecord(bytes32 evseId, address controller, uint finalPrice);
     
     event Error(bytes32 evseId, address controller, uint8 errorCode);
 
@@ -29,79 +31,66 @@ contract Charging is Ownable {
     modifier onlyEvseOwner(bytes32 id) {
         address owner;
         (owner,,,) = evses.getGeneralInformationById(id);
-        // address controller = evses.getSessionById(id);
         require(owner == msg.sender);
-        /*  || controller == msg.sender */
         _;
     }
-
 
     function setEvsesAddress(address evsesAddress) public onlyOwner() {
         evses = EvseStorage(evsesAddress);
     }
 
-    function setTokenAddress(address tokenAddress) public onlyOwner() {
-        token = MSPToken(tokenAddress);
-    }
-
-    function requestStart(bytes32 evseId, uint estimatedPrice) external {
+    function requestStart(bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
         bool isAvailable;
         (,,isAvailable) = evses.getGeneralInformationById(evseId);
         require(isAvailable == true);
-        evses.setController(evseId, msg.sender);
-
-        evses.setSessionPrice(evseId, estimatedPrice);                
-        token.restrictedApproval(msg.sender, address(this), estimatedPrice);
-
+        state[evseId] = Session(msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(evseId, msg.sender);
+        MSPToken token = MSPToken(tokenAddress);
+        token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
 
     function confirmStart(bytes32 evseId) external onlyEvseOwner(evseId) {
-        address controller;
-        uint price;
-        (controller,price) = evses.getSessionById(evseId);
-
+        Session storage session = state[evseId];
         evses.setAvailable(evseId, false);
-        
-        token.transferFrom(controller, address(this), price);
-        emit StartConfirmed(evseId, controller);
+        MSPToken token = MSPToken(session.token);
+        token.transferFrom(session.controller, address(this), session.price);
+        emit StartConfirmed(evseId, session.controller);
     }
 
     function requestStop(bytes32 evseId) external {
-        address _controller;
-        (_controller,) = evses.getSessionById(evseId);
-        require(_controller == msg.sender);
+        Session storage session = state[evseId];
+        require(session.controller == msg.sender);
         emit StopRequested(evseId, msg.sender);
     }
 
     function confirmStop(bytes32 evseId) public onlyEvseOwner(evseId) {
-        address controller;
-        (controller,) = evses.getSessionById(evseId);
-        emit StopConfirmed(evseId, controller);
+        Session storage session = state[evseId];
+        emit StopConfirmed(evseId, session.controller);
     } 
 
     function chargeDetailRecord(bytes32 evseId, uint finalPrice) public onlyEvseOwner(evseId) {
-        address _controller;        
-        uint sessionPrice;
-        (_controller, sessionPrice) = evses.getSessionById(evseId);
-        uint difference = sessionPrice - finalPrice;
+        Session storage session = state[evseId];
+        uint difference = session.price - finalPrice;
+        MSPToken token = MSPToken(session.token);
         token.transfer(msg.sender, finalPrice);
         if(difference > 0) {
-            token.transfer(_controller, difference);
+            token.transfer(session.controller, difference);
         }
-        emit ChargeDetailRecord(evseId, _controller, finalPrice);
+        emit ChargeDetailRecord(evseId, session.controller, finalPrice);
+        evses.setAvailable(evseId, true);
+        state[evseId] = Session(address(0), address(0), 0);
     }
 
     function logError(bytes32 evseId, uint8 errorCode) external onlyEvseOwner(evseId) {
-        address controller;
-        (controller,) = evses.getSessionById(evseId);
+        Session storage session = state[evseId];
         if (errorCode == 0) {
             // address _controller = evses.getSessionById(evseId);
             // require(controller == _controller);
             // token.transfer(_controller, 1);
-            evses.setController(evseId, 0);
+            evses.setAvailable(evseId, true);        
+            state[evseId] = Session(address(0), address(0), 0);
         }
-        emit Error(evseId, controller, errorCode);
+        emit Error(evseId, session.controller, errorCode);
     }
 
 }
