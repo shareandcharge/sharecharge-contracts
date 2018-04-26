@@ -74,20 +74,22 @@ contract Charging is Ownable {
         emit StopRequested(evseId, msg.sender);
     }
 
-    function confirmStop(bytes32 id) public onlyEvseOwner(id) {
-        emit StopConfirmed(id, msg.sender);
+    function confirmStop(bytes32 evseId) public onlyEvseOwner(evseId) {
+        address controller;
+        (controller,) = evses.getSessionById(evseId);
+        emit StopConfirmed(evseId, controller);
     } 
 
-    function chargeDetailRecord(bytes32 id, uint finalPrice) public onlyEvseOwner(id) {
+    function chargeDetailRecord(bytes32 evseId, uint finalPrice) public onlyEvseOwner(evseId) {
         address _controller;        
         uint sessionPrice;
-        (_controller, sessionPrice) = evses.getSessionById(id);
+        (_controller, sessionPrice) = evses.getSessionById(evseId);
         uint difference = sessionPrice - finalPrice;
         token.transfer(msg.sender, finalPrice);
         if(difference > 0) {
             token.transfer(_controller, difference);
         }
-        emit ChargeDetailRecord(id, _controller, finalPrice);
+        emit ChargeDetailRecord(evseId, _controller, finalPrice);
     }
 
     function logError(bytes32 evseId, uint8 errorCode) external onlyEvseOwner(evseId) {
