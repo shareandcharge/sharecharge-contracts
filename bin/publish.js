@@ -16,14 +16,6 @@ async function publish() {
     const promises = contractNames.map(async contractName => {
         return new Promise((resolve, reject) => {
             const instance = contract(require('../build/contracts/' + contractName));
-            if (contractName === 'MSPToken') {
-                resolve({
-                    name: instance.contractName,
-                    abi: instance.abi,
-                    address: '',
-                    bytecode: instance.bytecode
-                })
-            } else {
                 instance.setProvider(provider);
                 instance.detectNetwork().then(() => {
                     resolve({
@@ -33,8 +25,7 @@ async function publish() {
                         bytecode: instance.bytecode
                     });
                 });
-            }
-        });
+            });   
     });
     const config = {};
     const result = await Promise.all(promises);
