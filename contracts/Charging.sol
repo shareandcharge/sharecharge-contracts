@@ -83,13 +83,6 @@ contract Charging is Ownable {
 
     function logError(bytes32 evseId, uint8 errorCode) external onlyEvseOwner(evseId) {
         Session storage session = state[evseId];
-        if (errorCode == 0) {
-            // address _controller = evses.getSessionById(evseId);
-            // require(controller == _controller);
-            // token.transfer(_controller, 1);
-            evses.setAvailable(evseId, true);        
-            state[evseId] = Session(address(0), address(0), 0);
-        }
         emit Error(evseId, session.controller, errorCode);
     }
 

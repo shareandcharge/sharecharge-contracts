@@ -1,6 +1,6 @@
 {
   "name": "@motionwerk/sharecharge-contracts",
-  "version": "0.0.15",
+  "version": "0.0.18",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
@@ -13,7 +13,7 @@
     "migrate": "truffle migrate",
     "geth-dev": "geth --dev --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
     "parity-dev": "parity --config network/dev.toml",
-    "publish-development": "node bin/publish.js",
+    "publish-dev": "node bin/publish.js",
     "publish-test": "node bin/publish.js test",
     "publish-production": "node bin/publish.js production"
   },
