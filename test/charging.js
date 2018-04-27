@@ -63,7 +63,7 @@ contract('Charging', function (accounts) {
         const confirmStop = await charging.confirmStop(evseId, { from: accounts[0] });
         console.log('confirmStop gas:', confirmStop.receipt.gasUsed);
         
-        const cdr = await charging.chargeDetailRecord(evseId, 200);
+        const cdr = await charging.chargeDetailRecord(evseId, 200, 1524690000);
         console.log('chargeDetailRecord gas:', cdr.receipt.gasUsed);
 
         const balanceAfter = await token.balanceOf(accounts[1]);
@@ -96,7 +96,7 @@ contract('Charging', function (accounts) {
         // driver charges for 1.5 hours (5400 seconds)
         await charging.confirmStop(evseId, { from: accounts[0] });
         
-        const result = await charging.chargeDetailRecord(evseId, 225);
+        const result = await charging.chargeDetailRecord(evseId, 225, 1524690000);
         
         const balanceControllerAfter = await token.balanceOf(accounts[1]);
         expect(balanceControllerAfter.toNumber()).to.equal(275);

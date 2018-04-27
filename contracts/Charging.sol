@@ -22,7 +22,7 @@ contract Charging is Ownable {
     event StopRequested(bytes32 evseId, address controller);
     event StopConfirmed(bytes32 evseId, address controller);
 
-    event ChargeDetailRecord(bytes32 evseId, address controller, uint finalPrice);
+    event ChargeDetailRecord(bytes32 evseId, address controller, address tokenAddress, uint finalPrice, uint timestamp);
     
     event Error(bytes32 evseId, address controller, uint8 errorCode);
 
@@ -68,15 +68,15 @@ contract Charging is Ownable {
         emit StopConfirmed(evseId, session.controller);
     } 
 
-    function chargeDetailRecord(bytes32 evseId, uint finalPrice) public onlyEvseOwner(evseId) {
+    function chargeDetailRecord(bytes32 evseId, uint finalPrice, uint timestamp) public onlyEvseOwner(evseId) {
         Session storage session = state[evseId];
         uint difference = session.price - finalPrice;
         MSPToken token = MSPToken(session.token);
         token.transfer(msg.sender, finalPrice);
-        if(difference > 0) {
+        if(difference > 0) {    
             token.transfer(session.controller, difference);
         }
-        emit ChargeDetailRecord(evseId, session.controller, finalPrice);
+        emit ChargeDetailRecord(evseId, session.controller, session.token, finalPrice, timestamp);
         evses.setAvailable(evseId, true);
         state[evseId] = Session(address(0), address(0), 0);
     }
