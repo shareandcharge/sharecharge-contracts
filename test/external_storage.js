@@ -8,7 +8,7 @@ function newLocation() {
     }
 }
 
-contract('ExternalStorage', function (accounts) {
+contract.only('ExternalStorage', function (accounts) {
 
     let storage;
 
@@ -27,7 +27,7 @@ contract('ExternalStorage', function (accounts) {
             console.log(tx2.receipt.gasUsed);            
             const storedHash = await storage.getLocationById(accounts[0], loc1.id);
             expect(storedHash).to.equal(loc1.hash);
-            const ids = await storage.getGlobalIDsByCPO(accounts[0]);
+            const ids = await storage.getGlobalIdsByCPO(accounts[0]);
             expect(ids.length).to.equal(2);
         });
 
@@ -41,7 +41,7 @@ contract('ExternalStorage', function (accounts) {
             } catch (err) {
                 expect(err.message.search('revert') !== -1).to.equal(true);
             }
-            const ids = await storage.getGlobalIDsByCPO(accounts[0]);
+            const ids = await storage.getGlobalIdsByCPO(accounts[0]);
             expect(ids.length).to.equal(1);
         });
 
@@ -61,7 +61,28 @@ contract('ExternalStorage', function (accounts) {
 
     });
 
+    context('#addTariffs()', () => {
 
+        it('should add tariffs to cpo', async () => {
+            const tariffs = helpers.randomBytes32String();
+            const tx = await storage.addTariffs(tariffs);
+            console.log(tx.receipt.gasUsed);
+            const storedHash = await storage.getTariffsByCPO(accounts[0]);
+            expect(storedHash).to.equal(tariffs);
+        });
+    });
 
+    context('#updateTariffs()', () => {
+
+        it('should update tariffs for cpo', async () => {
+            const tariffs = helpers.randomBytes32String();
+            await storage.addTariffs(tariffs);
+            const tariffs2 = helpers.randomBytes32String();
+            const tx = await storage.updateTariffs(tariffs2);
+            console.log(tx.receipt.gasUsed);
+            const storedHash = await storage.getTariffsByCPO(accounts[0]);
+            expect(storedHash).to.equal(tariffs2);
+        });
+    })
 
 });
