@@ -47,6 +47,20 @@ contract('ExternalStorage', function (accounts) {
 
     });
 
+    context('#updateLocation()', () => {
+
+        it('should update location', async () => {
+            const loc = newLocation();
+            await storage.addLocation(loc.id, loc.hash);
+            const newHash = helpers.randomBytes32String();
+            const tx = await storage.updateLocation(loc.id, newHash);
+            console.log(tx.receipt.gasUsed);
+            const storedHash = await storage.getLocationById(accounts[0], loc.id);
+            expect(storedHash).to.equal(newHash);
+        });
+
+    });
+
 
 
 

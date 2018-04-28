@@ -9,8 +9,8 @@ contract ConnectorStorage is Restricted {
 
     struct Connector {
         address owner;
-        bytes32 evseId;     // evse this connector belongs to
-        uint8 standard;     // connector type (CHADEMO, T1, T2, etc)
+        bytes32 evseId;     
+        uint8 standard;     
         uint8 powerType;
         uint32 voltage;
         uint32 amperage;

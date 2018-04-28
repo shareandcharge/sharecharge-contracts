@@ -12,7 +12,12 @@ contract('ConnectorStorage', function (accounts) {
         const powerType = helpers.randomInt(0, 2);
         const voltage = helpers.randomInt(50, 400);
         const amperage = helpers.randomInt(8, 32);
-        await storage.create(id, evseId, standard, powerType, voltage, amperage);
+        const create = await storage.create(id, evseId, standard, powerType, voltage, amperage);
+        console.log(create.receipt.gasUsed);
+
+        // const id2 = helpers.randomBytes32String();
+        // const create2 = await storage.create(id2, '0x01', 0, 0, 400, 32);
+        // console.log(create2.receipt.gasUsed);
 
         const connector = await storage.getById(id);
         expect(connector[0]).to.equal(id);

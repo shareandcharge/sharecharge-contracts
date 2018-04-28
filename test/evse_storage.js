@@ -14,7 +14,8 @@ contract('EvseStorage', function (accounts) {
         const basePrice = "150";
         const tariffId = 1
         const available = true;
-        await storage.create(id, uid, stationId, currency, basePrice, tariffId, available, { from: owner });
+        const create = await storage.create(id, uid, stationId, currency, basePrice, tariffId, available, { from: owner });
+        console.log(create.receipt.gasUsed);
         return id;
     }
 
@@ -24,6 +25,7 @@ contract('EvseStorage', function (accounts) {
 
     it('should add an evse', async () => {
         const id = await createEvse(accounts[0]);
+        await createEvse(accounts[0]);
         const evse = await storage.getById(id);
         expect(evse[0]).to.equal(id);
         expect(web3.toUtf8(evse[1])).to.equal('FR138E1ETG5578567YU8D');

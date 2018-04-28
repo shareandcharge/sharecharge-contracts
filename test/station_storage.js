@@ -12,7 +12,8 @@ contract('StationStorage', function (accounts) {
         const longitude = -9233200;
         const openingHours = '0x3030303030303030303030303030303030303030303030303030303000000000';
 
-        await stations.create(id, latitude, longitude, openingHours, { from: owner });
+        const create = await stations.create(id, latitude, longitude, openingHours, { from: owner });
+        console.log(create.receipt.gasUsed);
         return id;
     }
 
@@ -22,6 +23,7 @@ contract('StationStorage', function (accounts) {
 
     it('should add a station', async () => {
         const id = await createStation(accounts[0]);
+        // await createStation(accounts[0]);
 
         const stationsCount = await stations.getTotal();
         const stationValues = await stations.getById(id);
