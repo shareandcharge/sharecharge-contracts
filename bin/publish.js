@@ -50,12 +50,12 @@ async function publish() {
 
         const outputPath = path + fileName;
 
-        await fs.writeFile(outputPath, JSON.stringify(config, null, 2), err => {
+        await fs.writeFile(outputPath, JSON.stringify(config), err => {
             if (err) console.log(err);
         });
     }
 
-    await fs.writeFile(fileName, JSON.stringify(config, null, 2), err => {
+    await fs.writeFile(fileName, JSON.stringify(config), err => {
         if (err) console.log(err);
     });
 }
