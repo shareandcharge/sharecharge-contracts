@@ -8,7 +8,7 @@ function newLocation() {
     }
 }
 
-contract.only('ExternalStorage', function (accounts) {
+contract('ExternalStorage', function (accounts) {
 
     let storage;
 

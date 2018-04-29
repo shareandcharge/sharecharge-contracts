@@ -1,9 +1,9 @@
 pragma solidity ^0.4.23;
 
-import "../node_modules/zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-import "../node_modules/zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 
-contract MSPToken is MintableToken, BurnableToken {
+contract MSPToken is MintableToken, StandardBurnableToken {
 
     string public name;
     string public symbol;
@@ -29,12 +29,6 @@ contract MSPToken is MintableToken, BurnableToken {
         require(balanceOf(owner) >= value);
         allowed[owner][spender] = value;
         emit Approval(owner, spender, value);
-    }   
-
-    function restrictedTransferFrom(address owner, address spender) public restricted {
-        uint value = allowed[owner][spender];
-        transferFrom(owner, spender, value);
-        emit Transfer(owner, spender, value);
     }
 
 }

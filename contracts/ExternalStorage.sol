@@ -1,8 +1,8 @@
 pragma solidity ^0.4.23;
 
-contract ExternalStorage {
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-    address private owner;
+contract ExternalStorage is Ownable {
 
     struct ChargePointOperator {
         mapping(bytes32 => bytes32) locations;
@@ -15,10 +15,6 @@ contract ExternalStorage {
 
     event LocationAdded(bytes32 globalId);
     event LocationUpdated(bytes32 globalId);
-
-    constructor() public {
-        owner = msg.sender;
-    }
 
     function addLocation(bytes32 globalId, bytes32 externalHash) public {
         require(CPOs[msg.sender].locations[globalId] == bytes32(0));

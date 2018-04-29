@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./EvseStorage.sol";
 import "./MSPToken.sol";
 
@@ -72,8 +72,10 @@ contract Charging is Ownable {
         Session storage session = state[evseId];
         uint difference = session.price - finalPrice;
         MSPToken token = MSPToken(session.token);
+        // account for estimate being too low
+        // use burnFrom in StandardBurnableToken to remove remaining approval
         token.transfer(msg.sender, finalPrice);
-        if(difference > 0) {    
+        if (difference > 0) {    
             token.transfer(session.controller, difference);
         }
         emit ChargeDetailRecord(evseId, session.controller, session.token, finalPrice, timestamp);

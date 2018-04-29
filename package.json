@@ -1,6 +1,6 @@
 {
   "name": "@motionwerk/sharecharge-contracts",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
@@ -33,7 +33,7 @@
     "truffle": "^4.1.7",
     "truffle-contract": "3.0.4",
     "web3": "^0.20.6",
-    "zeppelin-solidity": "1.8.0"
+    "openzeppelin-solidity": "1.9.0"
   },
   "dependencies": {
     "mkdirp": "^0.5.1"
