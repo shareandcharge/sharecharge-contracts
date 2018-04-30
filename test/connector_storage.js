@@ -1,7 +1,7 @@
 const ConnectorStorage = artifacts.require('./ConnectorStorage.sol');
 const helpers = require('./helpers');
 
-contract('ConnectorStorage', function (accounts) {
+contract.skip('ConnectorStorage', function (accounts) {
 
     it('should insert a new connector', async () => {
         const storage = await ConnectorStorage.new();

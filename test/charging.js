@@ -25,7 +25,7 @@ contract('Charging', function (accounts) {
         return { scId, evseId };
     }
 
-    it('should not allow request start on unregistered location', async () => {
+    it.skip('should not allow request start on unregistered location', async () => {
         await token.mint(accounts[1], 500);
         const id = () => helpers.randomBytes32String();
         try {
@@ -36,10 +36,11 @@ contract('Charging', function (accounts) {
         }
     });
 
-    it('should only allow owner to call confirmation functions', async () => {
+    it.skip('should only allow owner to call confirmation functions', async () => {
         await token.mint(accounts[1], 500);
         const { scId, evseId } = await addLocation(accounts[0]);
-        await charging.requestStart(scId, evseId, token.address, 100, { from: accounts[1] });
+        const charge = await charging.requestStart(scId, evseId, token.address, 100, { from: accounts[1] });
+
         try {
             await charging.confirmStart(scId, evseId, helpers.randomBytes32String(), { from: accounts[1] });
             expect.fail();

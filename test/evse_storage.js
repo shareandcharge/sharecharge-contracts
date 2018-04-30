@@ -2,7 +2,7 @@ const EvseStorage = artifacts.require("./EvseStorage.sol");
 
 const helpers = require('./helpers');
 
-contract('EvseStorage', function (accounts) {
+contract.skip('EvseStorage', function (accounts) {
 
     let storage;
 

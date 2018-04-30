@@ -94,6 +94,16 @@ contract('ExternalStorage', function (accounts) {
             console.log(result.receipt.gasUsed);
             expect(result.logs.length).to.equal(1);
         });
-    })
+    });
+
+    context('#getters', () => {
+        it('should return owner', async () => {
+            const loc = newLocation();
+            await storage.addLocation(loc.id, loc.hash, { from: accounts[1] });
+            const owner = await storage.getOwnerById(loc.id);
+            expect(owner).to.equal(accounts[1]);
+
+        });
+    });
 
 });

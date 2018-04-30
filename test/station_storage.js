@@ -2,7 +2,7 @@ const StationStorage = artifacts.require("./StationStorage.sol");
 
 const helpers = require('./helpers');
 
-contract('StationStorage', function (accounts) {
+contract.skip('StationStorage', function (accounts) {
 
     let stations;
 
