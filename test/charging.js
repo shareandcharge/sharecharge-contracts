@@ -17,15 +17,15 @@ contract('Charging', function (accounts) {
         token.setAccess(charging.address);
     });
 
-
     async function addLocation(owner) {
         const scId = helpers.randomBytes32String();
-        const evseId = "FR138E1ETG5578567YU8D";
-        await store.addLocation(scId, evseId, { from: owner });
+        const hash = helpers.randomBytes32String();
+        const evseId = "0x42452d4245432d45303431353033303031";
+        await store.addLocation(scId, hash, { from: owner });
         return { scId, evseId };
     }
 
-    it.skip('should not allow request start on unregistered location', async () => {
+    it('should not allow request start on unregistered location', async () => {
         await token.mint(accounts[1], 500);
         const id = () => helpers.randomBytes32String();
         try {
@@ -36,7 +36,7 @@ contract('Charging', function (accounts) {
         }
     });
 
-    it.skip('should only allow owner to call confirmation functions', async () => {
+    it('should only allow owner to call confirmation functions', async () => {
         await token.mint(accounts[1], 500);
         const { scId, evseId } = await addLocation(accounts[0]);
         const charge = await charging.requestStart(scId, evseId, token.address, 100, { from: accounts[1] });
@@ -58,6 +58,7 @@ contract('Charging', function (accounts) {
         
         const { scId, evseId } = await addLocation(accounts[0]);
         
+        // console.log(scId, evseId, token.address, 200);
         const requestStart = await charging.requestStart(scId, evseId, token.address, 200, { from: accounts[1] });
         console.log('requestStart gas:', requestStart.receipt.gasUsed);
 

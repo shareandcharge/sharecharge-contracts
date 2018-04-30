@@ -24,10 +24,10 @@ contract Charging is Ownable {
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
     event Debug(address param);
 
-    // modifier onlyLocationOwner(bytes32 id) {
-    //     require(store.getOwnerById(id) == msg.sender);
-    //     _;
-    // }
+    modifier onlyLocationOwner(bytes32 id) {
+        require(store.getOwnerById(id) == msg.sender);
+        _;
+    }
 
     function setStorageAddress(address storageAddress) public onlyOwner {
         store = ExternalStorage(storageAddress);
@@ -38,13 +38,13 @@ contract Charging is Ownable {
         return (session.controller, session.token, session.price);
     }
 
-    // function getOwner(bytes32 scId) view public returns (address) {
+    // function getOwner(bytes32 scId) view public onlyOwner returns (address) {
     //     address owner = store.getOwnerById(scId);
     //     return owner;
     // }
 
     function requestStart(bytes32 scId, bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
-        // require(store.getOwnerById(scId) != address(0));
+        require(store.getOwnerById(scId) != address(0));
         require(state[scId][evseId].controller == address(0));
         state[scId][evseId] = Session(msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
@@ -52,7 +52,7 @@ contract Charging is Ownable {
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
 
-    function confirmStart(bytes32 scId, bytes32 evseId, bytes32 sessionId) external /* onlyLocationOwner(scId) */ {
+    function confirmStart(bytes32 scId, bytes32 evseId, bytes32 sessionId) external onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         MSPToken token = MSPToken(session.token);
         token.transferFrom(session.controller, address(this), session.price);
@@ -65,12 +65,12 @@ contract Charging is Ownable {
         emit StopRequested(scId, evseId, msg.sender);
     }
 
-    function confirmStop(bytes32 scId, bytes32 evseId) public /* onlyLocationOwner(scId) */ {
+    function confirmStop(bytes32 scId, bytes32 evseId) public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         emit StopConfirmed(scId, evseId, session.controller);
     } 
 
-    function chargeDetailRecord(bytes32 scId, bytes32 evseId, uint finalPrice, uint timestamp) public /* onlyLocationOwner(scId) */ {
+    function chargeDetailRecord(bytes32 scId, bytes32 evseId, uint finalPrice, uint timestamp) public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         uint difference = session.price - finalPrice;
         MSPToken token = MSPToken(session.token);
@@ -84,7 +84,7 @@ contract Charging is Ownable {
         state[scId][evseId] = Session(address(0), address(0), 0);
     }
 
-    function logError(bytes32 scId, bytes32 evseId, uint8 errorCode) external /* onlyLocationOwner(scId) */ {
+    function logError(bytes32 scId, bytes32 evseId, uint8 errorCode) external onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         emit Error(scId, evseId, session.controller, errorCode);
     }
