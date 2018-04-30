@@ -1,10 +1,9 @@
-const EvseStorage = artifacts.require("./EvseStorage.sol");
+const ExternalStorage = artifacts.require("./EvseStorage.sol");
 const MSPToken = artifacts.require("./MSPToken.sol");
 const Charging = artifacts.require("./Charging.sol");
 
 module.exports = async function(deployer) {
-    const evses = await EvseStorage.deployed();
+    const storage = await ExternalStorage.deployed();
     const charging = await Charging.deployed();
-    charging.setEvsesAddress(evses.address);
-    evses.setAccess(charging.address);
+    charging.setStorageAddress(storage.address);
 };
