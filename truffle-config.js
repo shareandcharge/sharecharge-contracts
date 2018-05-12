@@ -12,6 +12,12 @@ module.exports = {
             network_id: "*",
             gas: 4000000
         },
+        pilot: {
+            host: 'localhost',
+            port: 8545,
+            network_id: "*",
+            gas: 4000000
+        },
         tobalaba: {
             host: 'localhost',
             port: 8545,

@@ -20,7 +20,7 @@ contract Charging is Ownable {
     event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, bytes32 sessionId);
     event StopRequested(bytes32 scId, bytes32 evseId, address controller);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
-    event ChargeDetailRecord(bytes32 scId, address controller, address tokenAddress, uint finalPrice, uint timestamp);
+    event ChargeDetailRecord(bytes32 scId, bytes32 evseId, address controller, address tokenAddress, uint finalPrice, uint timestamp);
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
     event Debug(address param);
 
@@ -80,7 +80,7 @@ contract Charging is Ownable {
         if (difference > 0) {    
             token.transfer(session.controller, difference);
         }
-        emit ChargeDetailRecord(scId, session.controller, session.token, finalPrice, timestamp);
+        emit ChargeDetailRecord(scId, evseId, session.controller, session.token, finalPrice, timestamp);
         state[scId][evseId] = Session(address(0), address(0), 0);
     }
 

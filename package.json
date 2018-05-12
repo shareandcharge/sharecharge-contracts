@@ -1,6 +1,6 @@
 {
   "name": "@motionwerk/sharecharge-contracts",
-  "version": "0.0.24",
+  "version": "0.0.26",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
