@@ -28,12 +28,12 @@
   },
   "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
   "devDependencies": {
-    "solidity-coverage": "^0.4.11",
-    "solium": "^1.1.5",
-    "truffle": "^4.1.7",
-    "truffle-contract": "3.0.4",
-    "web3": "^0.20.6",
-    "openzeppelin-solidity": "1.9.0"
+    "openzeppelin-solidity": "1.9.0",
+    "solidity-coverage": "^0.5.0",
+    "solium": "^1.1.7",
+    "truffle": "^4.1.8",
+    "truffle-contract": "3.0.5",
+    "web3": "^0.20.6"
   },
   "dependencies": {
     "mkdirp": "^0.5.1"
