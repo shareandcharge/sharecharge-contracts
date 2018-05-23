@@ -11,7 +11,7 @@ contract ExternalStorage is Ownable {
     }
 
     mapping(address => ChargePointOperator) private CPOs;
-    mapping(bytes32 => address) private ownerOf;
+    mapping(bytes32 => address) public ownerOf;
 
     event LocationAdded(bytes32 scId);
     event LocationUpdated(bytes32 scId);

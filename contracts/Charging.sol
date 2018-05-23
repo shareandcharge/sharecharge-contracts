@@ -33,7 +33,7 @@ contract Charging is Ownable {
         store = ExternalStorage(storageAddress);
     }
 
-    function getState(bytes32 scId, bytes32 evseId) view public onlyOwner returns (address, address, uint) {
+    function getSession(bytes32 scId, bytes32 evseId) view public returns (address controller, address token, uint price) {
         Session storage session = state[scId][evseId];
         return (session.controller, session.token, session.price);
     }
@@ -49,6 +49,7 @@ contract Charging is Ownable {
         state[scId][evseId] = Session(msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
         MSPToken token = MSPToken(tokenAddress);
+        // user must have tokens even to charge with 0 price
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
 
