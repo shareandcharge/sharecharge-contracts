@@ -9,6 +9,7 @@ contract Charging is Ownable {
     ExternalStorage store;
 
     struct Session {
+        bytes32 id;
         address controller;
         address token;
         uint price;
@@ -18,7 +19,7 @@ contract Charging is Ownable {
 
     event StartRequested(bytes32 scId, bytes32 evseId, address controller);
     event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, bytes32 sessionId);
-    event StopRequested(bytes32 scId, bytes32 evseId, address controller);
+    event StopRequested(bytes32 scId, bytes32 evseId, address controller, bytes32 sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
     event ChargeDetailRecord(bytes32 scId, bytes32 evseId, address controller, address tokenAddress, uint finalPrice, uint timestamp);
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
@@ -33,9 +34,9 @@ contract Charging is Ownable {
         store = ExternalStorage(storageAddress);
     }
 
-    function getSession(bytes32 scId, bytes32 evseId) view public returns (address controller, address token, uint price) {
+    function getSession(bytes32 scId, bytes32 evseId) view public returns (bytes32 sessionId, address controller, address token, uint price) {
         Session storage session = state[scId][evseId];
-        return (session.controller, session.token, session.price);
+        return (session.id, session.controller, session.token, session.price);
     }
 
     // function getOwner(bytes32 scId) view public onlyOwner returns (address) {
@@ -46,7 +47,7 @@ contract Charging is Ownable {
     function requestStart(bytes32 scId, bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0));
         require(state[scId][evseId].controller == address(0));
-        state[scId][evseId] = Session(msg.sender, tokenAddress, estimatedPrice);
+        state[scId][evseId] = Session(0, msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
         MSPToken token = MSPToken(tokenAddress);
         // user must have tokens even to charge with 0 price
@@ -55,6 +56,7 @@ contract Charging is Ownable {
 
     function confirmStart(bytes32 scId, bytes32 evseId, bytes32 sessionId) external onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
+        session.id = sessionId;
         MSPToken token = MSPToken(session.token);
         token.transferFrom(session.controller, address(this), session.price);
         emit StartConfirmed(scId, evseId, session.controller, sessionId);
@@ -63,13 +65,13 @@ contract Charging is Ownable {
     function requestStop(bytes32 scId, bytes32 evseId) external {
         Session storage session = state[scId][evseId];
         require(session.controller == msg.sender);
-        emit StopRequested(scId, evseId, msg.sender);
+        emit StopRequested(scId, evseId, msg.sender, session.id);
     }
 
     function confirmStop(bytes32 scId, bytes32 evseId) public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         emit StopConfirmed(scId, evseId, session.controller);
-    } 
+    }
 
     function chargeDetailRecord(bytes32 scId, bytes32 evseId, uint finalPrice, uint timestamp) public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
@@ -78,11 +80,11 @@ contract Charging is Ownable {
         // account for estimate being too low
         // use burnFrom in StandardBurnableToken to remove remaining approval
         token.transfer(msg.sender, finalPrice);
-        if (difference > 0) {    
+        if (difference > 0) {
             token.transfer(session.controller, difference);
         }
         emit ChargeDetailRecord(scId, evseId, session.controller, session.token, finalPrice, timestamp);
-        state[scId][evseId] = Session(address(0), address(0), 0);
+        state[scId][evseId] = Session(0, address(0), address(0), 0);
     }
 
     function logError(bytes32 scId, bytes32 evseId, uint8 errorCode) external onlyLocationOwner(scId) {
