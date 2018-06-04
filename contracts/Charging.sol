@@ -65,6 +65,10 @@ contract Charging is Ownable {
         emit StartConfirmed(scId, evseId, session.controller, sessionId);
     }
 
+    function reset(bytes32 scId, bytes32 evseId) external onlyLocationOwner(scId) {
+        delete state[scId][evseId];
+    }
+
     function requestStop(bytes32 scId, bytes32 evseId) external {
         Session storage session = state[scId][evseId];
         require(session.controller == msg.sender);
