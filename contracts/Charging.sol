@@ -4,12 +4,13 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./ExternalStorage.sol";
 import "./MSPToken.sol";
 
+
 contract Charging is Ownable {
 
-    ExternalStorage store;
+    ExternalStorage private store;
 
     struct Session {
-        bytes32 id;
+        string id;
         address controller;
         address token;
         uint price;
@@ -18,10 +19,11 @@ contract Charging is Ownable {
     mapping(bytes32 => mapping(bytes32 => Session)) private state;
 
     event StartRequested(bytes32 scId, bytes32 evseId, address controller);
-    event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, bytes32 sessionId);
-    event StopRequested(bytes32 scId, bytes32 evseId, address controller, bytes32 sessionId);
+    event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, string sessionId);
+    event StopRequested(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
-    event ChargeDetailRecord(bytes32 scId, bytes32 evseId, address controller, address tokenAddress, uint finalPrice, uint timestamp);
+    event ChargeDetailRecord(bytes32 scId, bytes32 evseId, address controller, address tokenAddress,
+        uint finalPrice, uint timestamp);
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
     event Debug(address param);
 
@@ -34,7 +36,8 @@ contract Charging is Ownable {
         store = ExternalStorage(storageAddress);
     }
 
-    function getSession(bytes32 scId, bytes32 evseId) view public returns (bytes32 sessionId, address controller, address token, uint price) {
+    function getSession(bytes32 scId, bytes32 evseId) public view returns (string sessionId, address controller,
+        address token, uint price) {
         Session storage session = state[scId][evseId];
         return (session.id, session.controller, session.token, session.price);
     }
@@ -47,14 +50,14 @@ contract Charging is Ownable {
     function requestStart(bytes32 scId, bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0));
         require(state[scId][evseId].controller == address(0));
-        state[scId][evseId] = Session(0, msg.sender, tokenAddress, estimatedPrice);
+        state[scId][evseId] = Session("", msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
         MSPToken token = MSPToken(tokenAddress);
         // user must have tokens even to charge with 0 price
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
 
-    function confirmStart(bytes32 scId, bytes32 evseId, bytes32 sessionId) external onlyLocationOwner(scId) {
+    function confirmStart(bytes32 scId, bytes32 evseId, string sessionId) external onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         session.id = sessionId;
         MSPToken token = MSPToken(session.token);
@@ -84,7 +87,7 @@ contract Charging is Ownable {
             token.transfer(session.controller, difference);
         }
         emit ChargeDetailRecord(scId, evseId, session.controller, session.token, finalPrice, timestamp);
-        state[scId][evseId] = Session(0, address(0), address(0), 0);
+        state[scId][evseId] = Session("", address(0), address(0), 0);
     }
 
     function logError(bytes32 scId, bytes32 evseId, uint8 errorCode) external onlyLocationOwner(scId) {
