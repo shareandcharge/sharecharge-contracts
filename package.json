@@ -29,9 +29,9 @@
   "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
   "devDependencies": {
     "openzeppelin-solidity": "1.9.0",
-    "solidity-coverage": "^0.5.0",
+    "solidity-coverage": "^0.5.4",
     "solium": "^1.1.7",
-    "truffle": "^4.1.8",
+    "truffle": "^4.1.11",
     "truffle-contract": "3.0.5",
     "web3": "^0.20.6"
   },

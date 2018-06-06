@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./ExternalStorage.sol";
@@ -28,7 +28,7 @@ contract Charging is Ownable {
     event Debug(address param);
 
     modifier onlyLocationOwner(bytes32 id) {
-        require(store.getOwnerById(id) == msg.sender);
+        require(store.getOwnerById(id) == msg.sender, "Only location owner can call this method");
         _;
     }
 
@@ -48,8 +48,8 @@ contract Charging is Ownable {
     // }
 
     function requestStart(bytes32 scId, bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
-        require(store.getOwnerById(scId) != address(0));
-        require(state[scId][evseId].controller == address(0));
+        require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
+        require(state[scId][evseId].controller == address(0), "Session already exists for that EVSE ID");
         state[scId][evseId] = Session("", msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
         MSPToken token = MSPToken(tokenAddress);
@@ -71,7 +71,7 @@ contract Charging is Ownable {
 
     function requestStop(bytes32 scId, bytes32 evseId) external {
         Session storage session = state[scId][evseId];
-        require(session.controller == msg.sender);
+        require(session.controller == msg.sender, "Given controller did not start the charge session for that EVSE ID");
         emit StopRequested(scId, evseId, msg.sender, session.id);
     }
 

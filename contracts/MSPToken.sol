@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
@@ -26,7 +26,7 @@ contract MSPToken is MintableToken, StandardBurnableToken {
     }
 
     function restrictedApproval(address owner, address spender, uint256 value) public restricted {
-        require(balanceOf(owner) >= value);
+        require(balanceOf(owner) >= value, "Owner's balance is not greater than or equal to the value being approved");
         allowed[owner][spender] = value;
         emit Approval(owner, spender, value);
     }
