@@ -19,7 +19,7 @@ module.exports = {
             gas: 4000000
         },
         tobalaba: {
-            host: 'localhost',
+            host: '18.184.137.181',
             port: 8545,
             network_id: "*",
             gas: 4000000

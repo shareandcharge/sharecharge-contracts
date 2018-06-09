@@ -49,7 +49,6 @@ contract Charging is Ownable {
 
     function requestStart(bytes32 scId, bytes32 evseId, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
-        require(state[scId][evseId].controller == address(0), "Session already exists for that EVSE ID");
         state[scId][evseId] = Session("", msg.sender, tokenAddress, estimatedPrice);
         emit StartRequested(scId, evseId, msg.sender);
         MSPToken token = MSPToken(tokenAddress);
