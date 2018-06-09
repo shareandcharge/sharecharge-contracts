@@ -9,7 +9,7 @@ contract MSPToken is MintableToken, StandardBurnableToken {
     string public symbol;
     // uint8 public constant decimals = 18;
 
-    address private chargingContract;
+    address public chargingContract;
 
     modifier restricted() {
         require(msg.sender == owner || msg.sender == chargingContract);

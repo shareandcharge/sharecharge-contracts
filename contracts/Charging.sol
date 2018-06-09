@@ -36,6 +36,10 @@ contract Charging is Ownable {
         store = ExternalStorage(storageAddress);
     }
 
+    function getStorageAddress() view public returns (address storageAddress) {
+        return address(store);
+    }
+
     function getSession(bytes32 scId, bytes32 evseId) public view returns (string sessionId, address controller,
         address token, uint price) {
         Session storage session = state[scId][evseId];
