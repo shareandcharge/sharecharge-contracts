@@ -3,13 +3,22 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node
 
+defaults: 
+  - &stage_defaults
     working_directory: ~/contracts
+
+  - &docker_defaults
+    image: circleci/node
+
+jobs:
+
+  build:
+
+    <<: *stage_defaults
+
+    docker:
+      - <<: *docker_defaults
 
     steps:
       - checkout
@@ -32,6 +41,38 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
           paths:
             - node_modules
+
+      - persist_to_workspace:
+          root: ~/contracts
+          paths: .
+
+  compile:
+
+    <<: *stage_defaults
+
+    docker:
+      - <<: *docker_defaults
+
+    steps:
+
+      - attach_workspace:
+          at: ~/contracts
+
+      - run:
+          name: truffle compile
+          command: ./node_modules/.bin/truffle compile
+
+  test:
+
+    <<: *stage_defaults
+
+    docker:
+      - <<: *docker_defaults
+
+    steps:
+
+      - attach_workspace:
+          at: ~/contracts
 
       # run rpc
       - run:
@@ -56,3 +97,15 @@ jobs:
       #       git add contract.defs.local.json
       #       git commit -m "Automated: Updated local defs [ci skip]"
       #       git push --set-upstream origin ${CIRCLE_BRANCH}
+
+workflows:
+  version: 2
+  build_compile_test:
+    jobs:
+      - build
+      - compile:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
