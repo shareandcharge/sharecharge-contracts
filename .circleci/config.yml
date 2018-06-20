@@ -11,6 +11,11 @@ defaults:
   - &docker_defaults
     image: circleci/node
 
+  - &npm_auth
+    run:
+      name: npm secret
+      command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+
 jobs:
 
   build:
@@ -87,16 +92,24 @@ jobs:
           command: |
             npm test
 
-      # run truffle migrate
-      # - run:
-      #     name: Truffle migrate
-      #     command: |
-      #       npm run migrate
-      #       git config --global user.email "ci@shareandcharge.com"
-      #       git config --global user.name "CircleCI"
-      #       git add contract.defs.local.json
-      #       git commit -m "Automated: Updated local defs [ci skip]"
-      #       git push --set-upstream origin ${CIRCLE_BRANCH}
+deploy:
+
+    <<: *stage_defaults
+
+    docker:
+      - <<: *docker_defaults
+
+    steps:
+
+      - attach_workspace:
+          at: ~/contracts
+
+      - <<: *npm_auth
+
+      # run tests
+      - run:
+          name: Publish
+          command: npm publish
 
 workflows:
   version: 2
@@ -109,3 +122,7 @@ workflows:
       - test:
           requires:
             - build
+      - deploy:
+          requires:
+            - compile
+            - test
