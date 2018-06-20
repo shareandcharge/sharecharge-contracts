@@ -42,7 +42,7 @@ contract('Charging', function (accounts) {
         const charge = await charging.requestStart(scId, evseId, 3, 60, token.address, 100, { from: accounts[1] });
 
         try {
-            await charging.confirmStart(scId, evseId, helpers.randomBytes32String(), { from: accounts[1] });
+            await charging.confirmStart(scId, evseId, helpers.randomBytes32String(), Date.now() / 1000, { from: accounts[1] });
             expect.fail();
         } catch (err) {
             expect(err.message.search('revert') != -1).to.equal(true);
@@ -54,7 +54,6 @@ contract('Charging', function (accounts) {
         const { scId, evseId } = await addLocation(accounts[0]);
         await charging.requestStart(scId, evseId, 0, 20, token.address, 150, { from: accounts[1] });
         const session = await charging.state(scId, evseId);
-        console.log(session);
         expect(session).to.not.equal(undefined);
     });
 
@@ -75,7 +74,7 @@ contract('Charging', function (accounts) {
         expect(allowance.toNumber()).to.equal(200);
 
         const sessionId = helpers.randomBytes32String();
-        const confirmStart = await charging.confirmStart(scId, evseId, sessionId, { from: accounts[0] });
+        const confirmStart = await charging.confirmStart(scId, evseId, sessionId, Date.now() / 1000, { from: accounts[0] });
         console.log('confirmStart gas:', confirmStart.receipt.gasUsed);
 
         // check allowance has been expended after token transfer
@@ -108,7 +107,7 @@ contract('Charging', function (accounts) {
         await charging.requestStart(scId, evseId, 1, 0, token.address, 300, { from: accounts[1] });
 
         const sessionId = helpers.randomBytes32String();
-        await charging.confirmStart(scId, evseId, sessionId, { from: accounts[0] });        
+        await charging.confirmStart(scId, evseId, sessionId, Date.now() / 1000, { from: accounts[0] });        
 
         const balanceControllerBefore = await token.balanceOf(accounts[1]);
         expect(balanceControllerBefore.toNumber()).to.equal(200);

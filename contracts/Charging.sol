@@ -16,6 +16,7 @@ contract Charging is Ownable {
         uint tariffValue;
         address token;
         uint price;
+        uint startTime;
     }
 
     mapping(bytes32 => mapping(bytes32 => Session)) public state;
@@ -50,16 +51,17 @@ contract Charging is Ownable {
 
     function requestStart(bytes32 scId, bytes32 evseId, uint8 tariffId, uint tariffValue, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
-        state[scId][evseId] = Session("", msg.sender, tariffId, tariffValue, tokenAddress, estimatedPrice);
+        state[scId][evseId] = Session("", msg.sender, tariffId, tariffValue, tokenAddress, estimatedPrice, 0);
         emit StartRequested(scId, evseId, msg.sender, tariffId, tariffValue);
         MSPToken token = MSPToken(tokenAddress);
         // user must have tokens even to charge with 0 price
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
 
-    function confirmStart(bytes32 scId, bytes32 evseId, string sessionId) external onlyLocationOwner(scId) {
+    function confirmStart(bytes32 scId, bytes32 evseId, string sessionId, uint startTime) external onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         session.id = sessionId;
+        session.startTime = startTime;
         MSPToken token = MSPToken(session.token);
         token.transferFrom(session.controller, address(this), session.price);
         emit StartConfirmed(scId, evseId, session.controller, sessionId);
@@ -80,7 +82,7 @@ contract Charging is Ownable {
         emit StopConfirmed(scId, evseId, session.controller);
     }
 
-    function chargeDetailRecord(bytes32 scId, bytes32 evseId, uint finalPrice, uint tariffValue, uint startTime, uint endTime) 
+    function chargeDetailRecord(bytes32 scId, bytes32 evseId, uint finalPrice, uint tariffValue, uint endTime) 
     public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         uint difference = session.price - finalPrice;
@@ -91,8 +93,10 @@ contract Charging is Ownable {
         if (difference > 0) {
             token.transfer(session.controller, difference);
         }
-        emit ChargeDetailRecord(scId, evseId, session.controller, session.token, finalPrice, session.tariffId, tariffValue, startTime, endTime);
-        state[scId][evseId] = Session("", address(0), 0, 0, address(0), 0);
+        emit ChargeDetailRecord(
+            scId, evseId, session.controller, session.token, finalPrice, session.tariffId, tariffValue, session.startTime, endTime
+        );
+        state[scId][evseId] = Session("", address(0), 0, 0, address(0), 0, 0);
     }
 
     function logError(bytes32 scId, bytes32 evseId, uint8 errorCode) external onlyLocationOwner(scId) {
