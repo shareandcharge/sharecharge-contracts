@@ -29,7 +29,7 @@ contract('Charging', function (accounts) {
         await token.mint(accounts[1], 500);
         const id = () => helpers.randomBytes32String();
         try {
-            await charging.requestStart(id(), id(), token.address, 100, { from: accounts[1] });
+            await charging.requestStart(id(), id(), 3, 60, token.address, 100, { from: accounts[1] });
             expect.fail();
         } catch (err) {
             expect(err.message.search('revert') != -1).to.equal(true);            
@@ -39,7 +39,7 @@ contract('Charging', function (accounts) {
     it('should only allow owner to call confirmation functions', async () => {
         await token.mint(accounts[1], 500);
         const { scId, evseId } = await addLocation(accounts[0]);
-        const charge = await charging.requestStart(scId, evseId, token.address, 100, { from: accounts[1] });
+        const charge = await charging.requestStart(scId, evseId, 3, 60, token.address, 100, { from: accounts[1] });
 
         try {
             await charging.confirmStart(scId, evseId, helpers.randomBytes32String(), { from: accounts[1] });
@@ -47,6 +47,15 @@ contract('Charging', function (accounts) {
         } catch (err) {
             expect(err.message.search('revert') != -1).to.equal(true);
         }
+    });
+
+    it('should get state of charge', async () => {
+        await token.mint(accounts[1], 500);
+        const { scId, evseId } = await addLocation(accounts[0]);
+        await charging.requestStart(scId, evseId, 0, 20, token.address, 150, { from: accounts[1] });
+        const session = await charging.state(scId, evseId);
+        console.log(session);
+        expect(session).to.not.equal(undefined);
     });
 
     it('should emit charge detail record event at end of charging session', async () => {
@@ -59,7 +68,7 @@ contract('Charging', function (accounts) {
         const { scId, evseId } = await addLocation(accounts[0]);
         
         // console.log(scId, evseId, token.address, 200);
-        const requestStart = await charging.requestStart(scId, evseId, token.address, 200, { from: accounts[1] });
+        const requestStart = await charging.requestStart(scId, evseId, 0, 20, token.address, 200, { from: accounts[1] });
         console.log('requestStart gas:', requestStart.receipt.gasUsed);
 
         const allowance = await token.allowance(accounts[1], charging.address);
@@ -77,7 +86,7 @@ contract('Charging', function (accounts) {
         const confirmStop = await charging.confirmStop(scId, evseId, { from: accounts[0] });
         console.log('confirmStop gas:', confirmStop.receipt.gasUsed);
         
-        const cdr = await charging.chargeDetailRecord(scId, evseId, 200, Date.now());
+        const cdr = await charging.chargeDetailRecord(scId, evseId, 200, 50, Date.now() - 10000, Date.now());
         console.log('chargeDetailRecord gas:', cdr.receipt.gasUsed);
 
         const balanceAfter = await token.balanceOf(accounts[1]);
@@ -96,7 +105,7 @@ contract('Charging', function (accounts) {
         await token.mint(accounts[1], 500);
         const { scId, evseId } = await addLocation(accounts[0]);
 
-        await charging.requestStart(scId, evseId, token.address, 300, { from: accounts[1] });
+        await charging.requestStart(scId, evseId, 1, 0, token.address, 300, { from: accounts[1] });
 
         const sessionId = helpers.randomBytes32String();
         await charging.confirmStart(scId, evseId, sessionId, { from: accounts[0] });        
@@ -106,7 +115,7 @@ contract('Charging', function (accounts) {
 
         await charging.confirmStop(scId, evseId, { from: accounts[0] });
         
-        const result = await charging.chargeDetailRecord(scId, evseId, 225, Date.now());
+        const result = await charging.chargeDetailRecord(scId, evseId, 225, 40, Date.now() - 5000, Date.now());
         
         const balanceControllerAfter = await token.balanceOf(accounts[1]);
         expect(balanceControllerAfter.toNumber()).to.equal(275);
