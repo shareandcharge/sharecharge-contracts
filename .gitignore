@@ -61,3 +61,6 @@ typings/
 build
 coverage.json
 .chaindata
+
+# idea
+.idea
