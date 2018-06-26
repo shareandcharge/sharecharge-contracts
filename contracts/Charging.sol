@@ -25,11 +25,10 @@ contract Charging is Ownable {
     event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopRequested(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
-    event ChargeDetailRecord(bytes32 scId, bytes32 evseId, address controller, address tokenAddress,
+    event ChargeDetailRecord(bytes32 scId, bytes32 evseId, string sessionId, address controller, address tokenAddress,
     uint finalPrice, uint8 tariffId, uint finalTariffValue, uint startTime, uint endTime);
     
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
-    event Debug(address param);
 
     modifier onlyLocationOwner(bytes32 id) {
         require(store.getOwnerById(id) == msg.sender, "Only location owner can call this method");
@@ -94,7 +93,7 @@ contract Charging is Ownable {
             token.transfer(session.controller, difference);
         }
         emit ChargeDetailRecord(
-            scId, evseId, session.controller, session.token, finalPrice, session.tariffId, tariffValue, session.startTime, endTime
+            scId, evseId, session.id, session.controller, session.token, finalPrice, session.tariffId, tariffValue, session.startTime, endTime
         );
         state[scId][evseId] = Session("", address(0), 0, 0, address(0), 0, 0);
     }
