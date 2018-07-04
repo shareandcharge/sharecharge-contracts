@@ -5,6 +5,8 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract ExternalStorage is Ownable {
 
     struct ChargePointOperator {
+
+        //Location is a group of one or more EVSEs that belong together geographically or spatially.
         mapping(bytes32 => bytes32) locations;
         bytes32[] scIds;
         bytes32 tariffs;
