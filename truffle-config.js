@@ -13,7 +13,7 @@ module.exports = {
             gas: 4000000
         },
         pilot: {
-            host: '52.59.207.123',
+            host: '18.185.85.20',
             port: 8545,
             from: "0x00bd138abd70e2f00903268f3db08f2d25677c9e",
             gasPrice: 0,
