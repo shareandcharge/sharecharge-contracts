@@ -6,7 +6,6 @@
     "test": "test"
   },
   "scripts": {
-    "install": "mkdirp ~/.sharecharge/ && cp contract.defs.local.json ~/.sharecharge/",
     "lint": "solium -d contracts",
     "cover": "solidity-coverage",
     "test": "truffle test",
