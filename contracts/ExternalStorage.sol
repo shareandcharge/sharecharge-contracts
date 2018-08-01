@@ -15,36 +15,40 @@ contract ExternalStorage is Ownable {
     mapping(address => ChargePointOperator) private CPOs;
     mapping(bytes32 => address) public ownerOf;
 
-    event LocationAdded(bytes32 scId);
-    event LocationUpdated(bytes32 scId);
-    event EvseAvailabilityUpdated(bytes32 scId, bytes32 evseId, bool isAvailable);
+    event LocationAdded(address cpo, bytes32 scId);
+    event LocationUpdated(address cpo, bytes32 scId);
+    event LocationDeleted(address cpo, bytes32 scId);
+    event TariffsAdded(address cpo);
+    event TariffsUpdated(address cpo);
 
     function addLocation(bytes32 scId, bytes32 externalHash) public {
         require(CPOs[msg.sender].locations[scId] == bytes32(0), "Location with that Share & Charge ID already exists");
         CPOs[msg.sender].locations[scId] = externalHash;
         CPOs[msg.sender].scIds.push(scId);
         ownerOf[scId] = msg.sender;
-        emit LocationAdded(scId);
+        emit LocationAdded(msg.sender, scId);
     }
 
     function updateLocation(bytes32 scId, bytes32 newHash) public {
         require(CPOs[msg.sender].locations[scId] != bytes32(0), "Location with that Share & Charge ID does not exist");
         CPOs[msg.sender].locations[scId] = newHash;
-        emit LocationUpdated(scId);
-    }
-
-    function updateEvseAvailability(bytes32 scId, bytes32 evseId, bool isAvailable) public {
-        emit EvseAvailabilityUpdated(scId, evseId, isAvailable);
+        if (newHash == bytes32(0)) {
+            emit LocationDeleted(msg.sender, scId);
+        } else {
+            emit LocationUpdated(msg.sender, scId);
+        }
     }
 
     function addTariffs(bytes32 externalHash) public {
         require(CPOs[msg.sender].tariffs == bytes32(0), "Tariffs already exist for this Charge Point Operator");
         CPOs[msg.sender].tariffs = externalHash;
+        emit TariffsAdded(msg.sender);
     }
 
     function updateTariffs(bytes32 newHash) public {
         require(CPOs[msg.sender].tariffs != bytes32(0), "No tariffs found for this Charge Point Operator");
         CPOs[msg.sender].tariffs = newHash;
+        emit TariffsUpdated(msg.sender);
     }
 
     function getLocationById(address cpo, bytes32 scId) view public returns (bytes32) {

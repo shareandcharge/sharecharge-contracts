@@ -85,17 +85,6 @@ contract('ExternalStorage', function (accounts) {
         });
     })
 
-    context('#updateEvseAvailability()', () => {
-
-        it('should emit event when evse changes status', async () => {
-            const scId = helpers.randomBytes32String();
-            const evseId = helpers.randomBytes32String();
-            const result = await storage.updateEvseAvailability(scId, evseId, true);
-            console.log(result.receipt.gasUsed);
-            expect(result.logs.length).to.equal(1);
-        });
-    });
-
     context('#getters', () => {
         it('should return owner', async () => {
             const loc = newLocation();
