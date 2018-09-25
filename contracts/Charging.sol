@@ -28,7 +28,7 @@ contract Charging is Ownable {
     event StopRequested(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
     event ChargeDetailRecord(bytes32 scId, bytes32 evseId, string sessionId, address controller, address tokenAddress,
-        uint finalPrice, uint8 tariffId, uint finalTariffValue, uint startTime, uint endTime);
+    uint finalPrice, uint8 tariffId, uint finalTariffValue, uint startTime, uint endTime);
 
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
 
@@ -42,7 +42,7 @@ contract Charging is Ownable {
         store = ExternalStorage(storageAddress);
     }
 
-    function getStorageAddress() view public returns (address storageAddress) {
+    function getStorageAddress() public view returns (address storageAddress) {
         return address(store);
     }
 

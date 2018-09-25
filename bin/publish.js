@@ -3,7 +3,7 @@ const Web3 = require('web3');
 const contract = require("truffle-contract");
 
 const network = process.argv[2] || "development";
-const config = require('../truffle-config').networks[network];
+const config = require('../truffle').networks[network];
 const provider = config.provider ? config.provider() : new Web3.providers.HttpProvider(`http://${config.host}:${config.port}`);
 const web3 = new Web3(provider);
 
