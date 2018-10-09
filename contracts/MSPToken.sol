@@ -12,7 +12,7 @@ contract MSPToken is MintableToken, StandardBurnableToken {
     address public chargingContract;
 
     modifier restricted() {
-        require(msg.sender == owner || msg.sender == chargingContract);
+        require(msg.sender == owner || msg.sender == chargingContract, "Unauthorized to call this function");
         _;
     }
 
