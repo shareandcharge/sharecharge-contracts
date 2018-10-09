@@ -22,8 +22,7 @@ contract Charging is Ownable {
     //locationId -> evesid (each location can have multiple charging sessions) -> session
     mapping(bytes32 => mapping(bytes32 => Session)) public state;
 
-
-    event StartRequested(bytes32 scId, bytes32 evseId, address controller, uint8 tariffId, uint tariffValue);
+    event StartRequested(bytes32 scId, bytes32 evseId, bytes32 connectorId, address controller, uint8 tariffId, uint tariffValue, uint estimatedPrice);
     event StartConfirmed(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopRequested(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
@@ -46,11 +45,10 @@ contract Charging is Ownable {
         return address(store);
     }
 
-
-    function requestStart(bytes32 scId, bytes32 evseId, uint8 tariffId, uint tariffValue, address tokenAddress, uint estimatedPrice) external {
+    function requestStart(bytes32 scId, bytes32 evseId, bytes32 connectorId, uint8 tariffId, uint tariffValue, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
         state[scId][evseId] = Session("", msg.sender, tariffId, tariffValue, tokenAddress, estimatedPrice, 0);
-        emit StartRequested(scId, evseId, msg.sender, tariffId, tariffValue);
+        emit StartRequested(scId, evseId, connectorId, msg.sender, tariffId, tariffValue, estimatedPrice);
         MSPToken token = MSPToken(tokenAddress);
         // user must have tokens even to charge with 0 price
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);

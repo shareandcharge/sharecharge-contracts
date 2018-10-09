@@ -21,15 +21,16 @@ contract('Charging', function (accounts) {
         const scId = helpers.randomBytes32String();
         const hash = helpers.randomBytes32String();
         const evseId = "0x42452d4245432d45303431353033303031";
+        const connectorId = "0x01";
         await store.addLocation(scId, hash, { from: owner });
-        return { scId, evseId };
+        return { scId, evseId, connectorId };
     }
 
     it('should not allow request start on unregistered location', async () => {
         await token.mint(accounts[1], 500);
         const id = () => helpers.randomBytes32String();
         try {
-            await charging.requestStart(id(), id(), 3, 60, token.address, 100, { from: accounts[1] });
+            await charging.requestStart(id(), id(), id(), 3, 60, token.address, 100, { from: accounts[1] });
             expect.fail();
         } catch (err) {
             expect(err.message.search('revert') != -1).to.equal(true);            
@@ -38,8 +39,8 @@ contract('Charging', function (accounts) {
 
     it('should only allow owner to call confirmation functions', async () => {
         await token.mint(accounts[1], 500);
-        const { scId, evseId } = await addLocation(accounts[0]);
-        const charge = await charging.requestStart(scId, evseId, 3, 60, token.address, 100, { from: accounts[1] });
+        const { scId, evseId, connectorId } = await addLocation(accounts[0]);
+        const charge = await charging.requestStart(scId, evseId, connectorId, 3, 60, token.address, 100, { from: accounts[1] });
 
         try {
             await charging.confirmStart(scId, evseId, helpers.randomBytes32String(), Date.now() / 1000, { from: accounts[1] });
@@ -51,8 +52,8 @@ contract('Charging', function (accounts) {
 
     it('should get state of charge', async () => {
         await token.mint(accounts[1], 500);
-        const { scId, evseId } = await addLocation(accounts[0]);
-        await charging.requestStart(scId, evseId, 0, 20, token.address, 150, { from: accounts[1] });
+        const { scId, evseId, connectorId } = await addLocation(accounts[0]);
+        await charging.requestStart(scId, evseId, connectorId, 0, 20, token.address, 150, { from: accounts[1] });
         const session = await charging.state(scId, evseId);
         expect(session).to.not.equal(undefined);
     });
@@ -64,10 +65,10 @@ contract('Charging', function (accounts) {
         const balanceBefore = await token.balanceOf(accounts[1]);
         expect(balanceBefore.toNumber()).to.equal(500);
         
-        const { scId, evseId } = await addLocation(accounts[0]);
+        const { scId, evseId, connectorId } = await addLocation(accounts[0]);
         
         // console.log(scId, evseId, token.address, 200);
-        const requestStart = await charging.requestStart(scId, evseId, 0, 20, token.address, 200, { from: accounts[1] });
+        const requestStart = await charging.requestStart(scId, evseId, connectorId, 0, 20, token.address, 200, { from: accounts[1] });
         console.log('requestStart gas:', requestStart.receipt.gasUsed);
 
         const allowance = await token.allowance(accounts[1], charging.address);
@@ -102,9 +103,9 @@ contract('Charging', function (accounts) {
 
     it('Should correctly refund driver tokens upon early stop', async () => {
         await token.mint(accounts[1], 500);
-        const { scId, evseId } = await addLocation(accounts[0]);
+        const { scId, evseId, connectorId } = await addLocation(accounts[0]);
 
-        await charging.requestStart(scId, evseId, 1, 0, token.address, 300, { from: accounts[1] });
+        await charging.requestStart(scId, evseId, connectorId, 1, 0, token.address, 300, { from: accounts[1] });
 
         const sessionId = helpers.randomBytes32String();
         await charging.confirmStart(scId, evseId, sessionId, Date.now() / 1000, { from: accounts[0] });        
