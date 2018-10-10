@@ -33,6 +33,7 @@ contract ExternalStorage is Ownable {
         require(CPOs[msg.sender].locations[scId] != bytes32(0), "Location with that Share & Charge ID does not exist");
         CPOs[msg.sender].locations[scId] = newHash;
         if (newHash == bytes32(0)) {
+            ownerOf[scId] = address(0);
             emit LocationDeleted(msg.sender, scId);
         } else {
             emit LocationUpdated(msg.sender, scId);

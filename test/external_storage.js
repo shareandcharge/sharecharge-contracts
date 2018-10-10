@@ -59,6 +59,16 @@ contract('ExternalStorage', function (accounts) {
             expect(storedHash).to.equal(newHash);
         });
 
+        it('should remove location from ownerOf mapping', async () => {
+            const loc = newLocation();
+            await storage.addLocation(loc.id, loc.hash);
+            const owner = await storage.ownerOf(loc.id);
+            console.log('owner:', owner);
+            await storage.updateLocation(loc.id, helpers.emptyBytesString(32));
+            const newOwner = await storage.ownerOf(loc.id);
+            expect(newOwner).to.equal(helpers.emptyBytesString(20));
+        });
+
     });
 
     context('#addTariffs()', () => {
