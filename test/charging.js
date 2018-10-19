@@ -16,7 +16,7 @@ contract('Charging', function (accounts) {
     token.setAccess(charging.address);
   })
 
-  it.only('setAccess should be restricted to the owner', async () => {
+  it('setAccess should be restricted to the owner', async () => {
     try {
       await token.setAccess(charging.address, {from: accounts[2]})
       expect.fail()
@@ -41,7 +41,7 @@ contract('Charging', function (accounts) {
     return {scId, evseId, connectorId}
   }
 
-  it.only('should not allow request start on unregistered location', async () => {
+  it('should not allow request start on unregistered location', async () => {
     await token.mint(accounts[1], 500)
     const id = () => helpers.randomBytes32String()
     try {
@@ -52,7 +52,7 @@ contract('Charging', function (accounts) {
     }
   })
 
-  it.only('should only allow owner to call confirmation functions', async () => {
+  it('should only allow owner to call confirmation functions', async () => {
     await token.mint(accounts[1], 500)
     const {scId, evseId, connectorId} = await addLocation(accounts[0])
     expect(await token.chargingContract()).to.equal(charging.address)
