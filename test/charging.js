@@ -21,14 +21,7 @@ contract('Charging', function (accounts) {
       await token.setAccess(charging.address, {from: accounts[2]})
       expect.fail()
     } catch (e) {
-      expect(e).to.not.be.null
-    }
-    try {
-      await token.setAccess(accounts[2], {from: await token.owner()})
-      await token.restrictedApproval(accounts[3], accounts[2], 1000, {from: accounts[2]})
-      expect.fail()
-    } catch (e) {
-      expect(e.message).to.contain(' Owner\'s balance is not greater than or equal to the value being approved')
+      expect(e.message).to.contain('VM Exception while processing transaction: revert')
     }
   })
 
