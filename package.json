@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
   "devDependencies": {
+    "ganache-cli": "^6.1.8",
     "openzeppelin-solidity": "1.10.0",
     "solium": "^1.1.7",
     "truffle": "^5.0.0-beta.1",

@@ -12,7 +12,7 @@ contract MSPToken is MintableToken, StandardBurnableToken {
     address public chargingContract;
 
     modifier restricted() {
-        require(msg.sender == owner || msg.sender == chargingContract, "Unauthorized to call this function");
+        require(msg.sender == owner || msg.sender == chargingContract, "MSPToken-restricted Unauthorized to call this function");
         _;
     }
 
@@ -21,7 +21,7 @@ contract MSPToken is MintableToken, StandardBurnableToken {
         symbol = _symbol;
     }
 
-    function setAccess(address _chargingAddress) external {
+    function setAccess(address _chargingAddress) external onlyOwner {
         chargingContract = _chargingAddress;
     }
 
