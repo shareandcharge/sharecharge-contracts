@@ -6,12 +6,12 @@ const network = process.argv[2] || "development";
 const config = require('../truffle').networks[network];
 const provider = config.provider ? config.provider() : new Web3.providers.HttpProvider(`http://${config.host}:${config.port}`);
 const web3 = new Web3(provider);
-console.log('web3:', web3.currentProvider);
 
-const contractNames = ['Charging', 'MSPToken', 'ExternalStorage'];
+const contractNames = ['Charging', 'EVToken', 'MSPToken', 'ExternalStorage'];
 
 const isDevelopment = network === "development";
-const isProduction = network === "production";
+
+console.log('dev:', isDevelopment);
 
 async function publish() {
     const promises = contractNames.map(async contractName => {
@@ -35,7 +35,7 @@ async function publish() {
             abi: contract.abi,
             address: contract.address
         }
-        if (!isProduction || contract.name === 'MSPToken') {
+        if (isDevelopment || contract.name === 'MSPToken') {
             config[contract.name].bytecode = contract.bytecode;
         }
     });

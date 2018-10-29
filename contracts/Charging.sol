@@ -2,12 +2,13 @@ pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./ExternalStorage.sol";
+import "./EVToken.sol";
 import "./MSPToken.sol";
-
 
 contract Charging is Ownable {
 
     ExternalStorage private store;
+    EVToken private evt;
 
     struct Session {
         string id; // for cpo backend to stop the session
@@ -36,16 +37,34 @@ contract Charging is Ownable {
         _;
     }
 
-    // Points to the address to the storage contract
-    function setStorageAddress(address storageAddress) public onlyOwner {
-        store = ExternalStorage(storageAddress);
+    constructor(address _store, address _evt) public {
+        store = ExternalStorage(_store);
+        evt = EVToken(_evt);
     }
 
+
+    // Get/Set storage address following initial contract deployment
     function getStorageAddress() public view returns (address storageAddress) {
         return address(store);
     }
 
+    function setStorageAddress(address storageAddress) public onlyOwner {
+        store = ExternalStorage(storageAddress);
+    }
+
+
+    // get/set evt address following initial contract deployment
+    function getEVTokenAddress() public view returns (address evtAddress) {
+        return address(evt);
+    }
+
+    function setEVTokenAddress(address evtAddress) public onlyOwner {
+        evt = EVToken(evtAddress);
+    }
+
+
     function requestStart(bytes32 scId, bytes32 evseId, bytes32 connectorId, uint8 tariffType, uint chargeUnits, address tokenAddress, uint estimatedPrice) external {
+        require(evt.balanceOf(msg.sender) > 0, "Required EV Token balance: 1");
         require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
         state[scId][evseId] = Session("", msg.sender, tariffType, chargeUnits, tokenAddress, estimatedPrice, 0);
         emit StartRequested(scId, evseId, connectorId, msg.sender, tariffType, chargeUnits, estimatedPrice);
