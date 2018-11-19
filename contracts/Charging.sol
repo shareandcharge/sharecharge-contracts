@@ -2,20 +2,19 @@ pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./ExternalStorage.sol";
-import "./EVToken.sol";
 import "./MSPToken.sol";
+
 
 contract Charging is Ownable {
 
     ExternalStorage private store;
-    EVToken private evt;
 
     struct Session {
         string id; // for cpo backend to stop the session
         address controller; // EVdriver wallet address
         uint8 tariffType;  // on tariffs there's an id that we can match to location.
         uint chargeUnits; // unit to be charged on that tariff
-        address mspToken; // the addr of the contract to pay for the charge
+        address tokenAddress; // the addr of the contract to pay for the charge
         uint estimatedPrice; // the tokens put for the charge
         uint startTime; // unix time
     }
@@ -28,7 +27,7 @@ contract Charging is Ownable {
     event StopRequested(bytes32 scId, bytes32 evseId, address controller, string sessionId);
     event StopConfirmed(bytes32 scId, bytes32 evseId, address controller);
     event ChargeDetailRecord(bytes32 scId, bytes32 evseId, string sessionId, address controller, uint8 tariffType, 
-    uint chargedUnits, uint startTime, uint endTime, address mspToken, uint finalPrice);
+    uint chargedUnits, uint startTime, uint endTime, address tokenAddress, uint finalPrice);
 
     event Error(bytes32 scId, bytes32 evseId, address controller, uint8 errorCode);
 
@@ -37,38 +36,20 @@ contract Charging is Ownable {
         _;
     }
 
-    constructor(address _store, address _evt) public {
-        store = ExternalStorage(_store);
-        evt = EVToken(_evt);
-    }
-
-
-    // Get/Set storage address following initial contract deployment
-    function getStorageAddress() public view returns (address storageAddress) {
-        return address(store);
-    }
-
+    // Points to the address to the storage contract
     function setStorageAddress(address storageAddress) public onlyOwner {
         store = ExternalStorage(storageAddress);
     }
 
-
-    // get/set evt address following initial contract deployment
-    function getEVTokenAddress() public view returns (address evtAddress) {
-        return address(evt);
+    function getStorageAddress() public view returns (address storageAddress) {
+        return address(store);
     }
 
-    function setEVTokenAddress(address evtAddress) public onlyOwner {
-        evt = EVToken(evtAddress);
-    }
-
-
-    function requestStart(bytes32 scId, bytes32 evseId, bytes32 connectorId, uint8 tariffType, uint chargeUnits, address mspToken, uint estimatedPrice) external {
-        require(evt.balanceOf(msg.sender) > 0, "Required EV Token balance: 1");
+    function requestStart(bytes32 scId, bytes32 evseId, bytes32 connectorId, uint8 tariffType, uint chargeUnits, address tokenAddress, uint estimatedPrice) external {
         require(store.getOwnerById(scId) != address(0), "Location with that Share & Charge ID does not exist");
-        state[scId][evseId] = Session("", msg.sender, tariffType, chargeUnits, mspToken, estimatedPrice, 0);
+        state[scId][evseId] = Session("", msg.sender, tariffType, chargeUnits, tokenAddress, estimatedPrice, 0);
         emit StartRequested(scId, evseId, connectorId, msg.sender, tariffType, chargeUnits, estimatedPrice);
-        MSPToken token = MSPToken(mspToken);
+        MSPToken token = MSPToken(tokenAddress);
         // user must have tokens even to charge with 0 price
         token.restrictedApproval(msg.sender, address(this), estimatedPrice);
     }
@@ -80,7 +61,7 @@ contract Charging is Ownable {
         Session storage session = state[scId][evseId];
         session.id = sessionId;
         session.startTime = startTime;
-        MSPToken token = MSPToken(session.mspToken);
+        MSPToken token = MSPToken(session.tokenAddress);
         token.transferFrom(session.controller, address(this), session.estimatedPrice);
         emit StartConfirmed(scId, evseId, session.controller, sessionId);
     }
@@ -100,7 +81,7 @@ contract Charging is Ownable {
     public onlyLocationOwner(scId) {
         Session storage session = state[scId][evseId];
         uint difference = session.estimatedPrice - finalPrice;
-        MSPToken token = MSPToken(session.mspToken);
+        MSPToken token = MSPToken(session.tokenAddress);
         // account for estimate being too low
         // use burnFrom in StandardBurnableToken to remove remaining approval
         token.transfer(msg.sender, finalPrice);
@@ -108,7 +89,7 @@ contract Charging is Ownable {
             token.transfer(session.controller, difference);
         }
         emit ChargeDetailRecord(
-            scId, evseId, session.id, session.controller, session.tariffType, chargedUnits, session.startTime, endTime, session.mspToken, finalPrice
+            scId, evseId, session.id, session.controller, session.tariffType, chargedUnits, session.startTime, endTime, session.tokenAddress, finalPrice
         );
         state[scId][evseId] = Session("", address(0), 0, 0, address(0), 0, 0);
     }
