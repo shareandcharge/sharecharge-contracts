@@ -61,7 +61,7 @@ typings/
 build
 coverage.json
 .chaindata
-pwd
 
 # idea
 .idea
+pwd
