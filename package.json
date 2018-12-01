@@ -1,9 +1,12 @@
 {
-  "name": "@motionwerk/sharecharge-contracts",
-  "version": "0.8.1",
+  "name": "@shareandcharge/sharecharge-contracts",
+  "version": "0.9.0",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "lint": "solium -d contracts",
@@ -18,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/motionwerkGmbH/sharecharge-contracts.git"
+    "url": "git+https://github.com/shareandcharge/sharecharge-contracts.git"
   },
-  "author": "MotionWerk GmbH",
+  "author": "Share & Charge foundation",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/motionwerkGmbH/sharecharge-contracts/issues"
+    "url": "https://github.com/shareandcharge/sharecharge-contracts/issues"
   },
-  "homepage": "https://github.com/motionwerkGmbH/sharecharge-contracts#readme",
+  "homepage": "https://github.com/shareandcharge/sharecharge-contracts#readme",
   "devDependencies": {
     "ganache-cli": "^6.1.8",
     "openzeppelin-solidity": "1.10.0",
@@ -34,6 +37,7 @@
     "truffle-contract": "^4.0.0-beta.1"
   },
   "dependencies": {
+    "bignumber.js": "^8.0.1",
     "mkdirp": "^0.5.1"
   }
 }

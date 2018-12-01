@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 file=contract.defs.local.json
-path=node_modules/@motionwerk/sharecharge-contracts/contract.defs.local.json
+path=node_modules/@shareandcharge/sharecharge-contracts/contract.defs.local.json
 
 cp $file ../sharecharge-lib/$path
 cp $file ../sharecharge-core-client/$path
