@@ -9,14 +9,14 @@ Share&Charge eMobility smart contracts written in Solidity for Ethereum-based ne
 The contract definitions are available as an NPM package for programmatic access and usage:
 
 ```
-npm install @motionwerk/sharecharge-contracts
+npm install @shareandcharge/sharecharge-contracts
 ```
 
 ## Usage
 
 ```ts
 const stage = 'tobalaba';
-const contracts = require(`@motionwerk/sharecharge-contracts/contract.defs.${stage}.json`);
+const contracts = require(`@shareandcharge/sharecharge-contracts/contract.defs.${stage}.json`);
 ```
 
 The contract definition for each stage contains address, abi and bytecode for the Charging, ExternalStorage and MSPToken contracts.
