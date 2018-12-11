@@ -1,9 +1,16 @@
 module.exports = {
+  compilers: {
+    solc: {
+      version: "0.4.25",   // Change this to whatever you need
+      docker: true,
+    }
+  },
+
   networks: {
     development: {
       host: 'localhost',
-      port: 8545,
-      network_id: '*',
+      port: 8544,
+      network_id: '9',
       gas: 4000000
     },
     test: {

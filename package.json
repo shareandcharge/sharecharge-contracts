@@ -13,6 +13,7 @@
     "cover": "solidity-coverage",
     "test": "truffle test",
     "migrate": "truffle migrate",
+    "ganache": "ganache-cli -m \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\" --port 8544 --accounts 20 --network-id 9 --db=./ganache-db",
     "geth-dev": "geth --dev --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
     "parity-dev": "parity --config network/dev.toml",
     "publish-dev": "node bin/publish.js",
@@ -30,10 +31,11 @@
   },
   "homepage": "https://github.com/shareandcharge/sharecharge-contracts#readme",
   "devDependencies": {
-    "ganache-cli": "^6.1.8",
-    "openzeppelin-solidity": "1.10.0",
+    "ganache-cli": "^6.2.3",
+    "jest": "^23.6.0",
+    "openzeppelin-solidity": "^2.0.0",
     "solium": "^1.1.7",
-    "truffle": "^5.0.0-beta.1",
+    "truffle": "^5.0.0-beta.2",
     "truffle-contract": "^4.0.0-beta.1"
   },
   "dependencies": {
