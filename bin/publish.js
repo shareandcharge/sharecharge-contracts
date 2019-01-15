@@ -8,7 +8,7 @@ const provider = config.provider ? config.provider() : new Web3.providers.HttpPr
 const web3 = new Web3(provider)
 console.log('web3:', web3.currentProvider)
 
-const contractNames = ['Settlement']
+const contractNames = ['Settlement', 'EurToken', 'UsdToken']
 
 const isDevelopment = network === 'development'
 const isProduction = network === 'production'
