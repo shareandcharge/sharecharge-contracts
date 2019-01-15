@@ -1,7 +1,7 @@
 module.exports = {
   compilers: {
     solc: {
-      version: "0.4.25",   // Change this to whatever you need
+      version: "0.5.0",
       docker: true,
     }
   },
@@ -39,7 +39,7 @@ module.exports = {
     poa: {
       host: 'node35590-env-2351721.hidora.com',
       port: 11009,
-      network_id: '0x11',
+      network_id: '17',
       from: "0x00a329c0648769a73afac7f9381e08fb43dbea72",
       gas: 4000000
     },

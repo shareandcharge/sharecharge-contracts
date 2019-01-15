@@ -3,8 +3,8 @@ chain = "network/dev.json"
 light = false
 
 [account]
-unlock = ["0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"]
-password = ["network/pwd"]
+unlock = ["0x37e0191fca9d79766b99de3b8512491783913a08"]
+password = ["/Users/mroon/Documents/projects/sharecharge-contracts/network/pwd"]
 
 [network]
 port = 30303
@@ -28,7 +28,7 @@ hosts = ["none"]
 
 [ipc]
 disable = false
-path = "$HOME/.local/share/io.parity.ethereum/jsonrpc.ipc"
+path = "network/jsonrpc.ipc"
 apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "parity_accounts", "traces", "rpc", "shh", "shh_pubsub"]
 
 [secretstore]
@@ -38,7 +38,7 @@ http_interface = "local"
 http_port = 8082
 interface = "local"
 port = 8083
-path = "$HOME/.local/share/io.parity.ethereum/secretstore"
+path = "network/keys"
 
 [ipfs]
 enable = false
@@ -48,8 +48,8 @@ cors = []
 hosts = ["none"]
 
 [mining]
-author = "0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"
-engine_signer = "0x67a273a0fb05e9cdc913f437a952e7e8af68f2b6"
+author = "0x37e0191fca9d79766b99de3b8512491783913a08"
+engine_signer = "0x37e0191fca9d79766b99de3b8512491783913a08"
 force_sealing = true
 
 [misc]
