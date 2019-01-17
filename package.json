@@ -8,7 +8,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "contracts.js",
+  "main": "main.js",
+  "files": ["*", "lib/*"],
   "scripts": {
     "compile": "truffle compile",
     "test": "rm -Rf build && truffle test",
@@ -34,6 +35,7 @@
   "homepage": "https://github.com/shareandcharge/sharecharge-contracts#readme",
   "devDependencies": {
     "ganache-cli": "^6.2.5",
+    "mkdirp": "^0.5.1",
     "openzeppelin-solidity": "^2.1.1",
     "solium": "^1.2.2",
     "truffle": "^5.0.1",
@@ -43,7 +45,6 @@
   "dependencies": {
     "bignumber.js": "^8.0.2",
     "ethers": "^4.0.20",
-    "mkdirp": "^0.5.1",
     "web3-utils": "^1.0.0-beta.37"
   }
 }

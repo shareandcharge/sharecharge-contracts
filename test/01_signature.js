@@ -16,6 +16,7 @@
 
 const ethers = require('ethers')
 const BigNumber = require('bignumber.js')
+const sign = require('../lib/signTransfer')
 
 var CheckSignature = artifacts.require('CheckSignature')
 
@@ -44,11 +45,9 @@ contract('CheckSignature', function (accounts) {
   })
 
   it('gets the signer from signed hash', async () => {
-    let messageHashBytes = ethers.utils.arrayify('0x' + txMsg)
-    let flatSig = await wallet.signMessage(messageHashBytes)
-    let sig = ethers.utils.splitSignature(flatSig)
+    let sig = await sign(accounts[1], '2e28', accounts[2], wallet)
     assert.equal(account.toLowerCase(),
-      (await sigCheck.getSigner(messageHashBytes, sig.v, sig.r, sig.s)).toLowerCase())
+      (await sigCheck.getSigner(sig.hash, sig.v, sig.r, sig.s)).toLowerCase())
   })
 
 })

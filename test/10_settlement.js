@@ -16,6 +16,7 @@
 
 const ethers = require('ethers')
 const BigNumber = require('bignumber.js')
+const sign = require('../lib/signTransfer')
 
 var TestToken = artifacts.require('TestToken')
 var Settlement = artifacts.require('Settlement')
@@ -48,12 +49,23 @@ contract('Settlement', function (accounts) {
   })
 
   it('can transfer tokens given a signed transfer message', async () => {
-    const txMsg = web3.utils.soliditySha3(accounts[1], toBN('2e28'), token.address)
-    let messageHashBytes = ethers.utils.arrayify(txMsg)
-    let flatSig = await wallet.signMessage(messageHashBytes)
-    let sig = ethers.utils.splitSignature(flatSig)
+    let sig = await sign(accounts[1], '2e28', token.address, wallet)
 
     await settlement.transfer(accounts[1], toBN('2e28'), token.address, sig.v, sig.r, sig.s, {from: accounts[2]})
+    assert.equal((await token.balanceOf(accounts[1])).toString(), toBN('2e28').toString())
+    assert.equal((await settlement.tokenBalances(token.address, wallet.address)).toString(), toBN('3e28').toString())
+
+  })
+
+  it('reverts the transfer on insufficient funds', async () => {
+    let sig = await sign(accounts[1], '2e29', token.address, wallet)
+
+    try {
+      await settlement.transfer(accounts[1], toBN('2e29'), token.address, sig.v, sig.r, sig.s, {from: accounts[2]})
+      assert.fail()
+    } catch (e) {
+      assert.equal(e.message, 'Returned error: VM Exception while processing transaction: revert')
+    }
     assert.equal((await token.balanceOf(accounts[1])).toString(), toBN('2e28').toString())
     assert.equal((await settlement.tokenBalances(token.address, wallet.address)).toString(), toBN('3e28').toString())
 
