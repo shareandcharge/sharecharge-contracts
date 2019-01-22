@@ -1,8 +1,11 @@
+var HDWalletProvider = require("truffle-hdwallet-provider")
+const MNEMONIC = 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
+
 module.exports = {
   compilers: {
     solc: {
       version: "0.5.0",
-      docker: true,
+      docker: false,
     }
   },
 
@@ -11,7 +14,7 @@ module.exports = {
       host: 'localhost',
       port: 8544,
       network_id: '9',
-      gas: 4000000
+      gas: 8000000
     },
     local: {
       protocol: 'http',
@@ -46,12 +49,27 @@ module.exports = {
       network_id: '*',
       gas: 4000000
     },
+    local_tobalaba: {
+      protocol: 'http',
+      provider: function() {
+        return new HDWalletProvider("CAB468AF941365618E45836E3C4E08F53A330C87C37941F011F68BA3D448C47B", "http://localhost:8545")
+      },
+      gasPrice: 0,
+      network_id: '*',
+      gas: 4000000
+    },
     poa: {
       protocol: 'http',
       host: 'node35590-env-2351721.hidora.com',
       port: 11009,
       network_id: '17',
       from: "0x00a329c0648769a73afac7f9381e08fb43dbea72",
+      gas: 4000000
+    },
+    poa_hd: {
+      provider: () => new HDWalletProvider(MNEMONIC, "http://node35590-env-2351721.hidora.com:11009"),
+      network_id: '17',
+      from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
       gas: 4000000
     },
     poalocal: {
