@@ -17,6 +17,12 @@ contract Settlement is Ownable {
     mapping(address => mapping(address => uint256)) public tokenBalances;
     mapping(address => Withdrawal) withdrawals;
 
+    // the owner can transfer arbitrary token amounts. this should only be used in extreme cases
+    function transferTokens(address recipient, uint256 amount, address token) public onlyOwner {
+        IERC20(token).transfer(recipient, amount);
+    }
+
+    // provision an account. the recipient is the address of the future spender
     function transferInto(address recipient, uint256 amount, address token) public {
         //get the tokens
         IERC20(token).transferFrom(msg.sender, address(this), amount);

@@ -49,10 +49,9 @@ module.exports = {
       network_id: '*',
       gas: 4000000
     },
-    local_tobalaba: {
-      protocol: 'http',
+    hd_tobalaba: {
       provider: function() {
-        return new HDWalletProvider("CAB468AF941365618E45836E3C4E08F53A330C87C37941F011F68BA3D448C47B", "http://localhost:8545")
+        return new HDWalletProvider("CAB468AF941365618E45836E3C4E08F53A330C87C37941F011F68BA3D448C47B", "http://node38817-test-cpo-api.hidora.com:11076")
       },
       gasPrice: 0,
       network_id: '*',

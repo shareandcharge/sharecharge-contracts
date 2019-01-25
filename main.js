@@ -1,7 +1,7 @@
 const ethers = require('ethers')
 const contracts = require('./lib/contracts')
 const sign = require('./lib/signTransfer')
-const {networks} = require('./truffle')
+const {networks} = require('./networks')
 const {toBN} = require('./lib/utils')
 
 class SnC {

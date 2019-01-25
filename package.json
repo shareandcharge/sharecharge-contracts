@@ -1,6 +1,6 @@
 {
   "name": "@shareandcharge/sharecharge-contracts",
-  "version": "0.10.7",
+  "version": "0.10.8",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
