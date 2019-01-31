@@ -1,4 +1,3 @@
-var HDWalletProvider = require("truffle-hdwallet-provider")
 const MNEMONIC = 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
 
 module.exports = {
@@ -20,7 +19,6 @@ module.exports = {
       protocol: 'http',
       host: 'node38817-test-cpo-api.hidora.com',
       port: 11076,
-      gasPrice: 0,
       network_id: '*',
       gas: 4000000
     },
@@ -28,7 +26,6 @@ module.exports = {
       protocol: 'http',
       host: '10.102.4.68',
       port: 8545,
-      gasPrice: 0,
       network_id: '*',
       gas: 4000000
     },

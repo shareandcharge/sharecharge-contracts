@@ -1,6 +1,6 @@
 {
   "name": "@shareandcharge/sharecharge-contracts",
-  "version": "0.10.8",
+  "version": "0.10.11",
   "description": "Share & Charge smart contracts",
   "directories": {
     "test": "test"
@@ -23,7 +23,7 @@
     "ganache": "ganache-cli -m \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\" --port 8544 --accounts 20 --networkId=9 --gasLimit=10000000",
     "geth-dev": "geth --dev --networkid=9 --datadir=../.chaindata --dev.period 1 --rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi=eth,personal,net,debug,shh --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi=eth,personal,net,pubsub,shh",
     "parity-dev": "parity --config $PROJECT/network/dev.toml",
-    "publish-dev": "node bin/publish.js",
+    "publish-dev": "truffle migrate && node bin/publish.js",
     "publish-test": "node bin/publish.js test",
     "publish-production": "node bin/publish.js production"
   },
@@ -38,8 +38,14 @@
   },
   "homepage": "https://github.com/shareandcharge/sharecharge-contracts#readme",
   "devDependencies": {
+    "apollo-client": "^2.4.12",
+    "apollo-link": "^1.2.6",
+    "apollo-link-http": "^1.5.9",
     "ganache-cli": "^6.2.5",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
     "mkdirp": "^0.5.1",
+    "node-fetch": "^2.3.0",
     "openzeppelin-solidity": "^2.1.1",
     "solium": "^1.2.2",
     "truffle": "^5.0.1",

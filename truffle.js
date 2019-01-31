@@ -19,7 +19,7 @@ module.exports = {
     local: {
       protocol: 'http',
       host: 'localhost',
-      port: 8544,
+      port: 8545,
       network_id: '9',
       gas: 4000000
     },
@@ -58,7 +58,6 @@ module.exports = {
       gas: 4000000
     },
     poa: {
-      protocol: 'http',
       host: 'node35590-env-2351721.hidora.com',
       port: 11009,
       network_id: '17',

@@ -40,7 +40,7 @@ snc.eurToken.provision(amount) // the amount must be a string and can be in scie
 
 Once your account is provisioned, you can transfer the tokens by delegating the transaction to anyone. Get the signature by calling
 ```
-getSignedTransfer(recipient: address, amount: string, currency: [EUR, USD])
+getSignedTransferRaw(recipient: address, amount: string, currency: [EUR, USD])
 ```
 
 this signature can then be forwarded to a server which can submit it to the smart-contract without needing to know the signer's private key

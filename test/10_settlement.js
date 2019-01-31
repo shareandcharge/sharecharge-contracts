@@ -39,7 +39,7 @@ contract('Settlement', function (accounts) {
     assert.equal((await token.balanceOf(wallet.address)).toString(), toBN('1e29').toString())
   })
 
-  it('does hold the correct balance after filling the account', async () => {
+  it('does hold the correct balance after provisioning the account', async () => {
     await token.approve(settlement.address, toBN('5e28'), {from: wallet.address})
     assert.equal((await token.allowance(wallet.address, settlement.address)).toString(), toBN('5e28').toString())
 
