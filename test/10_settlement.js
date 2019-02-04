@@ -28,7 +28,7 @@ contract('Settlement', function (accounts) {
 
   const wallet = new ethers.Wallet(privateKey)
 
-  before(async () => {
+  beforeEach(async () => {
     settlement = await Settlement.new()
     token = await TestToken.new()
   })
@@ -40,6 +40,8 @@ contract('Settlement', function (accounts) {
   })
 
   it('does hold the correct balance after provisioning the account', async () => {
+    await token.mint(wallet.address, toBN('1e29'))
+
     await token.approve(settlement.address, toBN('5e28'), {from: wallet.address})
     assert.equal((await token.allowance(wallet.address, settlement.address)).toString(), toBN('5e28').toString())
 
@@ -49,6 +51,10 @@ contract('Settlement', function (accounts) {
   })
 
   it('can transfer tokens given a signed transfer message', async () => {
+    await token.mint(wallet.address, toBN('1e29'))
+    await token.approve(settlement.address, toBN('5e28'), {from: wallet.address})
+    await settlement.transferInto(wallet.address, toBN('5e28'), token.address, {from: wallet.address})
+
     let sig = await sign(accounts[1], '2e28', token.address, wallet)
 
     await settlement.transfer(accounts[1], toBN('2e28'), token.address, sig.v, sig.r, sig.s, {from: accounts[2]})
@@ -58,6 +64,10 @@ contract('Settlement', function (accounts) {
   })
 
   it('reverts the transfer on insufficient funds', async () => {
+    await token.mint(wallet.address, toBN('1e29'))
+    await token.approve(settlement.address, toBN('5e28'), {from: wallet.address})
+    await settlement.transferInto(wallet.address, toBN('5e28'), token.address, {from: wallet.address})
+
     let sig = await sign(accounts[1], '2e29', token.address, wallet)
 
     try {
@@ -66,8 +76,8 @@ contract('Settlement', function (accounts) {
     } catch (e) {
       assert.equal(e.message, 'Returned error: VM Exception while processing transaction: revert')
     }
-    assert.equal((await token.balanceOf(accounts[1])).toString(), toBN('2e28').toString())
-    assert.equal((await settlement.tokenBalances(token.address, wallet.address)).toString(), toBN('3e28').toString())
+    assert.equal((await token.balanceOf(accounts[1])).toString(), toBN('0e28').toString())
+    assert.equal((await settlement.tokenBalances(token.address, wallet.address)).toString(), toBN('5e28').toString())
 
   })
 
