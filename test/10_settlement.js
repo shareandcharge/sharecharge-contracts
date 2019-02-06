@@ -62,7 +62,7 @@ contract('Settlement', function (accounts) {
     assert.equal((await token.balanceOf(accounts[1])).toString(), toBN('2e28').toString())
     assert.equal((await settlement.tokenBalances(token.address, wallet.address)).toString(), toBN('3e28').toString())
 
-    console.log('transfer gasUsed:', tx.receipt.gasUsed)
+    // console.log('transfer gasUsed:', tx.receipt.gasUsed)
   })
 
   it('reverts the transfer on insufficient funds', async () => {
