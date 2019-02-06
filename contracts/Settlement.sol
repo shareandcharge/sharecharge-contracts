@@ -19,6 +19,11 @@ contract Settlement is Ownable {
     mapping(address => mapping(string => bool)) private withdrawals;
     // mapping(address => Withdrawal) withdrawals;
 
+    // allow owner to withdraw any ether accidentally sent to contract
+    function withdrawEther() public onlyOwner {
+        msg.sender.transfer(address(this).balance);
+    }
+
     // the owner can transfer arbitrary token amounts. this should only be used in extreme cases
     function transferTokens(address recipient, uint256 amount, address token) public onlyOwner {
         IERC20(token).transfer(recipient, amount);
